@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DORA Metrics: Change Failure Rate</title>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 2rem;
+            background: #f4f5f7;
+            color: #172b4d;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+        }
+
+        .file-upload {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border: 1px dashed #dfe1e6;
+            border-radius: 4px;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        button {
+            background: #0052cc;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background: #0047b3;
+        }
+
+        .error {
+            color: #de350b;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        /* Dashboard styling */
+        .dashboard {
+            display: none;
+            background: #e9ecef;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-top: 2rem;
+        }
+
+        .dashboard h2 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: #172b4d;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #5e6c84;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0052cc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #dfe1e6;
+        }
+
+        th {
+            background: #f4f5f7;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Change Failure Rate (CFR) Calculator</h1>
+
+        <div class="file-upload">
+            <label for="exportFile">Upload gecombineerd Excel-bestand (Changes & Bugs)</label>
+            <input type="file" id="exportFile" accept=".xlsx, .xls, .csv">
+        </div>
+
+        <button onclick="calculateCFR()">Bereken CFR</button>
+        <div id="errorMessage" class="error"></div>
+
+        <!-- Samenvatting Dashboard -->
+        <div id="summaryDashboard" class="dashboard">
+            <h2>Samenvatting (<span id="sumDates"></span>)</h2>
+            <p style="font-size: 0.9rem; color: #5e6c84; margin-bottom: 1.5rem; line-height: 1.4;">
+                <em><strong>Hoe wordt dit berekend?</strong> De totale CFR wordt berekend door het unieke aantal bugs te
+                    delen door het unieke aantal changes, vermenigvuldigd met 100.<br>
+                    Per release is dit het aantal bugs (aangemaakt óp of ná de laatste Resolved-datum van die release)
+                    gedeeld door het aantal changes.</em>
+            </p>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-label">Releases</span>
+                    <span class="stat-value" id="sumReleases">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Changes</span>
+                    <span class="stat-value" id="sumChanges">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Bugs</span>
+                    <span class="stat-value" id="sumBugs">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Totale CFR</span>
+                    <span class="stat-value" id="sumCfr">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detail Tabel -->
+        <table id="resultsTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Release (Fix Version)</th>
+                    <th>Changes</th>
+                    <th>Bugs</th>
+                    <th>CFR (%)</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function readExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const json = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: false });
+                        resolve(json);
+                    } catch (err) {
+                        reject(err);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        async function calculateCFR() {
+            const exportFile = document.getElementById('exportFile').files[0];
+            const errorMsg = document.getElementById('errorMessage');
+
+            const dashboard = document.getElementById('summaryDashboard');
+            const resultsTable = document.getElementById('resultsTable');
+            const resultsBody = document.getElementById('resultsBody');
+
+            errorMsg.textContent = "";
+            resultsBody.innerHTML = "";
+            dashboard.style.display = "none";
+            resultsTable.style.display = "none";
+
+            if (!exportFile) {
+                errorMsg.textContent = "Upload a.u.b. een bestand voordat je rekent.";
+                return;
+            }
+
+            try {
+                const allData = await readExcelFile(exportFile);
+
+                const changesData = [];
+                const bugsData = [];
+
+                // Splits de data op basis van Issue Type
+                allData.forEach(row => {
+                    const issueType = row["Issue Type"] || row["Issue type"] || row["issuetype"];
+                    if (issueType && issueType.toLowerCase() === 'bug') {
+                        bugsData.push(row);
+                    } else {
+                        changesData.push(row);
+                    }
+                });
+
+                const releases = {};
+                let uniqueChanges = new Set();
+                let uniqueBugs = new Set();
+
+                let minDate = null;
+                let maxDate = null;
+
+                const processDate = (dateStr) => {
+                    if (!dateStr) return;
+                    const d = new Date(dateStr);
+                    if (!isNaN(d.getTime())) {
+                        if (!minDate || d < minDate) minDate = d;
+                        if (!maxDate || d > maxDate) maxDate = d;
+                    }
+                };
+
+                const getIssueKey = (row) => row["Issue key"] || row["Issue Key"] || row["Issue ID"] || "Onbekend";
+                const parseDate = (dateStr) => dateStr ? new Date(dateStr) : null;
+
+                // Stap 1: Verwerk de Changes en bepaal de laatst resolved datum per release
+                changesData.forEach(row => {
+                    processDate(row["Created(date)"] || row["Created"]);
+                    processDate(row["Resolved(date)"] || row["Resolved"]);
+
+                    let resolvedDate = parseDate(row["Resolved(date)"] || row["Resolved"]);
+                    let versionsRaw = row["Fix Version/s"];
+
+                    if (versionsRaw) {
+                        let versions = versionsRaw.toString().split(',');
+                        versions.forEach(v => {
+                            let version = v.trim();
+                            if (version) {
+                                if (!releases[version]) {
+                                    releases[version] = { changes: 0, bugs: 0, maxResolvedDate: null };
+                                }
+                                releases[version].changes += 1;
+                                uniqueChanges.add(getIssueKey(row));
+
+                                // Werk de maxResolvedDate bij voor deze release
+                                if (resolvedDate && !isNaN(resolvedDate.getTime())) {
+                                    if (!releases[version].maxResolvedDate || resolvedDate > releases[version].maxResolvedDate) {
+                                        // Sla datum op zonder tijdstip voor zuivere vergelijking
+                                        releases[version].maxResolvedDate = new Date(resolvedDate.toDateString());
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // Stap 2: Verwerk de Bugs met datum-check
+                bugsData.forEach(row => {
+                    processDate(row["Created(date)"] || row["Created"]);
+                    processDate(row["Resolved(date)"] || row["Resolved"]);
+
+                    let createdDate = parseDate(row["Created(date)"] || row["Created"]);
+                    let versionsRaw = row["Fix Version/s"];
+
+                    if (versionsRaw) {
+                        let versions = versionsRaw.toString().split(',');
+                        versions.forEach(v => {
+                            let version = v.trim();
+                            if (version && releases[version]) {
+
+                                let countBug = false;
+
+                                if (createdDate && !isNaN(createdDate.getTime()) && releases[version].maxResolvedDate) {
+                                    // Tel alleen mee als bug op of na de laatst resolved datum van de release is aangemaakt
+                                    let bugDateStartOfDay = new Date(createdDate.toDateString());
+                                    if (bugDateStartOfDay >= releases[version].maxResolvedDate) {
+                                        countBug = true;
+                                    }
+                                } else if (!releases[version].maxResolvedDate) {
+                                    // Fallback: als er geen resolved datum in de changes stond, tel de bug altijd mee
+                                    countBug = true;
+                                }
+
+                                if (countBug) {
+                                    releases[version].bugs += 1;
+                                    uniqueBugs.add(getIssueKey(row));
+                                }
+                            }
+                        });
+                    }
+                });
+
+                // Update Dashboard Data
+                const numReleases = Object.keys(releases).length;
+                const numChanges = uniqueChanges.size;
+                const numBugs = uniqueBugs.size;
+                const totalCFR = numChanges > 0 ? ((numBugs / numChanges) * 100).toFixed(2) : 0;
+
+                document.getElementById('sumReleases').textContent = numReleases;
+                document.getElementById('sumChanges').textContent = numChanges;
+                document.getElementById('sumBugs').textContent = numBugs;
+                document.getElementById('sumCfr').textContent = totalCFR + '%';
+
+                if (minDate && maxDate) {
+                    const opties = { day: '2-digit', month: '2-digit', year: 'numeric' };
+                    document.getElementById('sumDates').textContent =
+                        `${minDate.toLocaleDateString('nl-NL', opties)} t/m ${maxDate.toLocaleDateString('nl-NL', opties)}`;
+                } else {
+                    document.getElementById('sumDates').textContent = 'Geen datums gevonden';
+                }
+
+                // Render de detail tabel
+                Object.keys(releases).sort().forEach(version => {
+                    const data = releases[version];
+                    const cfr = data.changes > 0 ? ((data.bugs / data.changes) * 100) : 0;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                    <td><strong>${version}</strong></td>
+                    <td>${data.changes}</td>
+                    <td>${data.bugs}</td>
+                    <td>${cfr.toFixed(2)}%</td>
+                `;
+                    resultsBody.appendChild(tr);
+                });
+
+                if (numReleases === 0) {
+                    errorMsg.textContent = "Geen releases gevonden. Check of de kolom 'Fix Version/s' exact zo heet in je exports.";
+                } else {
+                    dashboard.style.display = "block";
+                    resultsTable.style.display = "table";
+                }
+
+            } catch (error) {
+                console.error(error);
+                errorMsg.textContent = "Er ging iets mis met het inlezen van het bestand. Controleer of het een geldig Excel of CSV bestand is.";
+            }
+        }
+    </script>
+</body>
+
+</html>
