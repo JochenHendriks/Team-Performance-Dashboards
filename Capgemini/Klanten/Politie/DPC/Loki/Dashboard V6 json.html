@@ -206,6 +206,24 @@
 
         th {
             background: #f4f5f7;
+            user-select: none;
+        }
+
+        /* Sorteerbare headers styling */
+        .sortable {
+            cursor: pointer;
+        }
+
+        .sortable:hover {
+            background: #ebecf0;
+        }
+
+        .sort-icon {
+            display: inline-block;
+            width: 15px;
+            color: #5e6c84;
+            font-size: 0.8rem;
+            margin-left: 5px;
         }
 
         .details-container {
@@ -316,10 +334,12 @@
             <p style="font-size: 0.9rem; color: #5e6c84; margin-bottom: 1.5rem; line-height: 1.4; margin-top: 1rem;">
                 <strong>Hoe wordt de CFR berekend?</strong><br>
                 De tool vergelijkt de aanmaakdatum van de bugs met de officiële releasedatum van de versies.<br>
-                1. <strong>Pre-release Bugs:</strong> Bugs die vóór deze officiële datum zijn aangemaakt tellen niet
+                1. <strong>Pre-release Bugs:</strong> Bugs die vóór de officiële datum zijn aangemaakt tellen niet
                 mee.<br>
                 2. <strong>Post-release Bugs:</strong> Bugs die óp of ná de officiële releasedatum zijn aangemaakt
-                gelden als productie-incidenten. Alleen deze beïnvloeden de CFR.
+                gelden als productie-incidenten.<br>
+                3. <strong>Hotfixes:</strong> Heeft een release 0 features en alleen bugs? Dan herkent de tool dit als
+                een Hotfix. Al deze bugs tellen direct mee voor je totale CFR.
             </p>
 
             <div class="stats-grid">
@@ -358,11 +378,16 @@
         <table id="resultsTable" style="display:none;">
             <thead>
                 <tr>
-                    <th>Release (Fix Version)</th>
-                    <th>Officiële Datum</th>
-                    <th>Changes</th>
-                    <th>Bugs (Post-Release)</th>
-                    <th>CFR (%)</th>
+                    <th class="sortable" onclick="sortTable('name')">Release <span id="sort-name"
+                            class="sort-icon"></span></th>
+                    <th class="sortable" onclick="sortTable('date')">Officiële Datum <span id="sort-date"
+                            class="sort-icon">▼</span></th>
+                    <th class="sortable" onclick="sortTable('changes')">Changes <span id="sort-changes"
+                            class="sort-icon"></span></th>
+                    <th class="sortable" onclick="sortTable('bugs')">Bugs (Post) <span id="sort-bugs"
+                            class="sort-icon"></span></th>
+                    <th class="sortable" onclick="sortTable('cfr')">CFR (%) <span id="sort-cfr"
+                            class="sort-icon"></span></th>
                 </tr>
             </thead>
             <tbody id="resultsBody"></tbody>
@@ -370,6 +395,11 @@
     </div>
 
     <script>
+        // Globale variabelen voor het opslaan en sorteren van tabeldata
+        let tableData = [];
+        let currentSortColumn = 'date';
+        let isSortDescending = true;
+
         function generateUrls() {
             const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
             const projectKey = document.getElementById('projectKey').value.trim();
@@ -378,11 +408,8 @@
 
             if (baseUrlRaw && projectKey && startDate && endDate) {
                 const baseUrl = baseUrlRaw.replace(/\/$/, "");
-
-                // Link 1: Versies
                 document.getElementById('urlVersions').value = `${baseUrl}/rest/api/2/project/${projectKey}/versions`;
 
-                // Link 2: Issues (met encodeURIComponent voor een veilige URL string in de browser)
                 const jql = `project="${projectKey}" AND fixVersion is not EMPTY AND resolved>="${startDate}" AND resolved<="${endDate}"`;
                 document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(jql)}&maxResults=1000&fields=issuetype,summary,fixVersions,created,resolutiondate,priority`;
             } else {
@@ -396,7 +423,6 @@
             if (input.value) {
                 input.select();
                 document.execCommand('copy');
-                // Tijdelijke visuele feedback op de knop
                 const btn = input.nextElementSibling;
                 const originalText = btn.textContent;
                 btn.textContent = "Gekopieerd!";
@@ -437,6 +463,119 @@
             });
         }
 
+        function sortTable(column, forceDesc = null) {
+            // Reset alle iconen
+            ['name', 'date', 'changes', 'bugs', 'cfr'].forEach(col => {
+                document.getElementById(`sort-${col}`).textContent = '';
+            });
+
+            // Bepaal de sorteervolgorde
+            if (forceDesc !== null) {
+                isSortDescending = forceDesc;
+            } else {
+                if (currentSortColumn === column) {
+                    isSortDescending = !isSortDescending; // Draai om bij nogmaals klikken
+                } else {
+                    isSortDescending = true; // Standaard nieuwste/hoogste eerst
+                }
+            }
+
+            currentSortColumn = column;
+
+            // Update het icoontje
+            document.getElementById(`sort-${column}`).textContent = isSortDescending ? '▼' : '▲';
+
+            // Sorteer de data-array
+            tableData.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                // Voor datum-objecten
+                if (column === 'date') {
+                    valA = a.releaseDate.getTime();
+                    valB = b.releaseDate.getTime();
+                }
+
+                // Voor strings
+                if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) return isSortDescending ? 1 : -1;
+                if (valA > valB) return isSortDescending ? -1 : 1;
+                return 0;
+            });
+
+            renderTableRows();
+        }
+
+        function renderTableRows() {
+            const resultsBody = document.getElementById('resultsBody');
+            resultsBody.innerHTML = '';
+
+            const formatDate = (dateObj) => {
+                if (!dateObj) return "Onbekend";
+                return dateObj.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            };
+
+            tableData.forEach(data => {
+                let cfrBadgeHtml = '';
+                if (data.isHotfix) {
+                    cfrBadgeHtml = `<span class="cfr-badge" style="background-color: #de350b;">Hotfix</span>`;
+                } else {
+                    const bgColor = getCfrColor(data.cfr);
+                    cfrBadgeHtml = `<span class="cfr-badge" style="background-color: ${bgColor};">${data.cfr.toFixed(2)}%</span>`;
+                }
+
+                const vId = data.name.replace(/[^a-zA-Z0-9]/g, '');
+                const releaseDateStr = formatDate(data.releaseDate);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                <td>
+                    <button class="expand-btn" onclick="toggleDetails(this, 'details-${vId}')">▶</button>
+                    <strong>${data.name}</strong>
+                </td>
+                <td>${releaseDateStr}</td>
+                <td>${data.changes}</td>
+                <td>${data.bugs}</td>
+                <td>${cfrBadgeHtml}</td>
+            `;
+
+                const trDetails = document.createElement('tr');
+                trDetails.id = `details-${vId}`;
+                trDetails.style.display = 'none';
+
+                let changesList = data.issues.filter(i => i.type === 'Change').map(i => `<li><strong>${i.key}</strong>: ${i.summary}</li>`).join('');
+                let bugsList = data.issues.filter(i => i.type === 'Bug').map(i => {
+                    let tag = i.isPostRelease ? '<span class="tag-cfr">Post-release</span>' : '';
+                    return `<li><strong>${i.key}</strong>: ${i.summary} ${tag}</li>`;
+                }).join('');
+
+                if (!changesList) changesList = "<li>Geen changes gevonden</li>";
+                if (!bugsList) bugsList = "<li>Geen bugs gevonden</li>";
+
+                trDetails.innerHTML = `
+                <td colspan="5" style="background: #fafbfc; padding: 1.5rem; border-bottom: 2px solid #dfe1e6;">
+                    <div class="details-container">
+                        <div>
+                            <h4 style="margin: 0 0 0.5rem 0; color: #172b4d;">Features / Changes</h4>
+                            <ul class="issue-list">${changesList}</ul>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0 0 0.5rem 0; color: #172b4d;">Bugs in deze release</h4>
+                            <ul class="issue-list">${bugsList}</ul>
+                        </div>
+                    </div>
+                </td>
+            `;
+
+                resultsBody.appendChild(tr);
+                resultsBody.appendChild(trDetails);
+            });
+        }
+
         async function calculateMetrics() {
             const versionsFile = document.getElementById('versionsFile').files[0];
             const issuesFile = document.getElementById('issuesFile').files[0];
@@ -446,10 +585,9 @@
             const errorMsg = document.getElementById('errorMessage');
             const dashboard = document.getElementById('summaryDashboard');
             const resultsTable = document.getElementById('resultsTable');
-            const resultsBody = document.getElementById('resultsBody');
 
             errorMsg.style.display = "none";
-            resultsBody.innerHTML = "";
+            document.getElementById('resultsBody').innerHTML = "";
             dashboard.style.display = "none";
             resultsTable.style.display = "none";
 
@@ -508,9 +646,33 @@
                 let allUniqueBugs = new Map();
                 let validCfrBugs = new Set();
 
+                // PAS 1: Tel eerst alle changes (Features/Stories) per release
                 allIssues.forEach(issue => {
                     const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
                     const isBug = typeName.toLowerCase() === 'bug';
+                    if (isBug) return;
+
+                    const key = issue.key;
+                    const summary = issue.fields.summary || "Geen titel";
+
+                    if (issue.fields.fixVersions) {
+                        issue.fields.fixVersions.forEach(fv => {
+                            const vName = fv.name;
+                            if (validVersions[vName]) {
+                                validVersions[vName].changes += 1;
+                                uniqueChanges.add(key);
+                                validVersions[vName].issues.push({ key, summary, type: 'Change' });
+                            }
+                        });
+                    }
+                });
+
+                // PAS 2: Verwerk nu de bugs (nu we weten of een release een Hotfix is)
+                allIssues.forEach(issue => {
+                    const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
+                    const isBug = typeName.toLowerCase() === 'bug';
+                    if (!isBug) return;
+
                     const key = issue.key;
                     const createdDate = new Date(issue.fields.created);
                     const resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
@@ -524,25 +686,24 @@
                             const vName = fv.name;
                             if (validVersions[vName]) {
                                 belongsToValidVersion = true;
+                                let isPostRelease = false;
 
-                                if (!isBug) {
-                                    validVersions[vName].changes += 1;
-                                    uniqueChanges.add(key);
-                                    validVersions[vName].issues.push({ key, summary, type: 'Change' });
-                                } else {
-                                    let isPostRelease = false;
-                                    if (createdDate >= validVersions[vName].releaseDate) {
-                                        isPostRelease = true;
-                                        validVersions[vName].bugs += 1;
-                                        validCfrBugs.add(key);
-                                    }
-                                    validVersions[vName].issues.push({ key, summary, type: 'Bug', isPostRelease });
+                                if (validVersions[vName].changes === 0) {
+                                    isPostRelease = true;
+                                } else if (createdDate >= validVersions[vName].releaseDate) {
+                                    isPostRelease = true;
                                 }
+
+                                if (isPostRelease) {
+                                    validVersions[vName].bugs += 1;
+                                    validCfrBugs.add(key);
+                                }
+                                validVersions[vName].issues.push({ key, summary, type: 'Bug', isPostRelease });
                             }
                         });
                     }
 
-                    if (isBug && belongsToValidVersion) {
+                    if (belongsToValidVersion) {
                         if (!allUniqueBugs.has(key)) {
                             allUniqueBugs.set(key, { createdDate, resolvedDate, priority });
                         }
@@ -611,65 +772,35 @@
                     document.getElementById('sumDates').textContent = 'Geen datums';
                 }
 
-                const formatDate = (dateObj) => {
-                    if (!dateObj) return "Onbekend";
-                    return dateObj.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                };
-
-                Object.keys(validVersions).sort().forEach(versionName => {
+                // Bereid de globale tableData array voor
+                tableData = [];
+                Object.keys(validVersions).forEach(versionName => {
                     const data = validVersions[versionName];
-                    const cfr = data.changes > 0 ? ((data.bugs / data.changes) * 100) : 0;
+                    const isHotfix = data.changes === 0 && data.bugs > 0;
 
-                    const vId = versionName.replace(/[^a-zA-Z0-9]/g, '');
-                    const releaseDateStr = formatDate(data.releaseDate);
-                    const bgColor = getCfrColor(cfr);
+                    let cfrVal = 0;
+                    if (isHotfix) {
+                        cfrVal = 100; // Geef hotfixes virtueel 100% voor de sortering
+                    } else if (data.changes > 0) {
+                        cfrVal = (data.bugs / data.changes) * 100;
+                    }
 
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                    <td>
-                        <button class="expand-btn" onclick="toggleDetails(this, 'details-${vId}')">▶</button>
-                        <strong>${versionName}</strong>
-                    </td>
-                    <td>${releaseDateStr}</td>
-                    <td>${data.changes}</td>
-                    <td>${data.bugs}</td>
-                    <td><span class="cfr-badge" style="background-color: ${bgColor};">${cfr.toFixed(2)}%</span></td>
-                `;
-
-                    const trDetails = document.createElement('tr');
-                    trDetails.id = `details-${vId}`;
-                    trDetails.style.display = 'none';
-
-                    let changesList = data.issues.filter(i => i.type === 'Change').map(i => `<li><strong>${i.key}</strong>: ${i.summary}</li>`).join('');
-                    let bugsList = data.issues.filter(i => i.type === 'Bug').map(i => {
-                        let tag = i.isPostRelease ? '<span class="tag-cfr">Post-release</span>' : '';
-                        return `<li><strong>${i.key}</strong>: ${i.summary} ${tag}</li>`;
-                    }).join('');
-
-                    if (!changesList) changesList = "<li>Geen changes gevonden</li>";
-                    if (!bugsList) bugsList = "<li>Geen bugs gevonden</li>";
-
-                    trDetails.innerHTML = `
-                    <td colspan="5" style="background: #fafbfc; padding: 1.5rem; border-bottom: 2px solid #dfe1e6;">
-                        <div class="details-container">
-                            <div>
-                                <h4 style="margin: 0 0 0.5rem 0; color: #172b4d;">Features / Changes</h4>
-                                <ul class="issue-list">${changesList}</ul>
-                            </div>
-                            <div>
-                                <h4 style="margin: 0 0 0.5rem 0; color: #172b4d;">Bugs in deze release</h4>
-                                <ul class="issue-list">${bugsList}</ul>
-                            </div>
-                        </div>
-                    </td>
-                `;
-
-                    resultsBody.appendChild(tr);
-                    resultsBody.appendChild(trDetails);
+                    tableData.push({
+                        name: data.name,
+                        releaseDate: data.releaseDate,
+                        changes: data.changes,
+                        bugs: data.bugs,
+                        cfr: cfrVal,
+                        isHotfix: isHotfix,
+                        issues: data.issues
+                    });
                 });
 
                 dashboard.style.display = "block";
                 resultsTable.style.display = "table";
+
+                // Render de tabel met de standaard sortering (Datum, nieuwste eerst)
+                sortTable('date', true);
 
             } catch (error) {
                 console.error(error);
@@ -678,7 +809,6 @@
             }
         }
 
-        // Voer de link-generator een keer uit bij het inladen om placeholders te updaten
         generateUrls();
     </script>
 </body>
