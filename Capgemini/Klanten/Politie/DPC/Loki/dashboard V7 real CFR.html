@@ -190,7 +190,6 @@
             line-height: 1.4;
         }
 
-        /* Severity Pills Styling */
         .severity-pills {
             display: flex;
             flex-wrap: wrap;
@@ -277,7 +276,6 @@
             border-bottom: 1px solid #ebecf0;
         }
 
-        /* Badges */
         .tag-cfr {
             color: #de350b;
             font-weight: bold;
@@ -343,7 +341,8 @@
                     <button class="copy-btn" onclick="copyToClipboard('urlVersions')">Kopieer</button>
                 </div>
 
-                <label style="margin-top: 1rem;">Link 2: Issues (issues.json)</label>
+                <label style="margin-top: 1rem;">Link 2: Issues (issues.json) - Nu zuiverder via
+                    releasedVersions()</label>
                 <div class="url-box">
                     <input type="text" id="urlIssues" readonly placeholder="Vul eerst je Base URL en Project Key in...">
                     <button class="copy-btn" onclick="copyToClipboard('urlIssues')">Kopieer</button>
@@ -375,7 +374,7 @@
                 als:<br>
                 1. Het een <strong>Hotfix</strong> is (0 features, alleen bugs).<br>
                 2. Er ná livegang minimaal één kritieke bug (High, Highest, Major, Critical, P1, P2) in de release is
-                gemeld. Cosmetische (Low) post-release bugs laten een release dus <em>niet</em> falen.<br><br>
+                gemeld. Cosmetische post-release bugs laten een release <em>niet</em> falen.<br><br>
                 <em>Formule: (Aantal Gefaalde Releases / Totaal Aantal Releases) * 100</em>
             </p>
 
@@ -441,7 +440,6 @@
         let isSortDescending = true;
         let globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
 
-        // Bepaal of een prioriteit 'kritiek' is (deze laten de release falen)
         const isSeverePriority = (priority) => {
             if (!priority) return false;
             const p = priority.toLowerCase();
@@ -451,15 +449,16 @@
         function generateUrls() {
             const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
             const projectKey = document.getElementById('projectKey').value.trim();
-            const startDate = document.getElementById('startDate').value;
+            const startDate = document.getElementById('startDate').value; // Wordt alleen nog gebruikt voor dashboard UI weergave
             const endDate = document.getElementById('endDate').value;
 
             if (baseUrlRaw && projectKey && startDate && endDate) {
                 const baseUrl = baseUrlRaw.replace(/\/$/, "");
                 document.getElementById('urlVersions').value = `${baseUrl}/rest/api/2/project/${projectKey}/versions`;
 
-                const jql = `project="${projectKey}" AND fixVersion is not EMPTY AND resolved>="${startDate}" AND resolved<="${endDate}"`;
-                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(jql)}&maxResults=1000&fields=issuetype,summary,fixVersions,created,resolutiondate,priority`;
+                // GEWIJZIGD: We gebruiken nu releasedVersions() en vragen status en updated mee op voor de MTTR fallback.
+                const jql = `project="${projectKey}" AND fixVersion in releasedVersions()`;
+                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(jql)}&maxResults=1000&fields=issuetype,summary,fixVersions,created,resolutiondate,priority,status,updated`;
             } else {
                 document.getElementById('urlVersions').value = "";
                 document.getElementById('urlIssues').value = "";
@@ -698,6 +697,7 @@
                 allVersions.forEach(v => {
                     if (v.released && v.releaseDate) {
                         const rDate = new Date(v.releaseDate);
+                        // Filter versies puur af op de UI datums
                         if (rDate >= startLimit && rDate <= endLimit) {
                             validVersions[v.name] = {
                                 name: v.name,
@@ -752,7 +752,15 @@
 
                     const key = issue.key;
                     const createdDate = new Date(issue.fields.created);
-                    const resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
+                    let resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
+
+                    // --- FALLBACK LOGICA VOOR ONTBREKENDE RESOLUTION DATE ---
+                    if (!resolvedDate && issue.fields.status && issue.fields.status.statusCategory && issue.fields.status.statusCategory.key === 'done') {
+                        if (issue.fields.updated) {
+                            resolvedDate = new Date(issue.fields.updated);
+                        }
+                    }
+
                     const summary = issue.fields.summary || "Geen titel";
                     const priority = issue.fields.priority ? issue.fields.priority.name : "Onbekend";
 
@@ -766,7 +774,7 @@
                                 let isPostRelease = false;
 
                                 if (validVersions[vName].changes === 0) {
-                                    isPostRelease = true; // Bij hotfix zijn alle bugs post-release
+                                    isPostRelease = true;
                                 } else if (createdDate >= validVersions[vName].releaseDate) {
                                     isPostRelease = true;
                                 }
@@ -774,7 +782,6 @@
                                 if (isPostRelease) {
                                     validVersions[vName].bugs += 1;
 
-                                    // Check op severe priority voor de release failure
                                     if (isSeverePriority(priority)) {
                                         validVersions[vName].hasSeverePostBug = true;
                                     }
@@ -804,6 +811,7 @@
                         globalMttrData.byPriority[prio] = { hours: 0, count: 0 };
                     }
 
+                    // Check op positief verschil
                     if (data.createdDate && data.resolvedDate) {
                         let diffHrs = (data.resolvedDate - data.createdDate) / (1000 * 60 * 60);
                         if (diffHrs >= 0) {
@@ -837,15 +845,12 @@
                     });
                 severityHtml += `</div>`;
 
-                // Bepaal gefaalde releases op de DORA manier
                 let failedReleasesCount = 0;
                 tableData = [];
 
                 Object.keys(validVersions).forEach(versionName => {
                     const data = validVersions[versionName];
                     const isHotfix = data.changes === 0 && data.bugs > 0;
-
-                    // Een release faalt als het een hotfix is, OF als er minimaal 1 kritieke post-release bug is.
                     const isFailed = isHotfix || data.hasSeverePostBug;
 
                     if (isFailed) {
@@ -865,7 +870,6 @@
 
                 const totalCFR = numReleases > 0 ? ((failedReleasesCount / numReleases) * 100) : 0;
 
-                // Update UI statics
                 document.getElementById('sumReleases').textContent = numReleases;
                 document.getElementById('sumFailedReleases').textContent = failedReleasesCount;
                 document.getElementById('sumChanges').textContent = numChanges;
