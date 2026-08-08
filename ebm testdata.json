@@ -1,0 +1,3644 @@
+{
+    "issues": [
+        {
+            "key": "WEB-1",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 1",
+                "created": "2026-02-27T09:00:00.000Z",
+                "resolutiondate": "2026-03-12T14:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-03-11T12:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-03-12T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-2",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 2",
+                "created": "2026-10-07T10:00:00.000Z",
+                "resolutiondate": "2026-10-18T18:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-17T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-18T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-3",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 3",
+                "created": "2026-01-14T17:00:00.000Z",
+                "resolutiondate": "2026-01-27T06:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-01-18T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-01-27T06:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-4",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 4",
+                "created": "2026-05-23T09:00:00.000Z",
+                "resolutiondate": "2026-06-11T16:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-06-05T11:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-06-11T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-5",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 5",
+                "created": "2026-06-22T10:00:00.000Z",
+                "resolutiondate": "2026-06-26T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-06-24T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-06-26T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-6",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 6",
+                "created": "2026-08-24T17:00:00.000Z",
+                "resolutiondate": "2026-08-29T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-26T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-29T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-7",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 7",
+                "created": "2026-02-05T09:00:00.000Z",
+                "resolutiondate": "2026-02-20T15:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-16T11:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-20T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-8",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 8",
+                "created": "2026-07-14T13:00:00.000Z",
+                "resolutiondate": "2026-07-28T01:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-07-22T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-07-28T01:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-9",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 9",
+                "created": "2026-05-17T10:00:00.000Z",
+                "resolutiondate": "2026-05-30T20:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-27T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-30T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-10",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 10",
+                "created": "2026-07-14T13:00:00.000Z",
+                "resolutiondate": "2026-08-04T01:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-07-25T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-04T01:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-11",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 11",
+                "created": "2026-01-29T12:00:00.000Z",
+                "resolutiondate": "2026-02-19T18:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-12T13:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-19T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-12",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 12",
+                "created": "2026-10-18T14:00:00.000Z",
+                "resolutiondate": "2026-10-26T04:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-22T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-26T04:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-13",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 13",
+                "created": "2026-03-13T12:00:00.000Z",
+                "resolutiondate": "2026-04-04T00:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-03-25T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-04-04T00:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-14",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 14",
+                "created": "2026-07-24T14:00:00.000Z",
+                "resolutiondate": "2026-08-01T17:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-07-28T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-01T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-15",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 15",
+                "created": "2026-03-20T11:00:00.000Z",
+                "resolutiondate": "2026-04-04T00:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-04-02T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-04-04T00:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-16",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 16",
+                "created": "2026-08-28T17:00:00.000Z",
+                "resolutiondate": "2026-09-14T00:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-02T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-14T00:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-17",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 17",
+                "created": "2026-10-02T13:00:00.000Z",
+                "resolutiondate": "2026-10-18T02:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-15T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-18T02:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-18",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 18",
+                "created": "2026-01-02T13:00:00.000Z",
+                "resolutiondate": "2026-01-15T20:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-01-11T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-01-15T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-19",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 19",
+                "created": "2026-09-17T12:00:00.000Z",
+                "resolutiondate": "2026-09-28T16:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-20T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-28T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-20",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 20",
+                "created": "2026-09-08T09:00:00.000Z",
+                "resolutiondate": "2026-10-04T17:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-10T12:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-04T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-21",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 21",
+                "created": "2026-05-04T10:00:00.000Z",
+                "resolutiondate": "2026-05-07T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-06T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-07T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-22",
+            "fields": {
+                "issuetype": {
+                    "name": "Spike"
+                },
+                "summary": "EBM Test Ticket 22",
+                "created": "2026-09-01T17:00:00.000Z",
+                "resolutiondate": "2026-09-13T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-04T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-13T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-23",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 23",
+                "created": "2026-10-04T12:00:00.000Z",
+                "resolutiondate": "2026-10-19T21:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-16T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-19T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-24",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 24",
+                "created": "2026-09-22T16:00:00.000Z",
+                "resolutiondate": "2026-09-26T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-24T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-26T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-25",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 25",
+                "created": "2026-04-28T12:00:00.000Z",
+                "resolutiondate": "2026-05-03T17:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-04-29T13:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-03T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-26",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 26",
+                "created": "2026-01-17T14:00:00.000Z",
+                "resolutiondate": "2026-01-23T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-01-19T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-01-23T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-27",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 27",
+                "created": "2026-03-09T16:00:00.000Z",
+                "resolutiondate": "2026-03-18T22:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-03-13T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-03-18T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-28",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 28",
+                "created": "2026-08-09T14:00:00.000Z",
+                "resolutiondate": "2026-08-19T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-16T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-19T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-29",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 29",
+                "created": "2026-02-20T09:00:00.000Z",
+                "resolutiondate": "2026-02-28T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-27T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-28T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-30",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 30",
+                "created": "2026-10-02T16:00:00.000Z",
+                "resolutiondate": "2026-10-08T00:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-05T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-08T00:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-31",
+            "fields": {
+                "issuetype": {
+                    "name": "Spike"
+                },
+                "summary": "EBM Test Ticket 31",
+                "created": "2026-02-08T16:00:00.000Z",
+                "resolutiondate": "2026-02-24T22:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-21T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-24T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-32",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 32",
+                "created": "2026-05-02T11:00:00.000Z",
+                "resolutiondate": "2026-05-11T16:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-09T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-11T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-33",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 33",
+                "created": "2026-01-02T15:00:00.000Z",
+                "resolutiondate": "2026-01-11T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-01-07T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-01-11T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-34",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 34",
+                "created": "2026-06-01T12:00:00.000Z",
+                "resolutiondate": "2026-06-06T23:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-06-02T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-06-06T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-35",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 35",
+                "created": "2026-10-27T16:00:00.000Z",
+                "resolutiondate": "2026-11-08T23:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-11-05T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-11-08T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-36",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 36",
+                "created": "2026-02-05T10:00:00.000Z",
+                "resolutiondate": "2026-02-19T16:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-16T12:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-19T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-37",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 37",
+                "created": "2026-01-21T10:00:00.000Z",
+                "resolutiondate": "2026-02-05T22:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-01-28T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-05T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-38",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 38",
+                "created": "2026-04-15T14:00:00.000Z",
+                "resolutiondate": "2026-04-22T22:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-04-19T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-04-22T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-39",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 39",
+                "created": "2026-02-07T09:00:00.000Z",
+                "resolutiondate": "2026-02-27T16:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-15T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-27T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-40",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 40",
+                "created": "2026-09-17T13:00:00.000Z",
+                "resolutiondate": "2026-10-15T20:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-20T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-15T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-41",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 41",
+                "created": "2026-03-22T16:00:00.000Z",
+                "resolutiondate": "2026-04-13T22:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-04-05T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-04-13T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-42",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 42",
+                "created": "2026-10-11T13:00:00.000Z",
+                "resolutiondate": "2026-11-04T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-22T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-11-04T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-43",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 43",
+                "created": "2026-02-24T17:00:00.000Z",
+                "resolutiondate": "2026-03-01T02:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-27T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-03-01T02:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-44",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 44",
+                "created": "2026-05-16T17:00:00.000Z",
+                "resolutiondate": "2026-06-17T21:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-24T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-06-17T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-45",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 45",
+                "created": "2026-08-05T13:00:00.000Z",
+                "resolutiondate": "2026-08-07T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-06T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-07T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-46",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 46",
+                "created": "2026-08-15T17:00:00.000Z",
+                "resolutiondate": "2026-08-31T23:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-27T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-31T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-47",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 47",
+                "created": "2026-03-18T17:00:00.000Z",
+                "resolutiondate": "2026-03-25T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-03-19T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-03-25T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-48",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 48",
+                "created": "2026-06-07T14:00:00.000Z",
+                "resolutiondate": "2026-07-04T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-06-20T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-07-04T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-49",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 49",
+                "created": "2026-07-01T17:00:00.000Z",
+                "resolutiondate": "2026-08-07T00:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-07-15T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-07T00:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-50",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 50",
+                "created": "2026-05-02T11:00:00.000Z",
+                "resolutiondate": "2026-05-26T16:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-15T13:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-26T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-51",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 51",
+                "created": "2026-06-20T15:00:00.000Z",
+                "resolutiondate": "2026-07-27T01:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-07-03T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-07-27T01:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-52",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 52",
+                "created": "2026-02-25T15:00:00.000Z",
+                "resolutiondate": "2026-03-25T20:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-03-11T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-03-25T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-53",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 53",
+                "created": "2026-08-24T14:00:00.000Z",
+                "resolutiondate": "2026-09-01T20:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-29T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-01T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-54",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 54",
+                "created": "2026-05-23T10:00:00.000Z",
+                "resolutiondate": "2026-06-08T20:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-06-05T13:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-06-08T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-55",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 55",
+                "created": "2026-10-02T14:00:00.000Z",
+                "resolutiondate": "2026-10-18T18:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-03T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-18T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-56",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 56",
+                "created": "2026-05-16T09:00:00.000Z",
+                "resolutiondate": "2026-05-21T20:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-18T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-21T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-57",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 57",
+                "created": "2026-09-19T10:00:00.000Z",
+                "resolutiondate": "2026-09-27T22:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-26T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-27T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-58",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 58",
+                "created": "2026-10-03T12:00:00.000Z",
+                "resolutiondate": "2026-10-12T22:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-09T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-12T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-59",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 59",
+                "created": "2026-03-05T13:00:00.000Z",
+                "resolutiondate": "2026-03-20T23:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-03-14T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-03-20T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-60",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 60",
+                "created": "2026-10-11T11:00:00.000Z",
+                "resolutiondate": "2026-10-22T18:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-15T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-22T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-61",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 61",
+                "created": "2026-06-04T15:00:00.000Z",
+                "resolutiondate": "2026-06-14T23:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-06-13T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-06-14T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-62",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 62",
+                "created": "2026-06-14T16:00:00.000Z",
+                "resolutiondate": "2026-07-01T04:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-06-22T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-07-01T04:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-63",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 63",
+                "created": "2026-03-28T10:00:00.000Z",
+                "resolutiondate": "2026-04-10T21:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-04-02T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-04-10T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-64",
+            "fields": {
+                "issuetype": {
+                    "name": "Spike"
+                },
+                "summary": "EBM Test Ticket 64",
+                "created": "2026-05-01T13:00:00.000Z",
+                "resolutiondate": "2026-05-06T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-05T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-06T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-65",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 65",
+                "created": "2026-02-07T16:00:00.000Z",
+                "resolutiondate": "2026-02-24T05:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-14T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-24T05:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-66",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 66",
+                "created": "2026-05-05T11:00:00.000Z",
+                "resolutiondate": "2026-05-18T00:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-16T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-18T00:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-67",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 67",
+                "created": "2026-09-23T16:00:00.000Z",
+                "resolutiondate": "2026-09-26T05:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-24T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-26T05:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-68",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 68",
+                "created": "2026-08-26T17:00:00.000Z",
+                "resolutiondate": "2026-09-07T05:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-04T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-07T05:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-69",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 69",
+                "created": "2026-10-08T16:00:00.000Z",
+                "resolutiondate": "2026-10-30T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-11T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-30T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-70",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 70",
+                "created": "2026-05-22T17:00:00.000Z",
+                "resolutiondate": "2026-06-02T01:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-30T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-06-02T01:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-71",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 71",
+                "created": "2026-05-01T13:00:00.000Z",
+                "resolutiondate": "2026-05-19T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-07T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-19T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-72",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 72",
+                "created": "2026-07-16T11:00:00.000Z",
+                "resolutiondate": "2026-07-30T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-07-28T13:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-07-30T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-73",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 73",
+                "created": "2026-08-01T09:00:00.000Z",
+                "resolutiondate": "2026-08-08T14:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-05T13:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-08T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-74",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 74",
+                "created": "2026-10-22T15:00:00.000Z",
+                "resolutiondate": "2026-11-14T23:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-30T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-11-14T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-75",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 75",
+                "created": "2026-08-03T17:00:00.000Z",
+                "resolutiondate": "2026-08-24T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-15T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-24T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-76",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 76",
+                "created": "2026-05-20T15:00:00.000Z",
+                "resolutiondate": "2026-05-31T23:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-28T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-31T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-77",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 77",
+                "created": "2026-08-28T11:00:00.000Z",
+                "resolutiondate": "2026-09-09T17:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-07T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-09T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-78",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 78",
+                "created": "2026-08-08T11:00:00.000Z",
+                "resolutiondate": "2026-08-24T22:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-22T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-24T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-79",
+            "fields": {
+                "issuetype": {
+                    "name": "Task"
+                },
+                "summary": "EBM Test Ticket 79",
+                "created": "2026-08-21T14:00:00.000Z",
+                "resolutiondate": "2026-08-29T23:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-27T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-29T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-80",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 80",
+                "created": "2026-08-29T09:00:00.000Z",
+                "resolutiondate": "2026-09-12T18:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-10T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-12T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-81",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 81",
+                "created": "2026-01-21T09:00:00.000Z",
+                "resolutiondate": "2026-02-02T14:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-01-25T11:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-02T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-82",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 82",
+                "created": "2026-08-31T10:00:00.000Z",
+                "resolutiondate": "2026-09-12T18:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-10T12:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-12T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-83",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 83",
+                "created": "2026-02-28T11:00:00.000Z",
+                "resolutiondate": "2026-03-11T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-03-05T12:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-03-11T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-84",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 84",
+                "created": "2026-04-12T10:00:00.000Z",
+                "resolutiondate": "2026-04-27T18:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-04-22T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-04-27T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-85",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 85",
+                "created": "2026-06-04T10:00:00.000Z",
+                "resolutiondate": "2026-06-23T22:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-06-17T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-06-23T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-86",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 86",
+                "created": "2026-02-05T17:00:00.000Z",
+                "resolutiondate": "2026-02-19T04:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-16T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-19T04:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-87",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 87",
+                "created": "2026-07-05T16:00:00.000Z",
+                "resolutiondate": "2026-07-20T23:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-07-17T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-07-20T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-88",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 88",
+                "created": "2026-10-03T16:00:00.000Z",
+                "resolutiondate": "2026-10-20T01:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-11T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-20T01:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-89",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 89",
+                "created": "2026-05-06T10:00:00.000Z",
+                "resolutiondate": "2026-05-13T21:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-11T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-05-13T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-90",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 90",
+                "created": "2026-09-11T14:00:00.000Z",
+                "resolutiondate": "2026-09-17T00:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-14T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-17T00:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-91",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 91",
+                "created": "2026-05-22T17:00:00.000Z",
+                "resolutiondate": "2026-06-05T02:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-05-23T22:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-06-05T02:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-92",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 92",
+                "created": "2026-09-08T17:00:00.000Z",
+                "resolutiondate": "2026-10-01T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-21T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-01T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-93",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 93",
+                "created": "2026-01-09T10:00:00.000Z",
+                "resolutiondate": "2026-01-15T17:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-01-14T12:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-01-15T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-94",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 94",
+                "created": "2026-07-08T16:00:00.000Z",
+                "resolutiondate": "2026-07-21T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-07-17T21:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-07-21T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-95",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 95",
+                "created": "2026-08-21T13:00:00.000Z",
+                "resolutiondate": "2026-08-29T20:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-08-26T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-29T20:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-96",
+            "fields": {
+                "issuetype": {
+                    "name": "Spike"
+                },
+                "summary": "EBM Test Ticket 96",
+                "created": "2026-10-02T11:00:00.000Z",
+                "resolutiondate": "2026-10-12T18:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-06T13:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-12T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-97",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 97",
+                "created": "2026-04-10T13:00:00.000Z",
+                "resolutiondate": "2026-04-15T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-04-14T16:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-04-15T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-98",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 98",
+                "created": "2026-01-28T17:00:00.000Z",
+                "resolutiondate": "2026-02-24T07:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-02T23:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-24T07:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-99",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 99",
+                "created": "2026-01-07T13:00:00.000Z",
+                "resolutiondate": "2026-01-16T18:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-01-15T17:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-01-16T18:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-100",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 100",
+                "created": "2026-09-02T10:00:00.000Z",
+                "resolutiondate": "2026-09-17T12:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-09-16T11:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-09-17T12:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-101",
+            "fields": {
+                "issuetype": {
+                    "name": "Bug"
+                },
+                "summary": "EBM Test Ticket 101",
+                "created": "2026-10-16T13:00:00.000Z",
+                "resolutiondate": "2026-10-20T19:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-10-18T15:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-10-20T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-102",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 102",
+                "created": "2026-07-14T16:00:00.000Z",
+                "resolutiondate": "2026-08-09T00:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-07-22T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-08-09T00:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-103",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 103",
+                "created": "2026-01-31T10:00:00.000Z",
+                "resolutiondate": "2026-02-19T14:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-02-13T12:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-02-19T14:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "key": "WEB-104",
+            "fields": {
+                "issuetype": {
+                    "name": "Story"
+                },
+                "summary": "EBM Test Ticket 104",
+                "created": "2026-03-30T17:00:00.000Z",
+                "resolutiondate": "2026-04-04T03:00:00.000Z"
+            },
+            "changelog": {
+                "histories": [
+                    {
+                        "created": "2026-04-01T19:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "To Do",
+                                "toString": "In Progress"
+                            }
+                        ]
+                    },
+                    {
+                        "created": "2026-04-04T03:00:00.000Z",
+                        "items": [
+                            {
+                                "field": "status",
+                                "fromString": "In Progress",
+                                "toString": "Done"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}

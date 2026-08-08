@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EBM Dashboard - Cycle Time & Sprints</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 2rem;
+            background: #f4f5f7;
+            color: #172b4d;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+            color: #172b4d;
+            margin-top: 2rem;
+            border-bottom: 2px solid #dfe1e6;
+            padding-bottom: 0.5rem;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            padding: 1rem;
+            border: 1px dashed #dfe1e6;
+            border-radius: 4px;
+            background: #fafbfc;
+        }
+
+        .input-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        input[type="date"] {
+            width: 100%;
+            border: 1px solid #dfe1e6;
+            border-radius: 4px;
+            padding: 8px;
+            font-family: monospace;
+            box-sizing: border-box;
+        }
+
+        .url-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .url-box input {
+            flex: 1;
+            background: #fff;
+            color: #5e6c84;
+            cursor: text;
+        }
+
+        .copy-btn {
+            background: #ebecf0;
+            color: #172b4d;
+            font-weight: bold;
+            padding: 0 15px;
+            cursor: pointer;
+            border: 1px solid #dfe1e6;
+            width: auto;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn:hover {
+            background: #dfe1e6;
+        }
+
+        button {
+            background: #0052cc;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #0047b3;
+        }
+
+        .error {
+            color: #de350b;
+            margin-top: 1rem;
+            font-weight: bold;
+            padding: 10px;
+            background: #ffebe6;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .dashboard {
+            display: none;
+            background: #e0f7fa;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-top: 2rem;
+            border-left: 5px solid #00acc1;
+        }
+
+        .dashboard-header {
+            margin-top: 0;
+            border: none;
+            padding: 0;
+        }
+
+        .stats-grid {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            display: flex;
+            flex-direction: column;
+            min-width: 150px;
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #5e6c84;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00838f;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .severity-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 5px;
+        }
+
+        .severity-pill {
+            background: #f4f5f7;
+            border: 1px solid #dfe1e6;
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            color: #172b4d;
+        }
+
+        .severity-pill:hover {
+            background: #ebecf0;
+        }
+
+        .severity-pill.active {
+            background: #00838f;
+            color: white;
+            border-color: #00838f;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #dfe1e6;
+        }
+
+        th {
+            background: #f4f5f7;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        th:hover {
+            background: #ebecf0;
+        }
+
+        .sort-icon {
+            display: inline-block;
+            width: 15px;
+            color: #5e6c84;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        a.jira-link {
+            color: #0052cc;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a.jira-link:hover {
+            text-decoration: underline;
+            color: #0047b3;
+        }
+
+        .cycle-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .cycle-fast {
+            background-color: #e3fcef;
+            color: #006644;
+        }
+
+        .cycle-med {
+            background-color: #fff0b3;
+            color: #ff8b00;
+        }
+
+        .cycle-slow {
+            background-color: #ffebe6;
+            color: #de350b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>EBM Dashboard - Responsiveness</h1>
+        <p style="color: #5e6c84; margin-top: 0;">Focus op Flow & Cycle Time</p>
+
+        <h2>Stap 1: API-link met Changelog & Sprints</h2>
+        <div class="grid-layout">
+            <div class="input-group">
+                <label for="jiraUrl">Jira Base URL</label>
+                <input type="text" id="jiraUrl" placeholder="https://jira.jouwbedrijf.nl"
+                    oninput="generateUrls(); renderTableRows();">
+            </div>
+            <div class="input-group">
+                <label for="projectKey">Project Key</label>
+                <input type="text" id="projectKey" placeholder="Bijv: WEB" oninput="generateUrls();">
+            </div>
+            <div class="input-group">
+                <label for="startDate">Opgelost vanaf</label>
+                <input type="date" id="startDate" value="2026-01-01" onchange="generateUrls()">
+            </div>
+            <div class="input-group">
+                <label for="endDate">Opgelost tot en met</label>
+                <input type="date" id="endDate" value="2026-12-31" onchange="generateUrls()">
+            </div>
+
+            <div class="input-group full-width">
+                <label>Link: Sprint Issues (inclusief Changelog én Sprint data)</label>
+                <div class="url-box">
+                    <input type="text" id="urlIssues" readonly placeholder="Vul eerst je Base URL en Project Key in...">
+                    <button class="copy-btn" onclick="copyToClipboard('urlIssues')">Kopieer</button>
+                </div>
+            </div>
+        </div>
+
+        <h2>Stap 2: Upload en Bereken</h2>
+        <div class="grid-layout">
+            <div class="input-group">
+                <label for="issuesFile">Upload issues JSON</label>
+                <input type="file" id="issuesFile" accept=".json" multiple>
+            </div>
+            <div class="input-group">
+                <label for="inProgressStatus">Naam van jullie 'Start' status in Jira</label>
+                <input type="text" id="inProgressStatus" value="In Progress">
+            </div>
+        </div>
+
+        <button onclick="calculateMetrics()">Bereken Cycle Time</button>
+        <div id="errorMessage" class="error"></div>
+
+        <div id="summaryDashboard" class="dashboard">
+            <h2 class="dashboard-header">Control Chart Metrics (<span id="sumDates"></span>)</h2>
+
+            <div class="stats-grid">
+                <div class="stat-box" style="flex: 1; min-width: 250px;">
+                    <span class="stat-label">Filter op Issue Type (Klikbaar)</span>
+                    <div id="typeFilterContainer"></div>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Totaal Items</span>
+                    <span class="stat-value" id="sumItems">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Gemiddelde Cycle Time</span>
+                    <span class="stat-value" id="sumAvgCycle">0 dgn</span>
+                </div>
+                <div class="stat-box" style="border: 2px solid #00bcd4;">
+                    <span class="stat-label">85e Percentiel (SLE)</span>
+                    <span class="stat-value" id="sum85th">0 dgn</span>
+                    <span style="font-size: 0.75rem; color: #5e6c84; margin-top: 5px;">85% is binnen deze tijd
+                        afgerond.</span>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="cycleTimeChart" height="120"></canvas>
+            </div>
+        </div>
+
+        <table id="resultsTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('key')">Ticket <span id="sort-key" class="sort-icon"></span></th>
+                    <th onclick="sortTable('summary')">Omschrijving <span id="sort-summary" class="sort-icon"></span>
+                    </th>
+                    <th onclick="sortTable('type')">Type <span id="sort-type" class="sort-icon"></span></th>
+                    <th onclick="sortTable('start')">Start Datum <span id="sort-start" class="sort-icon"></span></th>
+                    <th onclick="sortTable('end')">Eind Datum <span id="sort-end" class="sort-icon">▼</span></th>
+                    <th onclick="sortTable('cycle')">Cycle Time (Dagen) <span id="sort-cycle" class="sort-icon"></span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let allProcessedIssues = [];
+        let globalSprints = []; // Bewaart alle unieke sprints voor de grafiek achtergrond
+        let tableData = [];
+        let currentSortColumn = 'end';
+        let isSortDescending = true;
+        let myChart = null;
+
+        const typeColors = {
+            'Bug': '#de350b',
+            'Story': '#0052cc',
+            'Task': '#00875a',
+            'Spike': '#5243aa',
+            'Epic': '#ff8b00',
+            'Default': '#5e6c84'
+        };
+
+        // Custom Chart.js Plugin om de Sprints op de achtergrond te tekenen
+        const sprintBackgroundPlugin = {
+            id: 'sprintBands',
+            beforeDraw: (chart) => {
+                if (!chart.options.sprintsData || chart.options.sprintsData.length === 0) return;
+
+                const ctx = chart.ctx;
+                const xAxis = chart.scales.x;
+                const yAxis = chart.scales.y;
+                const sprints = chart.options.sprintsData;
+
+                ctx.save();
+                // Sorteer sprints chronologisch voor de afwisselende kleuren
+                sprints.sort((a, b) => a.start - b.start).forEach((sprint, index) => {
+                    let startX = xAxis.getPixelForValue(sprint.start.getTime());
+                    let endX = xAxis.getPixelForValue(sprint.end.getTime());
+
+                    // Teken alleen als het blok zichtbaar is in de grafiek
+                    if (endX < xAxis.left || startX > xAxis.right) return;
+
+                    // Houd de blokken netjes binnen het tekengebied
+                    startX = Math.max(startX, xAxis.left);
+                    endX = Math.min(endX, xAxis.right);
+
+                    // Afwisselende zachte kleuren voor Sprints (lichtgrijs)
+                    ctx.fillStyle = index % 2 === 0 ? 'rgba(9, 30, 66, 0.03)' : 'rgba(9, 30, 66, 0.06)';
+                    ctx.fillRect(startX, yAxis.top, endX - startX, yAxis.bottom - yAxis.top);
+
+                    // Teken de naam van de sprint bovenaan
+                    if ((endX - startX) > 30) { // Alleen tekst als het blok breed genoeg is
+                        ctx.fillStyle = '#5e6c84';
+                        ctx.font = 'bold 10px -apple-system, sans-serif';
+                        ctx.fillText(sprint.name, startX + 6, yAxis.top + 16);
+                    }
+                });
+                ctx.restore();
+            }
+        };
+
+        // Registreer de plugin in Chart.js
+        Chart.register(sprintBackgroundPlugin);
+
+        function generateUrls() {
+            const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
+            const projectKey = document.getElementById('projectKey').value.trim();
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            if (baseUrlRaw && projectKey && startDate && endDate) {
+                const baseUrl = baseUrlRaw.replace(/\/$/, "");
+                const jql = `project="${projectKey}" AND Sprint is not EMPTY AND resolved>="${startDate}" AND resolved<="${endDate}"`;
+                // Veld 'sprint' is toegevoegd aan &fields=
+                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(jql)}&expand=changelog&startAt=0&maxResults=1000&fields=issuetype,summary,created,resolutiondate,status,sprint,customfield_10020`;
+            } else {
+                document.getElementById('urlIssues').value = "";
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            const input = document.getElementById(elementId);
+            if (input.value) {
+                input.select();
+                document.execCommand('copy');
+                const btn = input.nextElementSibling;
+                const originalText = btn.textContent;
+                btn.textContent = "Gekopieerd!";
+                setTimeout(() => { btn.textContent = originalText; }, 1500);
+            }
+        }
+
+        function readFileAsJson(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try { resolve(JSON.parse(e.target.result)); }
+                    catch (err) { reject(new Error(`Kan ${file.name} niet parsen.`)); }
+                };
+                reader.onerror = () => reject(new Error(`Fout bij het lezen van ${file.name}`));
+                reader.readAsText(file);
+            });
+        }
+
+        function getCycleBadge(days) {
+            if (days <= 3) return "cycle-fast";
+            if (days <= 10) return "cycle-med";
+            return "cycle-slow";
+        }
+
+        function sortTable(column, forceDesc = null) {
+            ['key', 'summary', 'type', 'start', 'end', 'cycle'].forEach(col => {
+                document.getElementById(`sort-${col}`).textContent = '';
+            });
+
+            if (forceDesc !== null) {
+                isSortDescending = forceDesc;
+                currentSortColumn = column;
+            } else {
+                if (currentSortColumn === column) {
+                    isSortDescending = !isSortDescending;
+                } else {
+                    isSortDescending = true;
+                    currentSortColumn = column;
+                }
+            }
+
+            document.getElementById(`sort-${column}`).textContent = isSortDescending ? '▼' : '▲';
+
+            tableData.sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                if (column === 'start' || column === 'end') {
+                    valA = valA ? valA.getTime() : 0;
+                    valB = valB ? valB.getTime() : 0;
+                } else if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) return isSortDescending ? 1 : -1;
+                if (valA > valB) return isSortDescending ? -1 : 1;
+                return 0;
+            });
+
+            renderTableRows();
+        }
+
+        function renderTableRows() {
+            const resultsBody = document.getElementById('resultsBody');
+            resultsBody.innerHTML = '';
+
+            const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
+            const baseUrl = baseUrlRaw ? baseUrlRaw.replace(/\/$/, "") : "";
+
+            const formatDate = (dateObj) => {
+                if (!dateObj) return "-";
+                return dateObj.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            };
+
+            tableData.forEach(data => {
+                let issueLink = baseUrl ? `<a href="${baseUrl}/browse/${data.key}" target="_blank" class="jira-link">${data.key}</a>` : `<strong>${data.key}</strong>`;
+                let badgeClass = getCycleBadge(data.cycle);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                <td>${issueLink}</td>
+                <td>${data.summary}</td>
+                <td>${data.type}</td>
+                <td>${formatDate(data.start)}</td>
+                <td>${formatDate(data.end)}</td>
+                <td><span class="cycle-badge ${badgeClass}">${data.cycle.toFixed(1)}</span></td>
+            `;
+                resultsBody.appendChild(tr);
+            });
+        }
+
+        function renderChart(filteredIssues, p85Value) {
+            const ctx = document.getElementById('cycleTimeChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            if (filteredIssues.length === 0) return;
+
+            const sortedData = [...filteredIssues].sort((a, b) => a.end - b.end);
+
+            let rollingAvgData = [];
+            let upperBandData = [];
+            let lowerBandData = [];
+
+            const windowSize = Math.max(5, Math.floor(sortedData.length * 0.15));
+
+            for (let i = 0; i < sortedData.length; i++) {
+                let startIdx = Math.max(0, i - windowSize + 1);
+                let windowItems = sortedData.slice(startIdx, i + 1);
+
+                let sum = windowItems.reduce((a, b) => a + b.cycle, 0);
+                let mean = sum / windowItems.length;
+
+                let variance = windowItems.reduce((a, b) => a + Math.pow(b.cycle - mean, 2), 0) / windowItems.length;
+                let stdDev = Math.sqrt(variance);
+
+                let xDate = sortedData[i].end;
+                rollingAvgData.push({ x: xDate, y: mean });
+                upperBandData.push({ x: xDate, y: mean + stdDev });
+                lowerBandData.push({ x: xDate, y: Math.max(0, mean - stdDev) });
+            }
+
+            let datasets = [];
+
+            datasets.push({
+                label: 'Rolling Average',
+                data: rollingAvgData,
+                type: 'line',
+                borderColor: '#172b4d',
+                borderWidth: 2,
+                tension: 0.3,
+                pointRadius: 0,
+                fill: false,
+                order: 2
+            });
+
+            datasets.push({
+                label: 'Lower StdDev',
+                data: lowerBandData,
+                type: 'line',
+                borderColor: 'transparent',
+                pointRadius: 0,
+                fill: false,
+                order: 3
+            });
+
+            datasets.push({
+                label: 'Standaardafwijking',
+                data: upperBandData,
+                type: 'line',
+                borderColor: 'transparent',
+                backgroundColor: 'rgba(0, 131, 143, 0.15)',
+                pointRadius: 0,
+                fill: '-1',
+                order: 4
+            });
+
+            const typesInView = [...new Set(sortedData.map(i => i.type))];
+            typesInView.forEach(type => {
+                const typeDots = sortedData.filter(i => i.type === type).map(i => ({
+                    x: i.end,
+                    y: i.cycle,
+                    issueKey: i.key
+                }));
+
+                datasets.push({
+                    label: type,
+                    data: typeDots,
+                    type: 'scatter',
+                    backgroundColor: typeColors[type] || typeColors['Default'],
+                    borderColor: 'white',
+                    borderWidth: 1,
+                    pointRadius: 6,
+                    pointHoverRadius: 9,
+                    order: 1
+                });
+            });
+
+            myChart = new Chart(ctx, {
+                data: { datasets: datasets },
+                options: {
+                    responsive: true,
+                    sprintsData: globalSprints, // Doorgeven aan onze custom plugin
+                    interaction: { mode: 'nearest', axis: 'xy', intersect: false },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: { unit: 'day', displayFormats: { day: 'dd MMM' } },
+                            title: { display: true, text: 'Resolutiedatum', font: { weight: 'bold' } }
+                        },
+                        y: {
+                            title: { display: true, text: 'Cycle Time (Dagen)', font: { weight: 'bold' } },
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    if (context.dataset.type === 'line') return `${context.dataset.label}: ${context.raw.y.toFixed(1)} dgn`;
+                                    return `${context.raw.issueKey}: ${context.raw.y.toFixed(1)} dagen`;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                filter: function (item) {
+                                    return !item.text.includes('Lower StdDev') && !item.text.includes('Standaardafwijking');
+                                },
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function applyTypeFilter(selectedType) {
+            document.querySelectorAll('#typeFilterContainer .severity-pill').forEach(el => el.classList.remove('active'));
+
+            let safeId = selectedType === 'All' ? 'All' : selectedType.replace(/[^a-zA-Z0-9]/g, '-');
+            document.getElementById(`type-filter-${safeId}`).classList.add('active');
+
+            let filteredIssues = selectedType === 'All' ? allProcessedIssues : allProcessedIssues.filter(i => i.type === selectedType);
+
+            let totalDays = 0;
+            let cycleArray = [];
+
+            filteredIssues.forEach(item => {
+                totalDays += item.cycle;
+                cycleArray.push(item.cycle);
+            });
+
+            if (cycleArray.length > 0) {
+                let avg = totalDays / cycleArray.length;
+                cycleArray.sort((a, b) => a - b);
+                let p85 = cycleArray[Math.floor(cycleArray.length * 0.85)];
+
+                document.getElementById('sumItems').textContent = cycleArray.length;
+                document.getElementById('sumAvgCycle').textContent = avg.toFixed(1) + ' dgn';
+                document.getElementById('sum85th').textContent = p85.toFixed(1) + ' dgn';
+
+                renderChart(filteredIssues, p85);
+            } else {
+                document.getElementById('sumItems').textContent = 0;
+                document.getElementById('sumAvgCycle').textContent = '-';
+                document.getElementById('sum85th').textContent = '-';
+                if (myChart) myChart.destroy();
+            }
+
+            tableData = filteredIssues;
+            sortTable(currentSortColumn, isSortDescending);
+        }
+
+        // Helper functie om ruwe Jira sprint strings te parsen
+        function parseJiraSprintData(sprintObj) {
+            if (!sprintObj) return null;
+            if (typeof sprintObj === 'object' && sprintObj.name) {
+                return { name: sprintObj.name, start: new Date(sprintObj.startDate), end: new Date(sprintObj.endDate) };
+            }
+            if (typeof sprintObj === 'string') {
+                const nameMatch = sprintObj.match(/name=([^,\]]+)/);
+                const startMatch = sprintObj.match(/startDate=([^,\]]+)/);
+                const endMatch = sprintObj.match(/endDate=([^,\]]+)/);
+                if (nameMatch && startMatch && endMatch) {
+                    return { name: nameMatch[1], start: new Date(startMatch[1]), end: new Date(endMatch[1]) };
+                }
+            }
+            return null;
+        }
+
+        async function calculateMetrics() {
+            const issuesFiles = document.getElementById('issuesFile').files;
+            const targetStatus = document.getElementById('inProgressStatus').value.trim().toLowerCase();
+
+            const errorMsg = document.getElementById('errorMessage');
+            const dashboard = document.getElementById('summaryDashboard');
+            const resultsTable = document.getElementById('resultsTable');
+
+            errorMsg.style.display = "none";
+            dashboard.style.display = "none";
+            resultsTable.style.display = "none";
+
+            allProcessedIssues = [];
+            globalSprints = [];
+            let typeCounts = {};
+            let sprintsMap = new Map(); // Om unieke sprints te onthouden
+
+            if (issuesFiles.length === 0) {
+                errorMsg.textContent = "Upload a.u.b. minimaal één issues.json bestand.";
+                errorMsg.style.display = "block";
+                return;
+            }
+
+            try {
+                let allIssues = [];
+                for (let i = 0; i < issuesFiles.length; i++) {
+                    const issuesData = await readFileAsJson(issuesFiles[i]);
+                    if (!issuesData.issues || !Array.isArray(issuesData.issues)) {
+                        throw new Error(`Bestand ${issuesFiles[i].name} mist de 'issues' array.`);
+                    }
+                    allIssues = allIssues.concat(issuesData.issues);
+                }
+
+                allIssues.forEach(issue => {
+                    const key = issue.key;
+                    const summary = issue.fields.summary || "Geen titel";
+                    const type = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
+                    const end = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
+
+                    // ---- EXTRACT SPRINTS ----
+                    // Zoek dynamisch naar de sprint array (kan customfield_10020 of gewoon 'sprint' heten)
+                    let sprintArray = issue.fields.sprint || issue.fields.customfield_10020;
+                    if (!sprintArray) {
+                        const sprintFieldKey = Object.keys(issue.fields).find(k => k.toLowerCase().includes('sprint') || (Array.isArray(issue.fields[k]) && typeof issue.fields[k][0] === 'string' && issue.fields[k][0].includes('Sprint@')));
+                        if (sprintFieldKey) sprintArray = issue.fields[sprintFieldKey];
+                    }
+
+                    if (Array.isArray(sprintArray)) {
+                        sprintArray.forEach(s => {
+                            const parsed = parseJiraSprintData(s);
+                            // Voeg alleen toe als het geldige start/eind datums heeft
+                            if (parsed && parsed.name && parsed.start && parsed.end && !isNaN(parsed.start.getTime())) {
+                                if (!sprintsMap.has(parsed.name)) {
+                                    sprintsMap.set(parsed.name, parsed);
+                                }
+                            }
+                        });
+                    }
+                    // -------------------------
+
+                    if (!end) return;
+
+                    let start = null;
+
+                    if (issue.changelog && issue.changelog.histories) {
+                        const histories = issue.changelog.histories.sort((a, b) => new Date(a.created) - new Date(b.created));
+                        for (let history of histories) {
+                            for (let item of history.items) {
+                                if (item.field === 'status' && item.toString && item.toString.toLowerCase() === targetStatus) {
+                                    if (!start) {
+                                        start = new Date(history.created);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (!start) {
+                        start = new Date(issue.fields.created);
+                    }
+
+                    let diffMs = end - start;
+                    if (diffMs < 0) diffMs = 0;
+                    let cycleDays = diffMs / (1000 * 60 * 60 * 24);
+
+                    allProcessedIssues.push({ key, summary, type, start, end, cycle: cycleDays });
+                    typeCounts[type] = (typeCounts[type] || 0) + 1;
+                });
+
+                if (allProcessedIssues.length === 0) {
+                    throw new Error("Geen afgeronde tickets met data gevonden in de bestanden.");
+                }
+
+                // Sla de gevonden unieke sprints op in de globale array
+                globalSprints = Array.from(sprintsMap.values());
+
+                let typeHtml = `<div class="severity-pills">`;
+                typeHtml += `<div class="severity-pill" id="type-filter-All" onclick="applyTypeFilter('All')"><strong>Alles</strong>: ${allProcessedIssues.length}</div>`;
+                Object.keys(typeCounts).sort().forEach(t => {
+                    let safeId = t.replace(/[^a-zA-Z0-9]/g, '-');
+                    typeHtml += `<div class="severity-pill" id="type-filter-${safeId}" onclick="applyTypeFilter('${t}')"><strong>${t}</strong>: ${typeCounts[t]}</div>`;
+                });
+                typeHtml += `</div>`;
+                document.getElementById('typeFilterContainer').innerHTML = typeHtml;
+
+                const startDateStr = document.getElementById('startDate').value;
+                const endDateStr = document.getElementById('endDate').value;
+                document.getElementById('sumDates').textContent = `${startDateStr} t/m ${endDateStr}`;
+
+                dashboard.style.display = "block";
+                resultsTable.style.display = "table";
+
+                applyTypeFilter('All');
+
+            } catch (error) {
+                console.error(error);
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = "block";
+            }
+        }
+
+        generateUrls();
+    </script>
+</body>
+
+</html>
