@@ -3,133 +3,1901 @@
     {
       "key": "WEB-1",
       "fields": {
-        "issuetype": { "name": "Story" },
-        "summary": "Bouw integratie met iDeal",
-        "fixVersions": [ { "name": "Web | 1.0" } ],
-        "created": "2026-01-02T10:00:00.000Z",
-        "resolutiondate": "2026-01-10T14:00:00.000Z",
-        "priority": { "name": "High" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 1 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
       }
     },
     {
       "key": "WEB-2",
       "fields": {
-        "issuetype": { "name": "Story" },
-        "summary": "Update styling homepage",
-        "fixVersions": [ { "name": "Web | 1.0" } ],
-        "created": "2026-01-03T11:00:00.000Z",
-        "resolutiondate": "2026-01-11T16:00:00.000Z",
-        "priority": { "name": "Medium" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 2 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
       }
     },
     {
       "key": "WEB-3",
       "fields": {
-        "issuetype": { "name": "Story" },
-        "summary": "Maak contactformulier responsive",
-        "fixVersions": [ { "name": "Web | 1.0" } ],
-        "created": "2026-01-05T09:00:00.000Z",
-        "resolutiondate": "2026-01-14T10:00:00.000Z",
-        "priority": { "name": "Low" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 3 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
       }
     },
     {
       "key": "WEB-4",
       "fields": {
-        "issuetype": { "name": "Bug" },
-        "summary": "Knop werkt niet op Safari (Pre-release)",
-        "fixVersions": [ { "name": "Web | 1.0" } ],
-        "created": "2026-01-10T14:00:00.000Z",
-        "resolutiondate": "2026-01-12T11:00:00.000Z",
-        "priority": { "name": "Medium" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 4 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
       }
     },
     {
       "key": "WEB-5",
       "fields": {
-        "issuetype": { "name": "Bug" },
-        "summary": "404 foutmelding op /over-ons (Post-release)",
-        "fixVersions": [ { "name": "Web | 1.0" } ],
-        "created": "2026-01-16T08:30:00.000Z",
-        "resolutiondate": "2026-01-18T15:00:00.000Z",
-        "priority": { "name": "Highest" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 5 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
       }
     },
     {
       "key": "WEB-6",
       "fields": {
-        "issuetype": { "name": "Bug" },
-        "summary": "Tekst valt buiten kader mobiel (Post-release)",
-        "fixVersions": [ { "name": "Web | 1.0" } ],
-        "created": "2026-01-17T10:15:00.000Z",
-        "resolutiondate": "2026-01-19T14:45:00.000Z",
-        "priority": { "name": "High" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 6 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
       }
     },
     {
       "key": "WEB-7",
       "fields": {
-        "issuetype": { "name": "Bug" },
-        "summary": "iDeal betaling dubbel afgeschreven",
-        "fixVersions": [ { "name": "Web | 1.0.1 (Hotfix)" } ],
-        "created": "2026-01-18T09:00:00.000Z",
-        "resolutiondate": "2026-01-19T12:00:00.000Z",
-        "priority": { "name": "Highest" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 7 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
       }
     },
     {
       "key": "WEB-8",
       "fields": {
-        "issuetype": { "name": "Bug" },
-        "summary": "Checkout crasht bij spatie in naam",
-        "fixVersions": [ { "name": "Web | 1.0.1 (Hotfix)" } ],
-        "created": "2026-01-19T10:30:00.000Z",
-        "resolutiondate": "2026-01-20T08:00:00.000Z",
-        "priority": { "name": "High" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 8 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
       }
     },
     {
       "key": "WEB-9",
       "fields": {
-        "issuetype": { "name": "Story" },
-        "summary": "Bouw integratie met PayPal",
-        "fixVersions": [ { "name": "Web | 1.1" } ],
-        "created": "2026-02-02T10:00:00.000Z",
-        "resolutiondate": "2026-02-08T16:00:00.000Z",
-        "priority": { "name": "High" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 9 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
       }
     },
     {
       "key": "WEB-10",
       "fields": {
-        "issuetype": { "name": "Story" },
-        "summary": "Voeg cookie banner toe",
-        "fixVersions": [ { "name": "Web | 1.1" } ],
-        "created": "2026-02-04T09:30:00.000Z",
-        "resolutiondate": "2026-02-09T11:00:00.000Z",
-        "priority": { "name": "Medium" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 10 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
       }
     },
     {
       "key": "WEB-11",
       "fields": {
-        "issuetype": { "name": "Bug" },
-        "summary": "Menu klapt niet uit op tablet (Pre-release)",
-        "fixVersions": [ { "name": "Web | 1.1" } ],
-        "created": "2026-02-06T14:00:00.000Z",
-        "resolutiondate": "2026-02-07T16:30:00.000Z",
-        "priority": { "name": "Medium" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 11 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
       }
     },
     {
       "key": "WEB-12",
       "fields": {
-        "issuetype": { "name": "Bug" },
-        "summary": "PayPal laadt niet op iOS (Post-release)",
-        "fixVersions": [ { "name": "Web | 1.1" } ],
-        "created": "2026-02-12T09:15:00.000Z",
-        "resolutiondate": "2026-02-14T15:45:00.000Z",
-        "priority": { "name": "Highest" }
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 12 voor Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-01T10:00:00.000Z",
+        "resolutiondate": "2026-01-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-13",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 13 in Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-02T10:00:00.000Z",
+        "resolutiondate": "2026-01-14T14:00:00.000Z",
+        "priority": {
+          "name": "Highest"
+        }
+      }
+    },
+    {
+      "key": "WEB-14",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 14 in Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-02T10:00:00.000Z",
+        "resolutiondate": "2026-01-14T14:00:00.000Z",
+        "priority": {
+          "name": "Lowest"
+        }
+      }
+    },
+    {
+      "key": "WEB-15",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 15 in Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-02T10:00:00.000Z",
+        "resolutiondate": "2026-01-14T14:00:00.000Z",
+        "priority": {
+          "name": "Highest"
+        }
+      }
+    },
+    {
+      "key": "WEB-16",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 16 in Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-16T10:00:00.000Z",
+        "resolutiondate": "2026-01-18T14:00:00.000Z",
+        "priority": {
+          "name": "Highest"
+        }
+      }
+    },
+    {
+      "key": "WEB-17",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 17 in Web | 1.0",
+        "fixVersions": [
+          {
+            "name": "Web | 1.0"
+          }
+        ],
+        "created": "2026-01-16T10:00:00.000Z",
+        "resolutiondate": "2026-01-18T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-18",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 18 voor Web | 1.1",
+        "fixVersions": [
+          {
+            "name": "Web | 1.1"
+          }
+        ],
+        "created": "2026-02-01T10:00:00.000Z",
+        "resolutiondate": "2026-02-08T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-19",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 19 voor Web | 1.1",
+        "fixVersions": [
+          {
+            "name": "Web | 1.1"
+          }
+        ],
+        "created": "2026-02-01T10:00:00.000Z",
+        "resolutiondate": "2026-02-08T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-20",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 20 voor Web | 1.1",
+        "fixVersions": [
+          {
+            "name": "Web | 1.1"
+          }
+        ],
+        "created": "2026-02-01T10:00:00.000Z",
+        "resolutiondate": "2026-02-08T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-21",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 21 voor Web | 1.1",
+        "fixVersions": [
+          {
+            "name": "Web | 1.1"
+          }
+        ],
+        "created": "2026-02-01T10:00:00.000Z",
+        "resolutiondate": "2026-02-08T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-22",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 22 in Web | 1.1",
+        "fixVersions": [
+          {
+            "name": "Web | 1.1"
+          }
+        ],
+        "created": "2026-02-02T10:00:00.000Z",
+        "resolutiondate": "2026-02-09T14:00:00.000Z",
+        "priority": {
+          "name": "Highest"
+        }
+      }
+    },
+    {
+      "key": "WEB-23",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 23 in Web | 1.1",
+        "fixVersions": [
+          {
+            "name": "Web | 1.1"
+          }
+        ],
+        "created": "2026-02-02T10:00:00.000Z",
+        "resolutiondate": "2026-02-09T14:00:00.000Z",
+        "priority": {
+          "name": "Highest"
+        }
+      }
+    },
+    {
+      "key": "WEB-24",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 24 voor Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-01T10:00:00.000Z",
+        "resolutiondate": "2026-03-10T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-25",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 25 voor Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-01T10:00:00.000Z",
+        "resolutiondate": "2026-03-10T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-26",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 26 voor Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-01T10:00:00.000Z",
+        "resolutiondate": "2026-03-10T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-27",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 27 voor Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-01T10:00:00.000Z",
+        "resolutiondate": "2026-03-10T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-28",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 28 voor Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-01T10:00:00.000Z",
+        "resolutiondate": "2026-03-10T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-29",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 29 voor Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-01T10:00:00.000Z",
+        "resolutiondate": "2026-03-10T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-30",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 30 voor Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-01T10:00:00.000Z",
+        "resolutiondate": "2026-03-10T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-31",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 31 voor Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-01T10:00:00.000Z",
+        "resolutiondate": "2026-03-10T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-32",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 32 in Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-02T10:00:00.000Z",
+        "resolutiondate": "2026-03-11T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-33",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 33 in Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-13T10:00:00.000Z",
+        "resolutiondate": "2026-03-15T14:00:00.000Z",
+        "priority": {
+          "name": "Highest"
+        }
+      }
+    },
+    {
+      "key": "WEB-34",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 34 in Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-13T10:00:00.000Z",
+        "resolutiondate": "2026-03-15T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-35",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 35 in Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-13T10:00:00.000Z",
+        "resolutiondate": "2026-03-15T14:00:00.000Z",
+        "priority": {
+          "name": "Highest"
+        }
+      }
+    },
+    {
+      "key": "WEB-36",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 36 in Web | 1.2",
+        "fixVersions": [
+          {
+            "name": "Web | 1.2"
+          }
+        ],
+        "created": "2026-03-13T10:00:00.000Z",
+        "resolutiondate": "2026-03-15T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-37",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 37 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-38",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 38 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-39",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 39 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-40",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 40 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-41",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 41 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-42",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 42 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-43",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 43 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-44",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 44 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-45",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 45 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-46",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 46 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-47",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 47 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-48",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 48 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-49",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 49 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-50",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 50 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-51",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 51 voor Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-01T10:00:00.000Z",
+        "resolutiondate": "2026-04-18T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-52",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 52 in Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-02T10:00:00.000Z",
+        "resolutiondate": "2026-04-19T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-53",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 53 in Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-02T10:00:00.000Z",
+        "resolutiondate": "2026-04-19T14:00:00.000Z",
+        "priority": {
+          "name": "Lowest"
+        }
+      }
+    },
+    {
+      "key": "WEB-54",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 54 in Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-02T10:00:00.000Z",
+        "resolutiondate": "2026-04-19T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-55",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 55 in Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-02T10:00:00.000Z",
+        "resolutiondate": "2026-04-19T14:00:00.000Z",
+        "priority": {
+          "name": "Highest"
+        }
+      }
+    },
+    {
+      "key": "WEB-56",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 56 in Web | 1.3",
+        "fixVersions": [
+          {
+            "name": "Web | 1.3"
+          }
+        ],
+        "created": "2026-04-21T10:00:00.000Z",
+        "resolutiondate": "2026-04-23T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-57",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 57 voor Web | 1.4",
+        "fixVersions": [
+          {
+            "name": "Web | 1.4"
+          }
+        ],
+        "created": "2026-05-01T10:00:00.000Z",
+        "resolutiondate": "2026-05-06T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-58",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 58 voor Web | 1.4",
+        "fixVersions": [
+          {
+            "name": "Web | 1.4"
+          }
+        ],
+        "created": "2026-05-01T10:00:00.000Z",
+        "resolutiondate": "2026-05-06T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-59",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 59 voor Web | 1.4",
+        "fixVersions": [
+          {
+            "name": "Web | 1.4"
+          }
+        ],
+        "created": "2026-05-01T10:00:00.000Z",
+        "resolutiondate": "2026-05-06T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-60",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 60 in Web | 1.4",
+        "fixVersions": [
+          {
+            "name": "Web | 1.4"
+          }
+        ],
+        "created": "2026-05-02T10:00:00.000Z",
+        "resolutiondate": "2026-05-07T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-61",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 61 in Web | 1.4",
+        "fixVersions": [
+          {
+            "name": "Web | 1.4"
+          }
+        ],
+        "created": "2026-05-09T10:00:00.000Z",
+        "resolutiondate": "2026-05-11T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-62",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 62 in Web | 1.4",
+        "fixVersions": [
+          {
+            "name": "Web | 1.4"
+          }
+        ],
+        "created": "2026-05-09T10:00:00.000Z",
+        "resolutiondate": "2026-05-11T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-63",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 63 voor Web | 1.5",
+        "fixVersions": [
+          {
+            "name": "Web | 1.5"
+          }
+        ],
+        "created": "2026-06-01T10:00:00.000Z",
+        "resolutiondate": "2026-06-13T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-64",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 64 voor Web | 1.5",
+        "fixVersions": [
+          {
+            "name": "Web | 1.5"
+          }
+        ],
+        "created": "2026-06-01T10:00:00.000Z",
+        "resolutiondate": "2026-06-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-65",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 65 voor Web | 1.5",
+        "fixVersions": [
+          {
+            "name": "Web | 1.5"
+          }
+        ],
+        "created": "2026-06-01T10:00:00.000Z",
+        "resolutiondate": "2026-06-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-66",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 66 voor Web | 1.5",
+        "fixVersions": [
+          {
+            "name": "Web | 1.5"
+          }
+        ],
+        "created": "2026-06-01T10:00:00.000Z",
+        "resolutiondate": "2026-06-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-67",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 67 voor Web | 1.5",
+        "fixVersions": [
+          {
+            "name": "Web | 1.5"
+          }
+        ],
+        "created": "2026-06-01T10:00:00.000Z",
+        "resolutiondate": "2026-06-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-68",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 68 voor Web | 1.5",
+        "fixVersions": [
+          {
+            "name": "Web | 1.5"
+          }
+        ],
+        "created": "2026-06-01T10:00:00.000Z",
+        "resolutiondate": "2026-06-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-69",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 69 in Web | 1.5",
+        "fixVersions": [
+          {
+            "name": "Web | 1.5"
+          }
+        ],
+        "created": "2026-06-02T10:00:00.000Z",
+        "resolutiondate": "2026-06-14T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-70",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 70 in Web | 1.5",
+        "fixVersions": [
+          {
+            "name": "Web | 1.5"
+          }
+        ],
+        "created": "2026-06-02T10:00:00.000Z",
+        "resolutiondate": "2026-06-14T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-71",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 71 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-72",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 72 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-73",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 73 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-74",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 74 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-75",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 75 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-76",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 76 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-77",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 77 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-78",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 78 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-79",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 79 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-80",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 80 voor Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-01T10:00:00.000Z",
+        "resolutiondate": "2026-07-10T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-81",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 81 in Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-02T10:00:00.000Z",
+        "resolutiondate": "2026-07-11T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-82",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 82 in Web | 1.6",
+        "fixVersions": [
+          {
+            "name": "Web | 1.6"
+          }
+        ],
+        "created": "2026-07-13T10:00:00.000Z",
+        "resolutiondate": "2026-07-15T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-83",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 83 voor Web | 1.7",
+        "fixVersions": [
+          {
+            "name": "Web | 1.7"
+          }
+        ],
+        "created": "2026-08-01T10:00:00.000Z",
+        "resolutiondate": "2026-08-08T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-84",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 84 voor Web | 1.7",
+        "fixVersions": [
+          {
+            "name": "Web | 1.7"
+          }
+        ],
+        "created": "2026-08-01T10:00:00.000Z",
+        "resolutiondate": "2026-08-08T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-85",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 85 in Web | 1.7",
+        "fixVersions": [
+          {
+            "name": "Web | 1.7"
+          }
+        ],
+        "created": "2026-08-02T10:00:00.000Z",
+        "resolutiondate": "2026-08-09T14:00:00.000Z",
+        "priority": {
+          "name": "Lowest"
+        }
+      }
+    },
+    {
+      "key": "WEB-86",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 86 voor Web | 1.8",
+        "fixVersions": [
+          {
+            "name": "Web | 1.8"
+          }
+        ],
+        "created": "2026-09-01T10:00:00.000Z",
+        "resolutiondate": "2026-09-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-87",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 87 voor Web | 1.8",
+        "fixVersions": [
+          {
+            "name": "Web | 1.8"
+          }
+        ],
+        "created": "2026-09-01T10:00:00.000Z",
+        "resolutiondate": "2026-09-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-88",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 88 voor Web | 1.8",
+        "fixVersions": [
+          {
+            "name": "Web | 1.8"
+          }
+        ],
+        "created": "2026-09-01T10:00:00.000Z",
+        "resolutiondate": "2026-09-13T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-89",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 89 voor Web | 1.8",
+        "fixVersions": [
+          {
+            "name": "Web | 1.8"
+          }
+        ],
+        "created": "2026-09-01T10:00:00.000Z",
+        "resolutiondate": "2026-09-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-90",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 90 voor Web | 1.8",
+        "fixVersions": [
+          {
+            "name": "Web | 1.8"
+          }
+        ],
+        "created": "2026-09-01T10:00:00.000Z",
+        "resolutiondate": "2026-09-13T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-91",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Pre-release bug 91 in Web | 1.8",
+        "fixVersions": [
+          {
+            "name": "Web | 1.8"
+          }
+        ],
+        "created": "2026-09-02T10:00:00.000Z",
+        "resolutiondate": "2026-09-14T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-92",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 92 in Web | 1.8",
+        "fixVersions": [
+          {
+            "name": "Web | 1.8"
+          }
+        ],
+        "created": "2026-09-16T10:00:00.000Z",
+        "resolutiondate": "2026-09-18T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-93",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 93 voor Web | 1.9",
+        "fixVersions": [
+          {
+            "name": "Web | 1.9"
+          }
+        ],
+        "created": "2026-10-01T10:00:00.000Z",
+        "resolutiondate": "2026-10-10T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-94",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 94 voor Web | 1.9",
+        "fixVersions": [
+          {
+            "name": "Web | 1.9"
+          }
+        ],
+        "created": "2026-10-01T10:00:00.000Z",
+        "resolutiondate": "2026-10-10T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-95",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 95 voor Web | 1.9",
+        "fixVersions": [
+          {
+            "name": "Web | 1.9"
+          }
+        ],
+        "created": "2026-10-01T10:00:00.000Z",
+        "resolutiondate": "2026-10-10T14:00:00.000Z",
+        "priority": {
+          "name": "High"
+        }
+      }
+    },
+    {
+      "key": "WEB-96",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 96 voor Web | 1.9",
+        "fixVersions": [
+          {
+            "name": "Web | 1.9"
+          }
+        ],
+        "created": "2026-10-01T10:00:00.000Z",
+        "resolutiondate": "2026-10-10T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-97",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 97 voor Web | 1.9",
+        "fixVersions": [
+          {
+            "name": "Web | 1.9"
+          }
+        ],
+        "created": "2026-10-01T10:00:00.000Z",
+        "resolutiondate": "2026-10-10T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-98",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 98 voor Web | 1.9",
+        "fixVersions": [
+          {
+            "name": "Web | 1.9"
+          }
+        ],
+        "created": "2026-10-01T10:00:00.000Z",
+        "resolutiondate": "2026-10-10T14:00:00.000Z",
+        "priority": {
+          "name": "Low"
+        }
+      }
+    },
+    {
+      "key": "WEB-99",
+      "fields": {
+        "issuetype": {
+          "name": "Story"
+        },
+        "summary": "Feature 99 voor Web | 1.9",
+        "fixVersions": [
+          {
+            "name": "Web | 1.9"
+          }
+        ],
+        "created": "2026-10-01T10:00:00.000Z",
+        "resolutiondate": "2026-10-10T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
+      }
+    },
+    {
+      "key": "WEB-100",
+      "fields": {
+        "issuetype": {
+          "name": "Bug"
+        },
+        "summary": "Post-release bug 100 in Web | 1.9",
+        "fixVersions": [
+          {
+            "name": "Web | 1.9"
+          }
+        ],
+        "created": "2026-10-13T10:00:00.000Z",
+        "resolutiondate": "2026-10-15T14:00:00.000Z",
+        "priority": {
+          "name": "Medium"
+        }
       }
     }
   ]
