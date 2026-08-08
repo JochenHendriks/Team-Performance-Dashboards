@@ -190,6 +190,36 @@
             line-height: 1.4;
         }
 
+        /* Severity Pills Styling */
+        .severity-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 5px;
+        }
+
+        .severity-pill {
+            background: #f4f5f7;
+            border: 1px solid #dfe1e6;
+            border-radius: 12px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s;
+            color: #172b4d;
+        }
+
+        .severity-pill:hover {
+            background: #ebecf0;
+        }
+
+        .severity-pill.active {
+            background: #0052cc;
+            color: white;
+            border-color: #0052cc;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -209,7 +239,6 @@
             user-select: none;
         }
 
-        /* Sorteerbare headers styling */
         .sortable {
             cursor: pointer;
         }
@@ -365,12 +394,12 @@
                         style="padding: 4px 8px; border-radius: 4px; color: white; display: inline-block;">0%</span>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-label">MTTR</span>
+                    <span class="stat-label">MTTR (Klik op severity om te filteren)</span>
                     <span class="stat-value" id="sumMttr">N/A</span>
                 </div>
-                <div class="stat-box">
-                    <span class="stat-label">Bug Severity</span>
-                    <span class="stat-value stat-list" id="sumSeverity">-</span>
+                <div class="stat-box" style="flex: 1; min-width: 250px;">
+                    <span class="stat-label">Bug Severity (Klikbaar)</span>
+                    <div id="sumSeverity"></div>
                 </div>
             </div>
         </div>
@@ -395,10 +424,11 @@
     </div>
 
     <script>
-        // Globale variabelen voor het opslaan en sorteren van tabeldata
+        // Globale variabelen voor tabeldata en MTTR filtering
         let tableData = [];
         let currentSortColumn = 'date';
         let isSortDescending = true;
+        let globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
 
         function generateUrls() {
             const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
@@ -464,39 +494,32 @@
         }
 
         function sortTable(column, forceDesc = null) {
-            // Reset alle iconen
             ['name', 'date', 'changes', 'bugs', 'cfr'].forEach(col => {
                 document.getElementById(`sort-${col}`).textContent = '';
             });
 
-            // Bepaal de sorteervolgorde
             if (forceDesc !== null) {
                 isSortDescending = forceDesc;
             } else {
                 if (currentSortColumn === column) {
-                    isSortDescending = !isSortDescending; // Draai om bij nogmaals klikken
+                    isSortDescending = !isSortDescending;
                 } else {
-                    isSortDescending = true; // Standaard nieuwste/hoogste eerst
+                    isSortDescending = true;
                 }
             }
 
             currentSortColumn = column;
-
-            // Update het icoontje
             document.getElementById(`sort-${column}`).textContent = isSortDescending ? '▼' : '▲';
 
-            // Sorteer de data-array
             tableData.sort((a, b) => {
                 let valA = a[column];
                 let valB = b[column];
 
-                // Voor datum-objecten
                 if (column === 'date') {
                     valA = a.releaseDate.getTime();
                     valB = b.releaseDate.getTime();
                 }
 
-                // Voor strings
                 if (typeof valA === 'string') {
                     valA = valA.toLowerCase();
                     valB = valB.toLowerCase();
@@ -576,6 +599,35 @@
             });
         }
 
+        // Filter MTTR op basis van geselecteerde severity
+        function filterMTTR(priorityRaw) {
+            // Zorg dat de actieve class goed gezet wordt
+            document.querySelectorAll('.severity-pill').forEach(el => el.classList.remove('active'));
+
+            let safeId = priorityRaw === 'All' ? 'All' : priorityRaw.replace(/[^a-zA-Z0-9]/g, '-');
+            const activeBtn = document.getElementById(`sev-filter-${safeId}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            let hrs = 0;
+            let count = 0;
+
+            if (priorityRaw === 'All') {
+                hrs = globalMttrData.total.hours;
+                count = globalMttrData.total.count;
+            } else if (globalMttrData.byPriority[priorityRaw]) {
+                hrs = globalMttrData.byPriority[priorityRaw].hours;
+                count = globalMttrData.byPriority[priorityRaw].count;
+            }
+
+            let mttrText = "N/A";
+            if (count > 0) {
+                let avgHrs = hrs / count;
+                mttrText = avgHrs > 48 ? (avgHrs / 24).toFixed(1) + " dagen" : avgHrs.toFixed(1) + " uur";
+            }
+
+            document.getElementById('sumMttr').textContent = mttrText;
+        }
+
         async function calculateMetrics() {
             const versionsFile = document.getElementById('versionsFile').files[0];
             const issuesFile = document.getElementById('issuesFile').files[0];
@@ -590,6 +642,9 @@
             document.getElementById('resultsBody').innerHTML = "";
             dashboard.style.display = "none";
             resultsTable.style.display = "none";
+
+            // Reset globale MTTR data
+            globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
 
             if (!versionsFile || !issuesFile || !startDateStr || !endDateStr) {
                 errorMsg.textContent = "Upload a.u.b. beide JSON-bestanden in Stap 2.";
@@ -646,7 +701,7 @@
                 let allUniqueBugs = new Map();
                 let validCfrBugs = new Set();
 
-                // PAS 1: Tel eerst alle changes (Features/Stories) per release
+                // PAS 1: Tel eerst alle changes
                 allIssues.forEach(issue => {
                     const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
                     const isBug = typeName.toLowerCase() === 'bug';
@@ -667,7 +722,7 @@
                     }
                 });
 
-                // PAS 2: Verwerk nu de bugs (nu we weten of een release een Hotfix is)
+                // PAS 2: Verwerk nu de bugs
                 allIssues.forEach(issue => {
                     const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
                     const isBug = typeName.toLowerCase() === 'bug';
@@ -716,26 +771,29 @@
 
                 const totalCFR = numChanges > 0 ? ((numCfrBugs / numChanges) * 100) : 0;
 
-                let totalMTTRHours = 0;
-                let mttrCount = 0;
-                let priorities = {};
+                let prioritiesCount = {};
 
                 allUniqueBugs.forEach((data, key) => {
-                    priorities[data.priority] = (priorities[data.priority] || 0) + 1;
+                    let prio = data.priority;
+                    prioritiesCount[prio] = (prioritiesCount[prio] || 0) + 1;
+
+                    if (!globalMttrData.byPriority[prio]) {
+                        globalMttrData.byPriority[prio] = { hours: 0, count: 0 };
+                    }
+
                     if (data.createdDate && data.resolvedDate) {
                         let diffHrs = (data.resolvedDate - data.createdDate) / (1000 * 60 * 60);
                         if (diffHrs >= 0) {
-                            totalMTTRHours += diffHrs;
-                            mttrCount++;
+                            // Tel op voor totaal
+                            globalMttrData.total.hours += diffHrs;
+                            globalMttrData.total.count++;
+
+                            // Tel op per categorie
+                            globalMttrData.byPriority[prio].hours += diffHrs;
+                            globalMttrData.byPriority[prio].count++;
                         }
                     }
                 });
-
-                let mttrText = "N/A";
-                if (mttrCount > 0) {
-                    let avgHrs = totalMTTRHours / mttrCount;
-                    mttrText = avgHrs > 48 ? (avgHrs / 24).toFixed(1) + " dagen" : avgHrs.toFixed(1) + " uur";
-                }
 
                 let dfText = "N/A";
                 if (minDate && maxDate && numReleases > 0) {
@@ -748,11 +806,19 @@
                     }
                 }
 
-                let severityHtml = Object.keys(priorities)
-                    .sort((a, b) => priorities[b] - priorities[a])
-                    .map(p => `<strong>${p}</strong>: ${priorities[p]}`)
-                    .join('<br>') || "Geen";
+                // HTML opbouwen voor de klikbare Severity Pills
+                let severityHtml = `<div class="severity-pills">`;
+                severityHtml += `<div class="severity-pill active" id="sev-filter-All" onclick="filterMTTR('All')"><strong>Alles</strong></div>`;
 
+                Object.keys(prioritiesCount)
+                    .sort((a, b) => prioritiesCount[b] - prioritiesCount[a])
+                    .forEach(p => {
+                        let safeId = p.replace(/[^a-zA-Z0-9]/g, '-');
+                        severityHtml += `<div class="severity-pill" id="sev-filter-${safeId}" onclick="filterMTTR('${p}')"><strong>${p}</strong>: ${prioritiesCount[p]}</div>`;
+                    });
+                severityHtml += `</div>`;
+
+                // Update UI statics
                 document.getElementById('sumReleases').textContent = numReleases;
                 document.getElementById('sumChanges').textContent = numChanges;
                 document.getElementById('sumBugs').textContent = totalNumBugs;
@@ -761,7 +827,6 @@
                 sumCfrElement.textContent = totalCFR.toFixed(2) + '%';
                 sumCfrElement.style.backgroundColor = getCfrColor(totalCFR);
 
-                document.getElementById('sumMttr').textContent = mttrText;
                 document.getElementById('sumDf').textContent = dfText;
                 document.getElementById('sumSeverity').innerHTML = severityHtml;
 
@@ -772,7 +837,7 @@
                     document.getElementById('sumDates').textContent = 'Geen datums';
                 }
 
-                // Bereid de globale tableData array voor
+                // Initieer de globale tableData array
                 tableData = [];
                 Object.keys(validVersions).forEach(versionName => {
                     const data = validVersions[versionName];
@@ -780,7 +845,7 @@
 
                     let cfrVal = 0;
                     if (isHotfix) {
-                        cfrVal = 100; // Geef hotfixes virtueel 100% voor de sortering
+                        cfrVal = 100;
                     } else if (data.changes > 0) {
                         cfrVal = (data.bugs / data.changes) * 100;
                     }
@@ -799,8 +864,9 @@
                 dashboard.style.display = "block";
                 resultsTable.style.display = "table";
 
-                // Render de tabel met de standaard sortering (Datum, nieuwste eerst)
+                // Render tabel & stel initiële MTTR in ("Alles")
                 sortTable('date', true);
+                filterMTTR('All');
 
             } catch (error) {
                 console.error(error);
