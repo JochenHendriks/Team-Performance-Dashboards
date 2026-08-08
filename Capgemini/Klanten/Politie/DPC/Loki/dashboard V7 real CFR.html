@@ -341,8 +341,8 @@
                     <button class="copy-btn" onclick="copyToClipboard('urlVersions')">Kopieer</button>
                 </div>
 
-                <label style="margin-top: 1rem;">Link 2: Issues (issues.json) - Nu zuiverder via
-                    releasedVersions()</label>
+                <label style="margin-top: 1rem;">Link 2: Issues (issues.json) - Zodra je over de 1000 tickets gaat,
+                    verander startAt=0 naar startAt=1000</label>
                 <div class="url-box">
                     <input type="text" id="urlIssues" readonly placeholder="Vul eerst je Base URL en Project Key in...">
                     <button class="copy-btn" onclick="copyToClipboard('urlIssues')">Kopieer</button>
@@ -357,8 +357,8 @@
                 <input type="file" id="versionsFile" accept=".json">
             </div>
             <div class="input-group">
-                <label for="issuesFile">Upload issues.json</label>
-                <input type="file" id="issuesFile" accept=".json">
+                <label for="issuesFile">Upload issues.json (Je mag meerdere bestanden tegelijk selecteren)</label>
+                <input type="file" id="issuesFile" accept=".json" multiple>
             </div>
         </div>
 
@@ -449,16 +449,15 @@
         function generateUrls() {
             const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
             const projectKey = document.getElementById('projectKey').value.trim();
-            const startDate = document.getElementById('startDate').value; // Wordt alleen nog gebruikt voor dashboard UI weergave
+            const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
 
             if (baseUrlRaw && projectKey && startDate && endDate) {
                 const baseUrl = baseUrlRaw.replace(/\/$/, "");
                 document.getElementById('urlVersions').value = `${baseUrl}/rest/api/2/project/${projectKey}/versions`;
 
-                // GEWIJZIGD: We gebruiken nu releasedVersions() en vragen status en updated mee op voor de MTTR fallback.
                 const jql = `project="${projectKey}" AND fixVersion in releasedVersions()`;
-                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(jql)}&maxResults=1000&fields=issuetype,summary,fixVersions,created,resolutiondate,priority,status,updated`;
+                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(jql)}&startAt=0&maxResults=1000&fields=issuetype,summary,fixVersions,created,resolutiondate,priority,status,updated`;
             } else {
                 document.getElementById('urlVersions').value = "";
                 document.getElementById('urlIssues').value = "";
@@ -652,7 +651,7 @@
 
         async function calculateMetrics() {
             const versionsFile = document.getElementById('versionsFile').files[0];
-            const issuesFile = document.getElementById('issuesFile').files[0];
+            const issuesFiles = document.getElementById('issuesFile').files; // Let op: dit is nu een FileList
             const startDateStr = document.getElementById('startDate').value;
             const endDateStr = document.getElementById('endDate').value;
 
@@ -667,24 +666,28 @@
 
             globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
 
-            if (!versionsFile || !issuesFile || !startDateStr || !endDateStr) {
-                errorMsg.textContent = "Upload a.u.b. beide JSON-bestanden in Stap 2.";
+            if (!versionsFile || issuesFiles.length === 0 || !startDateStr || !endDateStr) {
+                errorMsg.textContent = "Upload a.u.b. de JSON-bestanden (versies en minimaal één issues bestand) in Stap 2.";
                 errorMsg.style.display = "block";
                 return;
             }
 
             try {
                 const allVersions = await readFileAsJson(versionsFile);
-                const issuesData = await readFileAsJson(issuesFile);
 
                 if (!Array.isArray(allVersions)) {
                     throw new Error("versies.json heeft niet het verwachte formaat (geen array van versies).");
                 }
-                if (!issuesData.issues || !Array.isArray(issuesData.issues)) {
-                    throw new Error("issues.json heeft niet het verwachte formaat (mist de 'issues' array).");
-                }
 
-                const allIssues = issuesData.issues;
+                // Lees alle geselecteerde issues.json bestanden en plak ze aan elkaar
+                let allIssues = [];
+                for (let i = 0; i < issuesFiles.length; i++) {
+                    const issuesData = await readFileAsJson(issuesFiles[i]);
+                    if (!issuesData.issues || !Array.isArray(issuesData.issues)) {
+                        throw new Error(`Bestand ${issuesFiles[i].name} heeft niet het verwachte formaat (mist de 'issues' array).`);
+                    }
+                    allIssues = allIssues.concat(issuesData.issues);
+                }
 
                 const startLimit = new Date(startDateStr);
                 const endLimit = new Date(endDateStr);
@@ -697,7 +700,6 @@
                 allVersions.forEach(v => {
                     if (v.released && v.releaseDate) {
                         const rDate = new Date(v.releaseDate);
-                        // Filter versies puur af op de UI datums
                         if (rDate >= startLimit && rDate <= endLimit) {
                             validVersions[v.name] = {
                                 name: v.name,
@@ -723,7 +725,6 @@
                 let uniqueChanges = new Set();
                 let allUniqueBugs = new Map();
 
-                // PAS 1: Tel eerst alle changes
                 allIssues.forEach(issue => {
                     const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
                     const isBug = typeName.toLowerCase() === 'bug';
@@ -744,7 +745,6 @@
                     }
                 });
 
-                // PAS 2: Verwerk nu de bugs
                 allIssues.forEach(issue => {
                     const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
                     const isBug = typeName.toLowerCase() === 'bug';
@@ -754,7 +754,6 @@
                     const createdDate = new Date(issue.fields.created);
                     let resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
 
-                    // --- FALLBACK LOGICA VOOR ONTBREKENDE RESOLUTION DATE ---
                     if (!resolvedDate && issue.fields.status && issue.fields.status.statusCategory && issue.fields.status.statusCategory.key === 'done') {
                         if (issue.fields.updated) {
                             resolvedDate = new Date(issue.fields.updated);
@@ -811,7 +810,6 @@
                         globalMttrData.byPriority[prio] = { hours: 0, count: 0 };
                     }
 
-                    // Check op positief verschil
                     if (data.createdDate && data.resolvedDate) {
                         let diffHrs = (data.resolvedDate - data.createdDate) / (1000 * 60 * 60);
                         if (diffHrs >= 0) {
