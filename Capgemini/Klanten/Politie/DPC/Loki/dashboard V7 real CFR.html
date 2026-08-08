@@ -303,6 +303,17 @@
         .bg-red {
             background-color: #de350b;
         }
+
+        /* Styling voor klikbare Jira links */
+        a.jira-link {
+            color: #0052cc;
+            text-decoration: none;
+        }
+
+        a.jira-link:hover {
+            text-decoration: underline;
+            color: #0047b3;
+        }
     </style>
 </head>
 
@@ -318,11 +329,12 @@
         <div class="grid-layout">
             <div class="input-group">
                 <label for="jiraUrl">Jira Base URL</label>
-                <input type="text" id="jiraUrl" placeholder="https://jira.jouwbedrijf.nl" oninput="generateUrls()">
+                <input type="text" id="jiraUrl" placeholder="https://jira.jouwbedrijf.nl"
+                    oninput="generateUrls(); renderTableRows();">
             </div>
             <div class="input-group">
                 <label for="projectKey">Project Key</label>
-                <input type="text" id="projectKey" placeholder="Bijv: WEB" oninput="generateUrls()">
+                <input type="text" id="projectKey" placeholder="Bijv: WEB" oninput="generateUrls(); renderTableRows();">
             </div>
             <div class="input-group">
                 <label for="startDate">Releases vanaf (Datum)</label>
@@ -357,7 +369,7 @@
                 <input type="file" id="versionsFile" accept=".json">
             </div>
             <div class="input-group">
-                <label for="issuesFile">Upload issues.json (Je mag meerdere bestanden tegelijk selecteren)</label>
+                <label for="issuesFile">Upload issues.json (Meerdere bestanden selecteren mogelijk)</label>
                 <input type="file" id="issuesFile" accept=".json" multiple>
             </div>
         </div>
@@ -405,7 +417,7 @@
                     <span class="stat-value" id="sumBugs">0</span>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-label">MTTR (Klik op severity om te filteren)</span>
+                    <span class="stat-label">MTTR (Klik op severity)</span>
                     <span class="stat-value" id="sumMttr">N/A</span>
                 </div>
                 <div class="stat-box" style="flex: 1; min-width: 250px;">
@@ -556,6 +568,12 @@
             const resultsBody = document.getElementById('resultsBody');
             resultsBody.innerHTML = '';
 
+            if (tableData.length === 0) return;
+
+            const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
+            const projectKey = document.getElementById('projectKey').value.trim();
+            const baseUrl = baseUrlRaw ? baseUrlRaw.replace(/\/$/, "") : "";
+
             const formatDate = (dateObj) => {
                 if (!dateObj) return "Onbekend";
                 return dateObj.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -574,11 +592,17 @@
                 const vId = data.name.replace(/[^a-zA-Z0-9]/g, '');
                 const releaseDateStr = formatDate(data.releaseDate);
 
+                // Releasenaam klikbaar maken als base URL en ID aanwezig zijn
+                let releaseDisplayName = `<strong>${data.name}</strong>`;
+                if (baseUrl && projectKey && data.id) {
+                    releaseDisplayName = `<strong><a href="${baseUrl}/projects/${projectKey}/versions/${data.id}" target="_blank" rel="noopener noreferrer" class="jira-link">${data.name}</a></strong>`;
+                }
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                 <td>
                     <button class="expand-btn" onclick="toggleDetails(this, 'details-${vId}')">▶</button>
-                    <strong>${data.name}</strong>
+                    ${releaseDisplayName}
                 </td>
                 <td>${releaseDateStr}</td>
                 <td>${data.changes}</td>
@@ -590,13 +614,18 @@
                 trDetails.id = `details-${vId}`;
                 trDetails.style.display = 'none';
 
-                let changesList = data.issues.filter(i => i.type === 'Change').map(i => `<li><strong>${i.key}</strong>: ${i.summary}</li>`).join('');
+                // Functie voor opmaken van issue links
+                const createIssueLink = (key) => {
+                    return baseUrl ? `<a href="${baseUrl}/browse/${key}" target="_blank" rel="noopener noreferrer" class="jira-link">${key}</a>` : key;
+                };
+
+                let changesList = data.issues.filter(i => i.type === 'Change').map(i => `<li><strong>${createIssueLink(i.key)}</strong>: ${i.summary}</li>`).join('');
                 let bugsList = data.issues.filter(i => i.type === 'Bug').map(i => {
                     let tag = '';
                     if (i.isPostRelease) {
                         tag = `<span class="tag-cfr">Post-release (${i.priority})</span>`;
                     }
-                    return `<li><strong>${i.key}</strong>: ${i.summary} ${tag}</li>`;
+                    return `<li><strong>${createIssueLink(i.key)}</strong>: ${i.summary} ${tag}</li>`;
                 }).join('');
 
                 if (!changesList) changesList = "<li>Geen changes gevonden</li>";
@@ -651,7 +680,7 @@
 
         async function calculateMetrics() {
             const versionsFile = document.getElementById('versionsFile').files[0];
-            const issuesFiles = document.getElementById('issuesFile').files; // Let op: dit is nu een FileList
+            const issuesFiles = document.getElementById('issuesFile').files;
             const startDateStr = document.getElementById('startDate').value;
             const endDateStr = document.getElementById('endDate').value;
 
@@ -679,7 +708,6 @@
                     throw new Error("versies.json heeft niet het verwachte formaat (geen array van versies).");
                 }
 
-                // Lees alle geselecteerde issues.json bestanden en plak ze aan elkaar
                 let allIssues = [];
                 for (let i = 0; i < issuesFiles.length; i++) {
                     const issuesData = await readFileAsJson(issuesFiles[i]);
@@ -702,6 +730,7 @@
                         const rDate = new Date(v.releaseDate);
                         if (rDate >= startLimit && rDate <= endLimit) {
                             validVersions[v.name] = {
+                                id: v.id, // Toegevoegd voor de release-link
                                 name: v.name,
                                 releaseDate: rDate,
                                 changes: 0,
@@ -856,6 +885,7 @@
                     }
 
                     tableData.push({
+                        id: data.id,
                         name: data.name,
                         releaseDate: data.releaseDate,
                         changes: data.changes,
