@@ -1,0 +1,136 @@
+{
+  "issues": [
+    {
+      "key": "WEB-1",
+      "fields": {
+        "issuetype": { "name": "Story" },
+        "summary": "Bouw integratie met iDeal",
+        "fixVersions": [ { "name": "Web | 1.0" } ],
+        "created": "2026-01-02T10:00:00.000Z",
+        "resolutiondate": "2026-01-10T14:00:00.000Z",
+        "priority": { "name": "High" }
+      }
+    },
+    {
+      "key": "WEB-2",
+      "fields": {
+        "issuetype": { "name": "Story" },
+        "summary": "Update styling homepage",
+        "fixVersions": [ { "name": "Web | 1.0" } ],
+        "created": "2026-01-03T11:00:00.000Z",
+        "resolutiondate": "2026-01-11T16:00:00.000Z",
+        "priority": { "name": "Medium" }
+      }
+    },
+    {
+      "key": "WEB-3",
+      "fields": {
+        "issuetype": { "name": "Story" },
+        "summary": "Maak contactformulier responsive",
+        "fixVersions": [ { "name": "Web | 1.0" } ],
+        "created": "2026-01-05T09:00:00.000Z",
+        "resolutiondate": "2026-01-14T10:00:00.000Z",
+        "priority": { "name": "Low" }
+      }
+    },
+    {
+      "key": "WEB-4",
+      "fields": {
+        "issuetype": { "name": "Bug" },
+        "summary": "Knop werkt niet op Safari (Pre-release)",
+        "fixVersions": [ { "name": "Web | 1.0" } ],
+        "created": "2026-01-10T14:00:00.000Z",
+        "resolutiondate": "2026-01-12T11:00:00.000Z",
+        "priority": { "name": "Medium" }
+      }
+    },
+    {
+      "key": "WEB-5",
+      "fields": {
+        "issuetype": { "name": "Bug" },
+        "summary": "404 foutmelding op /over-ons (Post-release)",
+        "fixVersions": [ { "name": "Web | 1.0" } ],
+        "created": "2026-01-16T08:30:00.000Z",
+        "resolutiondate": "2026-01-18T15:00:00.000Z",
+        "priority": { "name": "Highest" }
+      }
+    },
+    {
+      "key": "WEB-6",
+      "fields": {
+        "issuetype": { "name": "Bug" },
+        "summary": "Tekst valt buiten kader mobiel (Post-release)",
+        "fixVersions": [ { "name": "Web | 1.0" } ],
+        "created": "2026-01-17T10:15:00.000Z",
+        "resolutiondate": "2026-01-19T14:45:00.000Z",
+        "priority": { "name": "High" }
+      }
+    },
+    {
+      "key": "WEB-7",
+      "fields": {
+        "issuetype": { "name": "Bug" },
+        "summary": "iDeal betaling dubbel afgeschreven",
+        "fixVersions": [ { "name": "Web | 1.0.1 (Hotfix)" } ],
+        "created": "2026-01-18T09:00:00.000Z",
+        "resolutiondate": "2026-01-19T12:00:00.000Z",
+        "priority": { "name": "Highest" }
+      }
+    },
+    {
+      "key": "WEB-8",
+      "fields": {
+        "issuetype": { "name": "Bug" },
+        "summary": "Checkout crasht bij spatie in naam",
+        "fixVersions": [ { "name": "Web | 1.0.1 (Hotfix)" } ],
+        "created": "2026-01-19T10:30:00.000Z",
+        "resolutiondate": "2026-01-20T08:00:00.000Z",
+        "priority": { "name": "High" }
+      }
+    },
+    {
+      "key": "WEB-9",
+      "fields": {
+        "issuetype": { "name": "Story" },
+        "summary": "Bouw integratie met PayPal",
+        "fixVersions": [ { "name": "Web | 1.1" } ],
+        "created": "2026-02-02T10:00:00.000Z",
+        "resolutiondate": "2026-02-08T16:00:00.000Z",
+        "priority": { "name": "High" }
+      }
+    },
+    {
+      "key": "WEB-10",
+      "fields": {
+        "issuetype": { "name": "Story" },
+        "summary": "Voeg cookie banner toe",
+        "fixVersions": [ { "name": "Web | 1.1" } ],
+        "created": "2026-02-04T09:30:00.000Z",
+        "resolutiondate": "2026-02-09T11:00:00.000Z",
+        "priority": { "name": "Medium" }
+      }
+    },
+    {
+      "key": "WEB-11",
+      "fields": {
+        "issuetype": { "name": "Bug" },
+        "summary": "Menu klapt niet uit op tablet (Pre-release)",
+        "fixVersions": [ { "name": "Web | 1.1" } ],
+        "created": "2026-02-06T14:00:00.000Z",
+        "resolutiondate": "2026-02-07T16:30:00.000Z",
+        "priority": { "name": "Medium" }
+      }
+    },
+    {
+      "key": "WEB-12",
+      "fields": {
+        "issuetype": { "name": "Bug" },
+        "summary": "PayPal laadt niet op iOS (Post-release)",
+        "fixVersions": [ { "name": "Web | 1.1" } ],
+        "created": "2026-02-12T09:15:00.000Z",
+        "resolutiondate": "2026-02-14T15:45:00.000Z",
+        "priority": { "name": "Highest" }
+      }
+    }
+  ]
+}
