@@ -1,0 +1,101 @@
+Issue Type,Issue key,Summary,Fix Version/s,Created,Resolved,Priority,Status
+Story,WEB-1,Bouw integratie met iDeal,Web | 1.0,2025-01-02,2025-01-10,High,Done
+Story,WEB-2,Update styling homepage,Web | 1.0,2025-01-03,2025-01-11,Medium,Done
+Story,WEB-3,Refactor database queries,Web | 1.0,2025-01-04,2025-01-12,Low,Done
+Story,WEB-4,Voeg Google Analytics toe,Web | 1.0,2025-01-05,2025-01-13,Medium,Done
+Story,WEB-5,Maak contactformulier responsive,Web | 1.0,2025-01-06,2025-01-14,High,Done
+Story,WEB-6,Optimaliseer afbeeldingen,Web | 1.0,2025-01-07,2025-01-15,Lowest,Done
+Story,WEB-7,Schrijf unit tests voor login,Web | 1.0,2025-01-02,2025-01-09,Medium,Done
+Story,WEB-8,Update footer links,Web | 1.0,2025-01-08,2025-01-12,Low,Done
+Story,WEB-9,Pas kleur contrast aan,Web | 1.0,2025-01-09,2025-01-14,Medium,Done
+Story,WEB-10,Nieuwe header lay-out,Web | 1.0,2025-01-02,2025-01-11,High,Done
+Story,WEB-11,Migreer gebruikersdata,Web | 1.0,2025-01-05,2025-01-15,Highest,Done
+Story,WEB-12,Voeg FAQ pagina toe,Web | 1.0,2025-01-10,2025-01-14,Low,Done
+Bug,WEB-13,Knop werkt niet op Safari,Web | 1.0,2025-01-10,2025-01-14,Medium,Done
+Bug,WEB-14,Typefout in disclaimer,Web | 1.0,2025-01-11,2025-01-12,Lowest,Done
+Bug,WEB-15,Afbeelding laadt te traag,Web | 1.0,2025-01-12,2025-01-14,Low,Done
+Bug,WEB-16,404 fout op /over-ons,Web | 1.0,2025-01-16,2025-01-18,Highest,Done
+Bug,WEB-17,Tekst valt buiten kader mobiel,Web | 1.0,2025-01-17,2025-01-19,High,Done
+Story,WEB-18,Bouw integratie met PayPal,Web | 1.1,2025-02-02,2025-02-10,High,Done
+Story,WEB-19,Update navigatiemenu,Web | 1.1,2025-02-03,2025-02-10,Medium,Done
+Story,WEB-20,Voeg cookie banner toe,Web | 1.1,2025-02-05,2025-02-10,Medium,Done
+Story,WEB-21,Verwijder oude scripts,Web | 1.1,2025-02-07,2025-02-10,Lowest,Done
+Story,WEB-22,Implementeer dark mode,Web | 1.2,2025-03-02,2025-03-10,High,Done
+Story,WEB-23,Nieuwe blog lay-out,Web | 1.2,2025-03-03,2025-03-11,Medium,Done
+Story,WEB-24,Caching instellen voor API,Web | 1.2,2025-03-04,2025-03-12,Medium,Done
+Story,WEB-25,SEO optimalisatie titels,Web | 1.2,2025-03-05,2025-03-12,Low,Done
+Story,WEB-26,Profielpagina toevoegen,Web | 1.2,2025-03-06,2025-03-12,High,Done
+Story,WEB-27,Snelheid verbeteren Lighthouse,Web | 1.2,2025-03-07,2025-03-12,Medium,Done
+Story,WEB-28,Login flow optimaliseren,Web | 1.2,2025-03-08,2025-03-12,Medium,Done
+Story,WEB-29,Oude code opschonen,Web | 1.2,2025-03-02,2025-03-09,Low,Done
+Bug,WEB-30,Dark mode flikkert bij laden,Web | 1.2,2025-03-05,2025-03-10,Medium,Done
+Bug,WEB-31,Login faalt met speciale tekens,Web | 1.2,2025-03-13,2025-03-18,Highest,Done
+Bug,WEB-32,Afbeelding upload werkt niet,Web | 1.2,2025-03-14,2025-03-19,High,Done
+Bug,WEB-33,Sessie verloopt direct,Web | 1.2,2025-03-15,2025-03-17,High,Done
+Bug,WEB-34,Foutieve titel in SEO veld,Web | 1.2,2025-03-16,2025-03-20,Low,Done
+Story,WEB-35,Toevoegen nieuwsbrief popup,Web | 1.3,2025-04-02,2025-04-10,Medium,Done
+Story,WEB-36,Klantbeoordelingen tonen,Web | 1.3,2025-04-03,2025-04-11,Medium,Done
+Story,WEB-37,Sessie time-out vergroten,Web | 1.3,2025-04-04,2025-04-12,Low,Done
+Story,WEB-38,Social media knoppen update,Web | 1.3,2025-04-05,2025-04-13,Lowest,Done
+Story,WEB-39,Wachtwoord vergeten flow,Web | 1.3,2025-04-06,2025-04-14,High,Done
+Story,WEB-40,Breadcrumbs toevoegen,Web | 1.3,2025-04-07,2025-04-15,Medium,Done
+Story,WEB-41,Vertalingen updaten,Web | 1.3,2025-04-08,2025-04-16,Medium,Done
+Story,WEB-42,Algemene voorwaarden checkbox,Web | 1.3,2025-04-09,2025-04-17,High,Done
+Story,WEB-43,Verzendkosten berekening,Web | 1.3,2025-04-10,2025-04-18,Highest,Done
+Story,WEB-44,Factuuradres kan afwijken,Web | 1.3,2025-04-11,2025-04-19,Medium,Done
+Story,WEB-45,Postcode check integratie,Web | 1.3,2025-04-12,2025-04-20,Medium,Done
+Story,WEB-46,Klantnummer tonen op dashboard,Web | 1.3,2025-04-13,2025-04-20,Low,Done
+Story,WEB-47,Animatie in winkelmandje,Web | 1.3,2025-04-14,2025-04-20,Lowest,Done
+Story,WEB-48,BTW nummer veld toevoegen,Web | 1.3,2025-04-15,2025-04-20,High,Done
+Story,WEB-49,Order bevestiging mail restylen,Web | 1.3,2025-04-16,2025-04-20,Medium,Done
+Bug,WEB-50,Popup sluit niet via kruisje,Web | 1.3,2025-04-10,2025-04-14,Medium,Done
+Bug,WEB-51,Breadcrumbs verspringen,Web | 1.3,2025-04-11,2025-04-15,Low,Done
+Bug,WEB-52,Postcode checker faalt op spatie,Web | 1.3,2025-04-12,2025-04-16,Medium,Done
+Bug,WEB-53,Winkelmand icoon laadt niet,Web | 1.3,2025-04-13,2025-04-17,Lowest,Done
+Bug,WEB-54,BTW validatie keurt NL af,Web | 1.3,2025-04-15,2025-04-19,High,Done
+Bug,WEB-55,Wachtwoord reset mail komt niet,Web | 1.3,2025-04-22,2025-04-25,Highest,Done
+Story,WEB-56,Factuur PDF generatie,Web | 1.4,2025-05-02,2025-05-08,High,Done
+Story,WEB-57,Error logging verbeteren,Web | 1.4,2025-05-03,2025-05-08,Medium,Done
+Story,WEB-58,Interne wiki updaten,Web | 1.4,2025-05-04,2025-05-08,Low,Done
+Bug,WEB-59,PDF toont geen logo,Web | 1.4,2025-05-09,2025-05-14,Medium,Done
+Bug,WEB-60,Factuur bedrag klopt niet,Web | 1.4,2025-05-10,2025-05-12,Highest,Done
+Story,WEB-61,Klarna betaalmethode,Web | 1.5,2025-06-02,2025-06-15,High,Done
+Story,WEB-62,Product varianten tonen,Web | 1.5,2025-06-03,2025-06-15,Medium,Done
+Story,WEB-63,Database indexering,Web | 1.5,2025-06-04,2025-06-15,High,Done
+Story,WEB-64,Favicon vernieuwen,Web | 1.5,2025-06-05,2025-06-15,Lowest,Done
+Story,WEB-65,Voorraad indicatie tonen,Web | 1.5,2025-06-06,2025-06-15,Medium,Done
+Story,WEB-66,Testcases schrijven,Web | 1.5,2025-06-07,2025-06-15,Medium,Done
+Bug,WEB-67,Varianten tonen foute prijs,Web | 1.5,2025-06-10,2025-06-14,High,Done
+Bug,WEB-68,Indexering vertraagt de site,Web | 1.5,2025-06-11,2025-06-14,Highest,Done
+Story,WEB-69,Twee-staps verificatie,Web | 1.6,2025-07-02,2025-07-10,Highest,Done
+Story,WEB-70,Account verwijderen optie,Web | 1.6,2025-07-03,2025-07-11,High,Done
+Story,WEB-71,Upgrade React versie,Web | 1.6,2025-07-04,2025-07-12,Medium,Done
+Story,WEB-72,Video achtergrond toevoegen,Web | 1.6,2025-07-05,2025-07-12,Low,Done
+Story,WEB-73,Ordergeschiedenis inzien,Web | 1.6,2025-07-06,2025-07-12,Medium,Done
+Story,WEB-74,Caching voor afbeeldingen,Web | 1.6,2025-07-07,2025-07-12,Low,Done
+Story,WEB-75,Privacybeleid updaten,Web | 1.6,2025-07-08,2025-07-12,Low,Done
+Story,WEB-76,Verstuur SMS notificaties,Web | 1.6,2025-07-09,2025-07-12,Medium,Done
+Story,WEB-77,Landcodes toevoegen in profiel,Web | 1.6,2025-07-10,2025-07-12,Low,Done
+Story,WEB-78,Refactor login component,Web | 1.6,2025-07-02,2025-07-12,Medium,Done
+Bug,WEB-79,Video speelt niet op mobiel,Web | 1.6,2025-07-05,2025-07-10,Medium,Done
+Bug,WEB-80,SMS code wordt niet verstuurd,Web | 1.6,2025-07-15,2025-07-18,Highest,Done
+Story,WEB-81,Chatbot integratie,Web | 1.7,2025-08-02,2025-08-10,Medium,Done
+Story,WEB-82,Migratie naar AWS,Web | 1.7,2025-08-03,2025-08-10,Highest,Done
+Story,WEB-83,Gerelateerde producten tonen,Web | 1.8,2025-09-02,2025-09-15,Medium,Done
+Story,WEB-84,Paginering in categorieën,Web | 1.8,2025-09-03,2025-09-15,Medium,Done
+Story,WEB-85,Kortingscodes toevoegen,Web | 1.8,2025-09-04,2025-09-15,High,Done
+Story,WEB-86,Lazy loading afbeeldingen,Web | 1.8,2025-09-05,2025-09-15,Medium,Done
+Story,WEB-87,Release notes uitschrijven,Web | 1.8,2025-09-06,2025-09-15,Low,Done
+Bug,WEB-88,Paginering stopt bij pagina 3,Web | 1.8,2025-09-10,2025-09-14,Medium,Done
+Bug,WEB-89,Kortingscode validatie faalt,Web | 1.8,2025-09-11,2025-09-14,High,Done
+Bug,WEB-90,Afbeeldingen laden niet in Firefox,Web | 1.8,2025-09-12,2025-09-14,Low,Done
+Bug,WEB-91,Kortingscode 100% maakt prijs negatief,Web | 1.8,2025-09-16,2025-09-18,Highest,Done
+Story,WEB-92,Apple Pay toevoegen,Web | 1.9,2025-10-02,2025-10-12,High,Done
+Story,WEB-93,Kleur filters in webshop,Web | 1.9,2025-10-03,2025-10-12,Medium,Done
+Story,WEB-94,Update Node.js backend,Web | 1.9,2025-10-04,2025-10-12,High,Done
+Story,WEB-95,Trustpilot widget tonen,Web | 1.9,2025-10-05,2025-10-12,Medium,Done
+Story,WEB-96,Track & Trace integratie,Web | 1.9,2025-10-06,2025-10-12,High,Done
+Story,WEB-97,Logbestanden archiveren,Web | 1.9,2025-10-07,2025-10-12,Low,Done
+Story,WEB-98,Nieuwe onboarding voor devs,Web | 1.9,2025-10-08,2025-10-12,Low,Done
+Bug,WEB-99,Filter op rood toont blauw,Web | 1.9,2025-10-10,2025-10-11,Medium,Done
+Bug,WEB-100,Apple Pay knop onzichtbaar,Web | 1.9,2025-10-15,2025-10-18,Highest,Done

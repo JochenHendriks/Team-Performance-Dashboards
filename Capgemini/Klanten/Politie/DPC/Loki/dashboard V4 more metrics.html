@@ -15,7 +15,7 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             background: white;
             padding: 2rem;
@@ -63,6 +63,19 @@
 
         button:hover {
             background: #0047b3;
+        }
+
+        .expand-btn {
+            background: none;
+            color: #5e6c84;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 0 5px 0 0;
+        }
+
+        .expand-btn:hover {
+            color: #0052cc;
         }
 
         .error {
@@ -152,6 +165,49 @@
         th {
             background: #f4f5f7;
         }
+
+        .details-container {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .details-container>div {
+            flex: 1;
+        }
+
+        ul.issue-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin-top: 0.5rem;
+        }
+
+        ul.issue-list li {
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+            padding: 4px;
+            border-bottom: 1px solid #ebecf0;
+        }
+
+        .tag-cfr {
+            color: #de350b;
+            font-weight: bold;
+            font-size: 0.75rem;
+            margin-left: 5px;
+            background: #ffebe6;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        /* CFR Kleuren */
+        .cfr-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: white;
+            display: inline-block;
+            min-width: 50px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -163,11 +219,11 @@
         <div class="input-group">
             <label for="jqlQuery">1. Jira JQL-query (optioneel, voor bewijslast)</label>
             <textarea id="jqlQuery" rows="2"
-                placeholder='Bijv: project = "JOUWPROJECT" AND resolved >= startOfYear()...'></textarea>
+                placeholder='Bijv: project = "JOUWPROJECT" AND resolved >= "2025-01-01"...'></textarea>
         </div>
 
         <div class="input-group">
-            <label for="exportFile">2. Upload gecombineerd Jira Excel-bestand</label>
+            <label for="exportFile">2. Upload gecombineerd Jira Excel-bestand (incl. Summary/Titel)</label>
             <input type="file" id="exportFile" accept=".xlsx, .xls, .csv">
         </div>
 
@@ -182,9 +238,15 @@
             </div>
 
             <p style="font-size: 0.9rem; color: #5e6c84; margin-bottom: 1.5rem; line-height: 1.4;">
-                <em><strong>Let op:</strong> De 'Totale CFR' wordt berekend door het aantal bugs dat <strong>ná de
-                        release</strong> is aangemaakt te delen door het aantal changes. Het blokje 'Totaal Bugs', de
-                    MTTR en de Severity tonen de data van <strong>alle</strong> bugs uit de export.</em>
+                <strong>Hoe wordt de CFR berekend?</strong><br>
+                De tool berekent automatisch welke fouten daadwerkelijk in productie zijn gevonden:<br>
+                1. <strong>Livegang bepalen:</strong> Per release zoekt de tool naar de Story die als <em>laatste</em>
+                is afgerond. Deze 'Resolved'-datum is de geschatte releasedatum.<br>
+                2. <strong>Pre-release Bugs:</strong> Bugs die vóór deze datum zijn gemeld, zijn tijdens de bouwfase
+                afgevangen en tellen niet mee voor de CFR.<br>
+                3. <strong>Post-release Bugs:</strong> Bugs die óp of ná deze datum zijn gemeld, gelden als
+                productie-incidenten. Alleen deze beïnvloeden de CFR.<br><br>
+                <em>Formule: (Aantal Post-release bugs / Aantal Changes) * 100 = Totale CFR %</em>
             </p>
 
             <div class="stats-grid">
@@ -206,7 +268,8 @@
                 </div>
                 <div class="stat-box">
                     <span class="stat-label">Totale CFR</span>
-                    <span class="stat-value" id="sumCfr">0%</span>
+                    <span class="stat-value" id="sumCfr"
+                        style="padding: 4px 8px; border-radius: 4px; color: white; display: inline-block;">0%</span>
                 </div>
                 <div class="stat-box">
                     <span class="stat-label">MTTR</span>
@@ -223,6 +286,7 @@
             <thead>
                 <tr>
                     <th>Release (Fix Version)</th>
+                    <th>Geschatte Datum</th>
                     <th>Changes</th>
                     <th>Bugs (Post-Release)</th>
                     <th>CFR (%)</th>
@@ -233,6 +297,25 @@
     </div>
 
     <script>
+        function toggleDetails(btn, detailsId) {
+            const detailsRow = document.getElementById(detailsId);
+            if (detailsRow.style.display === 'none') {
+                detailsRow.style.display = 'table-row';
+                btn.textContent = '▼';
+            } else {
+                detailsRow.style.display = 'none';
+                btn.textContent = '▶';
+            }
+        }
+
+        // Helper functie voor CFR kleuren (DORA metrics benchmark)
+        function getCfrColor(cfr) {
+            if (cfr === 0) return '#006644'; // Donkergroen (Elite)
+            if (cfr <= 15) return '#36b37e'; // Lichtgroen (High)
+            if (cfr <= 30) return '#ff8b00'; // Oranje (Medium)
+            return '#de350b'; // Rood (Low)
+        }
+
         async function readExcelFile(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -262,6 +345,7 @@
             const resultsTable = document.getElementById('resultsTable');
             const resultsBody = document.getElementById('resultsBody');
             const displayJql = document.getElementById('displayJql');
+            const sumCfrElement = document.getElementById('sumCfr');
 
             errorMsg.textContent = "";
             resultsBody.innerHTML = "";
@@ -273,7 +357,6 @@
                 return;
             }
 
-            // Set JQL text
             displayJql.textContent = jqlInput !== "" ? jqlInput : "Niet opgegeven";
 
             try {
@@ -307,6 +390,7 @@
                 };
 
                 const getIssueKey = (row) => row["Issue key"] || row["Issue Key"] || row["Issue ID"] || "Onbekend";
+                const getSummary = (row) => row["Summary"] || row["Titel"] || row["summary"] || "Geen titel";
                 const parseDate = (dateStr) => dateStr ? new Date(dateStr) : null;
 
                 // Changes verwerken
@@ -323,10 +407,16 @@
                             let version = v.trim();
                             if (version) {
                                 if (!releases[version]) {
-                                    releases[version] = { changes: 0, bugs: 0, maxResolvedDate: null };
+                                    releases[version] = { changes: 0, bugs: 0, maxResolvedDate: null, issues: [] };
                                 }
                                 releases[version].changes += 1;
                                 uniqueChanges.add(getIssueKey(row));
+
+                                releases[version].issues.push({
+                                    key: getIssueKey(row),
+                                    summary: getSummary(row),
+                                    type: 'Change'
+                                });
 
                                 if (resolvedDate && !isNaN(resolvedDate.getTime())) {
                                     let d = new Date(resolvedDate.toDateString());
@@ -370,6 +460,13 @@
                                     releases[version].bugs += 1;
                                     validCfrBugs.add(bugKey);
                                 }
+
+                                releases[version].issues.push({
+                                    key: bugKey,
+                                    summary: getSummary(row),
+                                    type: 'Bug',
+                                    isPostRelease: countBugForCfr
+                                });
                             }
                         });
                     }
@@ -380,7 +477,7 @@
                 const totalNumBugs = allUniqueBugs.size;
                 const numCfrBugs = validCfrBugs.size;
 
-                const totalCFR = numChanges > 0 ? ((numCfrBugs / numChanges) * 100).toFixed(2) : 0;
+                const totalCFR = numChanges > 0 ? ((numCfrBugs / numChanges) * 100) : 0;
 
                 let totalMTTRHours = 0;
                 let mttrCount = 0;
@@ -425,7 +522,11 @@
                 document.getElementById('sumReleases').textContent = numReleases;
                 document.getElementById('sumChanges').textContent = numChanges;
                 document.getElementById('sumBugs').textContent = totalNumBugs;
-                document.getElementById('sumCfr').textContent = totalCFR + '%';
+
+                // Toepassen van de kleur op de Totale CFR
+                sumCfrElement.textContent = totalCFR.toFixed(2) + '%';
+                sumCfrElement.style.backgroundColor = getCfrColor(totalCFR);
+
                 document.getElementById('sumMttr').textContent = mttrText;
                 document.getElementById('sumDf').textContent = dfText;
                 document.getElementById('sumSeverity').innerHTML = severityHtml;
@@ -437,17 +538,62 @@
                     document.getElementById('sumDates').textContent = 'Geen datums';
                 }
 
+                const formatDate = (dateObj) => {
+                    if (!dateObj) return "Onbekend";
+                    return dateObj.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                };
+
+                // HTML tabel genereren
                 Object.keys(releases).sort().forEach(version => {
                     const data = releases[version];
                     const cfr = data.changes > 0 ? ((data.bugs / data.changes) * 100) : 0;
+
+                    const vId = version.replace(/[^a-zA-Z0-9]/g, '');
+                    const releaseDateStr = formatDate(data.maxResolvedDate);
+                    const bgColor = getCfrColor(cfr);
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                    <td><strong>${version}</strong></td>
+                    <td>
+                        <button class="expand-btn" onclick="toggleDetails(this, 'details-${vId}')">▶</button>
+                        <strong>${version}</strong>
+                    </td>
+                    <td>${releaseDateStr}</td>
                     <td>${data.changes}</td>
                     <td>${data.bugs}</td>
-                    <td>${cfr.toFixed(2)}%</td>
+                    <td><span class="cfr-badge" style="background-color: ${bgColor};">${cfr.toFixed(2)}%</span></td>
                 `;
+
+                    const trDetails = document.createElement('tr');
+                    trDetails.id = `details-${vId}`;
+                    trDetails.style.display = 'none';
+
+                    let changesList = data.issues.filter(i => i.type === 'Change').map(i => `<li><strong>${i.key}</strong>: ${i.summary}</li>`).join('');
+                    let bugsList = data.issues.filter(i => i.type === 'Bug').map(i => {
+                        let tag = i.isPostRelease ? '<span class="tag-cfr">Post-release</span>' : '';
+                        return `<li><strong>${i.key}</strong>: ${i.summary} ${tag}</li>`;
+                    }).join('');
+
+                    if (!changesList) changesList = "<li>Geen changes gevonden</li>";
+                    if (!bugsList) bugsList = "<li>Geen bugs gevonden</li>";
+
+                    trDetails.innerHTML = `
+                    <td colspan="5" style="background: #fafbfc; padding: 1.5rem; border-bottom: 2px solid #dfe1e6;">
+                        <div class="details-container">
+                            <div>
+                                <h4 style="margin: 0 0 0.5rem 0; color: #172b4d;">Features / Changes</h4>
+                                <ul class="issue-list">${changesList}</ul>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 0.5rem 0; color: #172b4d;">Bugs in deze release</h4>
+                                <ul class="issue-list">${bugsList}</ul>
+                            </div>
+                        </div>
+                    </td>
+                `;
+
                     resultsBody.appendChild(tr);
+                    resultsBody.appendChild(trDetails);
                 });
 
                 if (numReleases > 0) {
