@@ -457,6 +457,8 @@
             const p = priority.toLowerCase();
             return ['high', 'highest', 'critical', 'major', 'p1', 'p2', '1', '2'].includes(p);
         };
+        // Niet ernstig:
+        // medium, minor, low, trivial, none
 
         function generateUrls() {
             const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
@@ -730,14 +732,15 @@
                         const rDate = new Date(v.releaseDate);
                         if (rDate >= startLimit && rDate <= endLimit) {
                             validVersions[v.name] = {
-                                id: v.id, // Toegevoegd voor de release-link
+                                 id: v.id,
                                 name: v.name,
                                 releaseDate: rDate,
                                 changes: 0,
                                 bugs: 0,
                                 hasSeverePostBug: false,
+                                hasSevereBug: false,
                                 issues: []
-                            };
+                        };
 
                             if (!minDate || rDate < minDate) minDate = rDate;
                             if (!maxDate || rDate > maxDate) maxDate = rDate;
@@ -807,12 +810,17 @@
                                     isPostRelease = true;
                                 }
 
+                                if (isSeverePriority(priority)) {
+                                    validVersions[vName].hasSevereBug = true;
+                                }
+
                                 if (isPostRelease) {
                                     validVersions[vName].bugs += 1;
 
                                     if (isSeverePriority(priority)) {
                                         validVersions[vName].hasSeverePostBug = true;
                                     }
+                                }
                                 }
                                 validVersions[vName].issues.push({ key, summary, type: 'Bug', isPostRelease, priority });
                             }
@@ -877,8 +885,14 @@
 
                 Object.keys(validVersions).forEach(versionName => {
                     const data = validVersions[versionName];
-                    const isHotfix = data.changes === 0 && data.bugs > 0;
-                    const isFailed = isHotfix || data.hasSeverePostBug;
+
+                    const isHotfix =
+                        data.changes === 0 &&
+                        data.hasSevereBug;
+
+                    const isFailed =
+                        isHotfix ||
+                        data.hasSeverePostBug;
 
                     if (isFailed) {
                         failedReleasesCount++;
