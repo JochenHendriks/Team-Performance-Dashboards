@@ -431,7 +431,8 @@
             </div>
 
             <div class="chart-container">
-                <canvas id="cfrChart" height="80"></canvas>
+                <!-- Hoogte iets verhoogd om staven goed tot hun recht te laten komen -->
+                <canvas id="cfrChart" height="100"></canvas>
             </div>
         </div>
 
@@ -468,7 +469,6 @@
 
         let cfrChart = null;
 
-        // Laad bewaarde waarden bij het openen van de pagina
         document.addEventListener('DOMContentLoaded', () => {
             const savedUrl = localStorage.getItem('dora_jiraUrl');
             const savedProject = localStorage.getItem('dora_projectKey');
@@ -519,7 +519,6 @@
             const endDate = document.getElementById('endDate').value;
             const teamField = document.getElementById('teamFieldKey').value.trim() || 'team';
 
-            // Bewaar direct in local storage
             localStorage.setItem('dora_jiraUrl', baseUrlRaw);
             localStorage.setItem('dora_projectKey', projectKey);
             localStorage.setItem('dora_teamFieldKey', document.getElementById('teamFieldKey').value.trim());
@@ -560,7 +559,7 @@
         }
 
         function getCfrColor(cfr) {
-            if (cfr === 0) return '#006644';
+            if (cfr === 0) return '#00875a';
             if (cfr <= 15) return '#36b37e';
             if (cfr <= 30) return '#ff8b00';
             return '#de350b';
@@ -729,53 +728,96 @@
                 const data = monthlyData[key];
                 return {
                     x: data.date,
-                    y: (data.failed / data.total) * 100,
+                    cfr: (data.failed / data.total) * 100,
                     total: data.total,
-                    failed: data.failed
+                    failed: data.failed,
+                    success: data.total - data.failed
                 };
             });
 
             cfrChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
-                    datasets: [{
-                        label: 'Change Failure Rate (%)',
-                        data: chartPoints,
-                        borderColor: '#0052cc',
-                        backgroundColor: 'rgba(0, 82, 204, 0.08)',
-                        borderWidth: 2,
-                        pointBackgroundColor: chartPoints.map(p => getCfrColor(p.y)),
-                        pointBorderColor: '#fff',
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        fill: true,
-                        tension: 0.3
-                    }]
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'CFR (%)',
+                            data: chartPoints.map(p => ({ x: p.x, y: p.cfr })),
+                            yAxisID: 'yCfr',
+                            borderColor: '#0052cc',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointBackgroundColor: chartPoints.map(p => getCfrColor(p.cfr)),
+                            pointBorderColor: '#fff',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            tension: 0.3,
+                            order: 1
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Gefaald',
+                            data: chartPoints.map(p => ({ x: p.x, y: p.failed })),
+                            yAxisID: 'yCount',
+                            backgroundColor: '#de350b',
+                            order: 2
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Geslaagd',
+                            data: chartPoints.map(p => ({ x: p.x, y: p.success })),
+                            yAxisID: 'yCount',
+                            backgroundColor: '#00875a',
+                            order: 3
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                     scales: {
                         x: {
                             type: 'time',
                             time: { unit: 'month', displayFormats: { month: 'MMM yyyy' } },
+                            stacked: true,
                             title: { display: true, text: 'Maand', font: { weight: 'bold' } }
                         },
-                        y: {
+                        yCount: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            stacked: true,
+                            title: { display: true, text: 'Aantal Releases', font: { weight: 'bold' } },
+                            ticks: { stepSize: 1 }
+                        },
+                        yCfr: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
                             title: { display: true, text: 'CFR (%)', font: { weight: 'bold' } },
                             beginAtZero: true,
-                            max: 100
+                            max: 100,
+                            grid: { drawOnChartArea: false } // Voorkomt dubbele lijnen op de achtergrond
                         }
                     },
                     plugins: {
                         tooltip: {
                             callbacks: {
                                 label: function (context) {
-                                    const pt = context.raw;
-                                    return `CFR: ${pt.y.toFixed(1)}% (${pt.failed} van de ${pt.total} releases gefaald)`;
+                                    if (context.dataset.label === 'CFR (%)') {
+                                        return `CFR: ${context.raw.y.toFixed(1)}%`;
+                                    }
+                                    return `${context.dataset.label}: ${context.raw.y}`;
                                 }
                             }
                         },
-                        legend: { display: false }
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
                     }
                 }
             });
@@ -1123,9 +1165,6 @@
                 resultsTable.style.display = "none";
             }
         }
-
-        // Genereer urls zonder localStorage te overschrijven op basis van lege input bij allereerste load
-        // Dit is reeds afgevangen doordat DOMContentLoaded eerst vuurt.
     </script>
 </body>
 
