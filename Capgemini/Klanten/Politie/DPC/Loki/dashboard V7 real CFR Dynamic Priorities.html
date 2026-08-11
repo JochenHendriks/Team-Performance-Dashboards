@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DORA Metrics Dashboard (Zuivere CFR)</title>
+
+    <!-- Chart.js en Date Adapter inladen voor de grafiek -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -219,6 +224,15 @@
             border-color: #0052cc;
         }
 
+        /* Container voor de grafiek */
+        .chart-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            margin-top: 2rem;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -384,16 +398,16 @@
                 <strong>Hoe wordt de CFR berekend (DORA-Standaard)?</strong><br>
                 De tool berekent het percentage <em>Releases</em> dat heeft gefaald. Een release telt als 'Gefaald'
                 als:<br>
-                1. Het een <strong>Hotfix</strong> is (0 features en minimaal één bug met prioriteit High, Highest, Critical, Major, P1 of P2).<br>
-                2. Er ná livegang minimaal één kritieke bug (High, Highest, Major, Critical, P1, P2) in de release is
+                1. Het een <strong>Hotfix</strong> is (0 features en minimaal één geselecteerde kritieke bug).<br>
+                2. Er ná livegang minimaal één kritieke bug in de release is
                 gemeld. Cosmetische post-release bugs laten een release <em>niet</em> falen.<br><br>
                 <em>Formule: (Aantal Gefaalde Releases / Totaal Aantal Releases) * 100</em>
             </p>
 
             <div class="stat-box" style="margin-bottom:1rem;">
-                    <span class="stat-label">Prioriteiten die meetellen voor CFR</span>
-                    <div id="cfrPrioritySelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
-                </div>
+                <span class="stat-label">Prioriteiten die meetellen voor CFR</span>
+                <div id="cfrPrioritySelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+            </div>
 
             <div class="stats-grid">
                 <div class="stat-box">
@@ -430,6 +444,11 @@
                     <div id="sumSeverity"></div>
                 </div>
             </div>
+
+            <!-- CFR over Tijd Grafiek -->
+            <div class="chart-container">
+                <canvas id="cfrChart" height="80"></canvas>
+            </div>
         </div>
 
         <table id="resultsTable" style="display:none;">
@@ -458,6 +477,7 @@
         let globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
         let selectedCfrPriorities = new Set();
         let discoveredPriorities = new Set();
+        let cfrChart = null; // Globale variabele voor de grafiek
 
         const isSeverePriority = (priority) => {
             if (!priority) return false;
@@ -598,7 +618,6 @@
                 const vId = data.name.replace(/[^a-zA-Z0-9]/g, '');
                 const releaseDateStr = formatDate(data.releaseDate);
 
-                // Releasenaam klikbaar maken als base URL en ID aanwezig zijn
                 let releaseDisplayName = `<strong>${data.name}</strong>`;
                 if (baseUrl && projectKey && data.id) {
                     releaseDisplayName = `<strong><a href="${baseUrl}/projects/${projectKey}/versions/${data.id}" target="_blank" rel="noopener noreferrer" class="jira-link">${data.name}</a></strong>`;
@@ -620,7 +639,6 @@
                 trDetails.id = `details-${vId}`;
                 trDetails.style.display = 'none';
 
-                // Functie voor opmaken van issue links
                 const createIssueLink = (key) => {
                     return baseUrl ? `<a href="${baseUrl}/browse/${key}" target="_blank" rel="noopener noreferrer" class="jira-link">${key}</a>` : key;
                 };
@@ -657,6 +675,94 @@
             });
         }
 
+        function renderCfrChart() {
+            const ctx = document.getElementById('cfrChart').getContext('2d');
+            if (cfrChart) cfrChart.destroy();
+
+            if (tableData.length === 0) return;
+
+            // Groepeer de data per maand op basis van de releasedatum
+            let monthlyData = {};
+            tableData.forEach(release => {
+                const d = release.releaseDate;
+                const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = {
+                        total: 0,
+                        failed: 0,
+                        date: new Date(d.getFullYear(), d.getMonth(), 1)
+                    };
+                }
+                monthlyData[monthKey].total += 1;
+                if (release.isFailed) {
+                    monthlyData[monthKey].failed += 1;
+                }
+            });
+
+            // Sorteer op datum en formatteer voor Chart.js
+            const sortedKeys = Object.keys(monthlyData).sort();
+            const chartPoints = sortedKeys.map(key => {
+                const data = monthlyData[key];
+                return {
+                    x: data.date,
+                    y: (data.failed / data.total) * 100,
+                    total: data.total,
+                    failed: data.failed
+                };
+            });
+
+            cfrChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Change Failure Rate (%)',
+                        data: chartPoints,
+                        borderColor: '#0052cc',
+                        backgroundColor: 'rgba(0, 82, 204, 0.08)',
+                        borderWidth: 2,
+                        // Bepaal de kleur van het bolletje op basis van het percentage
+                        pointBackgroundColor: chartPoints.map(p => getCfrColor(p.y)),
+                        pointBorderColor: '#fff',
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'month',
+                                displayFormats: { month: 'MMM yyyy' }
+                            },
+                            title: { display: true, text: 'Maand', font: { weight: 'bold' } }
+                        },
+                        y: {
+                            title: { display: true, text: 'CFR (%)', font: { weight: 'bold' } },
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const pt = context.raw;
+                                    return `CFR: ${pt.y.toFixed(1)}% (${pt.failed} van de ${pt.total} releases gefaald)`;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
         function filterMTTR(priorityRaw) {
             document.querySelectorAll('.severity-pill').forEach(el => el.classList.remove('active'));
 
@@ -684,14 +790,21 @@
             document.getElementById('sumMttr').textContent = mttrText;
         }
 
-        
+
         function renderCfrPrioritySelector(priorities) {
             const container = document.getElementById('cfrPrioritySelector');
             if (!container) return;
 
+            const sortedPriorities = priorities.slice().sort();
+            const existingInputs = Array.from(container.querySelectorAll('input')).map(i => i.value);
+
+            if (existingInputs.join(',') === sortedPriorities.join(',')) {
+                return;
+            }
+
             container.innerHTML = '';
 
-            priorities.sort().forEach(priority => {
+            sortedPriorities.forEach(priority => {
                 const checked = selectedCfrPriorities.has(priority.toLowerCase()) ? 'checked' : '';
 
                 container.innerHTML += `
@@ -712,7 +825,7 @@
             });
         }
 
-async function calculateMetrics() {
+        async function calculateMetrics() {
             const versionsFile = document.getElementById('versionsFile').files[0];
             const issuesFiles = document.getElementById('issuesFile').files;
             const startDateStr = document.getElementById('startDate').value;
@@ -723,15 +836,14 @@ async function calculateMetrics() {
             const resultsTable = document.getElementById('resultsTable');
 
             errorMsg.style.display = "none";
-            document.getElementById('resultsBody').innerHTML = "";
-            dashboard.style.display = "none";
-            resultsTable.style.display = "none";
 
             globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
 
             if (!versionsFile || issuesFiles.length === 0 || !startDateStr || !endDateStr) {
                 errorMsg.textContent = "Upload a.u.b. de JSON-bestanden (versies en minimaal één issues bestand) in Stap 2.";
                 errorMsg.style.display = "block";
+                dashboard.style.display = "none";
+                resultsTable.style.display = "none";
                 return;
             }
 
@@ -764,7 +876,7 @@ async function calculateMetrics() {
                         const rDate = new Date(v.releaseDate);
                         if (rDate >= startLimit && rDate <= endLimit) {
                             validVersions[v.name] = {
-                                 id: v.id,
+                                id: v.id,
                                 name: v.name,
                                 releaseDate: rDate,
                                 changes: 0,
@@ -772,7 +884,7 @@ async function calculateMetrics() {
                                 hasSeverePostBug: false,
                                 hasSevereBug: false,
                                 issues: []
-                        };
+                            };
 
                             if (!minDate || rDate < minDate) minDate = rDate;
                             if (!maxDate || rDate > maxDate) maxDate = rDate;
@@ -882,7 +994,7 @@ async function calculateMetrics() {
                 if (selectedCfrPriorities.size === 0) {
                     discoveredPriorities.forEach(p => {
                         const v = p.toLowerCase();
-                        if (['high','highest','critical','major','p1','p2'].includes(v)) {
+                        if (['high', 'highest', 'critical', 'major', 'p1', 'p2'].includes(v)) {
                             selectedCfrPriorities.add(v);
                         }
                     });
@@ -990,10 +1102,15 @@ async function calculateMetrics() {
                 sortTable('date', true);
                 filterMTTR('All');
 
+                // Teken de CFR over Tijd grafiek
+                renderCfrChart();
+
             } catch (error) {
                 console.error(error);
                 errorMsg.textContent = error.message;
                 errorMsg.style.display = "block";
+                dashboard.style.display = "none";
+                resultsTable.style.display = "none";
             }
         }
 
