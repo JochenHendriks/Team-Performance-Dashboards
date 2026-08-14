@@ -1,14 +1,23 @@
 # ==============================================================================
-# Jira Data Fetcher voor DORA CFR Dashboard (V9)
+# Jira Data Fetcher voor DORA CFR Dashboard (V10)
 # ==============================================================================
 # Gebruik: Vul hieronder jouw Jira URL, Project Key, Veldnaam voor Team en PAT-token in.
+# Optioneel kun je $TeamName invullen om het resultaat te beperken tot één team,
+# en $IncludeUnreleased op $true zetten om ook on-gereleasede versies op te halen.
 # Dubbelklik daarna op 'run-update.bat' om 'versies.json' en 'issues.json' automatisch op te halen.
 # ==============================================================================
 
-$JiraUrl    = "https://jira.jouwbedrijf.nl" # Pas aan naar jouw Jira Base URL
-$ProjectKey = "WEB"                         # Pas aan naar jouw Jira Project Key
-$TeamField  = "team"                        # Jira veldnaam of customfield_ID voor Team
-$PatToken   = "JOUW_PERSONAL_ACCESS_TOKEN"  # Plak hier je Personal Access Token (PAT)
+param (
+    [string]$JiraUrl           = "https://jira.jouwbedrijf.nl",
+    [string]$ProjectKey        = "WEB",
+    [string]$TeamField         = "team",
+    [string]$TeamName          = "",                  # Optioneel: vul teamnaam in (bijv. "Team Alpha")
+    [string]$VersionFilterMode = "released",          # "released", "unreleased" (is not empty), of "all" (geen fixVersion beperking)
+    [string]$StartDate         = "",                  # Optioneel: YYYY-MM-DD
+    [string]$EndDate           = "",                  # Optioneel: YYYY-MM-DD
+    [string]$DateField         = "resolutiondate",    # "resolutiondate", "updated", of "created"
+    [string]$PatToken          = "JOUW_PERSONAL_ACCESS_TOKEN"
+)
 
 if ($JiraUrl -eq "https://jira.jouwbedrijf.nl" -or $PatToken -eq "JOUW_PERSONAL_ACCESS_TOKEN") {
     Write-Host "[WAARSCHUWING] Vul eerst je JiraUrl en PatToken in dit script (update-data.ps1) in!" -ForegroundColor Yellow
@@ -33,7 +42,27 @@ try {
     Write-Host "   [OK] versies.json opgeslagen ($($versions.Count) versies)." -ForegroundColor Green
 
     Write-Host "2. Issues ophalen (inclusief paginering)..." -ForegroundColor Cyan
-    $jql = "project=`"$ProjectKey`" AND fixVersion in releasedVersions()"
+
+    $jqlClauses = @("project=`"$ProjectKey`"")
+
+    if (-not [string]::IsNullOrWhiteSpace($TeamName)) {
+        $jqlClauses += "`"$TeamField`"=`"$TeamName`""
+    }
+    if (-not [string]::IsNullOrWhiteSpace($StartDate)) {
+        $jqlClauses += "$DateField >= `"$StartDate`""
+    }
+    if (-not [string]::IsNullOrWhiteSpace($EndDate)) {
+        $jqlClauses += "$DateField <= `"$EndDate`""
+    }
+    if ($VersionFilterMode -eq "released") {
+        $jqlClauses += "fixVersion in releasedVersions()"
+    } elseif ($VersionFilterMode -eq "unreleased") {
+        $jqlClauses += "fixVersion is not EMPTY"
+    }
+
+    $jql = $jqlClauses -join " AND "
+
+    Write-Host "   -> JQL Query: $jql" -ForegroundColor Gray
     $fields = "issuetype,summary,fixVersions,versions,created,resolutiondate,priority,status,updated,$TeamField"
 
     $allIssues = @()
@@ -60,7 +89,7 @@ try {
     @{ issues = $allIssues } | ConvertTo-Json -Depth 10 | Out-File -FilePath "$ScriptDir\issues.json" -Encoding utf8
     Write-Host "   [OK] issues.json opgeslagen met $($allIssues.Count) tickets!" -ForegroundColor Green
 
-    Write-Host "`nSucces! Je kunt nu Dashboard V9 openen en de bijgewerkte JSON-bestanden inladen.`n" -ForegroundColor Yellow
+    Write-Host "`nSucces! Je kunt nu Dashboard V10 openen en de bijgewerkte JSON-bestanden inladen.`n" -ForegroundColor Yellow
 
 } catch {
     Write-Host "`n[FOUT] Er is een fout ingetreden bij het ophalen van data uit Jira:" -ForegroundColor Red

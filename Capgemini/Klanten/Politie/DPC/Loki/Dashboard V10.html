@@ -382,16 +382,49 @@
                 <label for="projectKey">Project Key</label>
                 <input type="text" id="projectKey" placeholder="Bijv: WEB" oninput="generateUrls(); renderTableRows();">
             </div>
-            <div class="input-group full-width">
+            <div class="input-group">
                 <label for="teamFieldKey">Jira Veldnaam voor 'Team'</label>
                 <input type="text" id="teamFieldKey" value="team" oninput="generateUrls()">
-                <p style="font-size: 0.75rem; color: #5e6c84; margin: 5px 0 0 0;">Standaard zoeken we op 'team'. Werkt
-                    het filter straks niet? Verander dit dan naar het Custom Field ID (bijv.
+                <p style="font-size: 0.75rem; color: #5e6c84; margin: 5px 0 0 0;">Standaard 'team'. CustomField ID mag ook (bijv.
                     <em>customfield_10011</em>).
                 </p>
             </div>
+            <div class="input-group">
+                <label for="apiVersionFilter">1. Versies Filter (fixVersion)</label>
+                <select id="apiVersionFilter" onchange="generateUrls()">
+                    <option value="released">Alleen Gereleasede Versies (fixVersion in releasedVersions())</option>
+                    <option value="unreleased">Inclusief Unreleased Versies (fixVersion is not EMPTY)</option>
+                    <option value="all">Alle Issues in Project (Geen fixVersion beperking)</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="apiTeamFilter">2. Team Filter (Optioneel)</label>
+                <input type="text" id="apiTeamFilter" placeholder="Bijv: Team Alpha (leeg = alle teams)" oninput="generateUrls()">
+                <p style="font-size: 0.75rem; color: #5e6c84; margin: 5px 0 0 0;">Verkleint de query resultaten voor één specifiek team.</p>
+            </div>
+            <div class="input-group">
+                <label for="apiStartDate">3. Datum Vanaf (Optioneel)</label>
+                <input type="date" id="apiStartDate" onchange="generateUrls()">
+            </div>
+            <div class="input-group">
+                <label for="apiEndDate">4. Datum Tot en met (Optioneel)</label>
+                <input type="date" id="apiEndDate" onchange="generateUrls()">
+            </div>
+            <div class="input-group">
+                <label for="apiDateField">Datum Veld Type</label>
+                <select id="apiDateField" onchange="generateUrls()">
+                    <option value="resolutiondate">Resolution Date (Opgelost op)</option>
+                    <option value="updated">Updated Date (Gewijzigd op)</option>
+                    <option value="created">Created Date (Aangemaakt op)</option>
+                </select>
+            </div>
 
             <div class="input-group full-width">
+                <div style="background-color: #f4f5f7; border: 1px solid #dfe1e6; border-radius: 6px; padding: 10px 14px; margin-bottom: 1rem;">
+                    <strong style="font-size: 0.85rem; color: #172b4d;">Actieve JQL Query:</strong>
+                    <code id="jqlPreview" style="display: block; word-break: break-all; margin-top: 4px; color: #0052cc; font-size: 0.85rem;">-</code>
+                </div>
+
                 <label>Link 1: Versies (versies.json)</label>
                 <div class="url-box">
                     <input type="text" id="urlVersions" readonly
@@ -399,7 +432,7 @@
                     <button class="copy-btn" onclick="copyToClipboard('urlVersions')">Kopieer</button>
                 </div>
 
-                <label style="margin-top: 1rem;">Link 2: Issues (issues.json)</label>
+                <label style="margin-top: 1rem;">Link 2: Issues op maat (issues.json)</label>
                 <div class="url-box">
                     <input type="text" id="urlIssues" readonly placeholder="Vul eerst je Base URL en Project Key in...">
                     <button class="copy-btn" onclick="copyToClipboard('urlIssues')">Kopieer</button>
@@ -641,10 +674,20 @@
             const savedUrl = localStorage.getItem('dora_jiraUrl');
             const savedProject = localStorage.getItem('dora_projectKey');
             const savedTeamField = localStorage.getItem('dora_teamFieldKey');
+            const savedVersionFilter = localStorage.getItem('dora_apiVersionFilter');
+            const savedTeamFilter = localStorage.getItem('dora_apiTeamFilter');
+            const savedStartDate = localStorage.getItem('dora_apiStartDate');
+            const savedEndDate = localStorage.getItem('dora_apiEndDate');
+            const savedDateField = localStorage.getItem('dora_apiDateField');
 
             if (savedUrl) document.getElementById('jiraUrl').value = savedUrl;
             if (savedProject) document.getElementById('projectKey').value = savedProject;
             if (savedTeamField) document.getElementById('teamFieldKey').value = savedTeamField;
+            if (savedVersionFilter && document.getElementById('apiVersionFilter')) document.getElementById('apiVersionFilter').value = savedVersionFilter;
+            if (savedTeamFilter && document.getElementById('apiTeamFilter')) document.getElementById('apiTeamFilter').value = savedTeamFilter;
+            if (savedStartDate && document.getElementById('apiStartDate')) document.getElementById('apiStartDate').value = savedStartDate;
+            if (savedEndDate && document.getElementById('apiEndDate')) document.getElementById('apiEndDate').value = savedEndDate;
+            if (savedDateField && document.getElementById('apiDateField')) document.getElementById('apiDateField').value = savedDateField;
 
             generateUrls();
         });
@@ -684,20 +727,58 @@
             const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
             const projectKey = document.getElementById('projectKey').value.trim();
             const teamField = document.getElementById('teamFieldKey').value.trim() || 'team';
+            const versionFilter = document.getElementById('apiVersionFilter') ? document.getElementById('apiVersionFilter').value : 'released';
+            const teamFilter = document.getElementById('apiTeamFilter') ? document.getElementById('apiTeamFilter').value.trim() : '';
+            const startDate = document.getElementById('apiStartDate') ? document.getElementById('apiStartDate').value : '';
+            const endDate = document.getElementById('apiEndDate') ? document.getElementById('apiEndDate').value : '';
+            const dateField = document.getElementById('apiDateField') ? document.getElementById('apiDateField').value : 'resolutiondate';
 
             localStorage.setItem('dora_jiraUrl', baseUrlRaw);
             localStorage.setItem('dora_projectKey', projectKey);
             localStorage.setItem('dora_teamFieldKey', document.getElementById('teamFieldKey').value.trim());
+            localStorage.setItem('dora_apiVersionFilter', versionFilter);
+            localStorage.setItem('dora_apiTeamFilter', teamFilter);
+            localStorage.setItem('dora_apiStartDate', startDate);
+            localStorage.setItem('dora_apiEndDate', endDate);
+            localStorage.setItem('dora_apiDateField', dateField);
 
             if (baseUrlRaw && projectKey) {
                 const baseUrl = baseUrlRaw.replace(/\/$/, "");
                 document.getElementById('urlVersions').value = `${baseUrl}/rest/api/2/project/${projectKey}/versions`;
 
-                const jql = `project="${projectKey}" AND fixVersion in releasedVersions()`;
-                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(jql)}&startAt=0&maxResults=1000&fields=issuetype,summary,fixVersions,versions,created,resolutiondate,priority,status,updated,${teamField}`;
+                let jqlClauses = [`project="${projectKey}"`];
+
+                if (teamFilter) {
+                    jqlClauses.push(`"${teamField}"="${teamFilter}"`);
+                }
+
+                if (startDate) {
+                    jqlClauses.push(`${dateField} >= "${startDate}"`);
+                }
+
+                if (endDate) {
+                    jqlClauses.push(`${dateField} <= "${endDate}"`);
+                }
+
+                if (versionFilter === 'released') {
+                    jqlClauses.push(`fixVersion in releasedVersions()`);
+                } else if (versionFilter === 'unreleased') {
+                    jqlClauses.push(`fixVersion is not EMPTY`);
+                }
+
+                const fullJql = jqlClauses.join(' AND ');
+
+                if (document.getElementById('jqlPreview')) {
+                    document.getElementById('jqlPreview').textContent = fullJql;
+                }
+
+                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(fullJql)}&startAt=0&maxResults=1000&fields=issuetype,summary,fixVersions,versions,created,resolutiondate,priority,status,updated,${teamField}`;
             } else {
                 document.getElementById('urlVersions').value = "";
                 document.getElementById('urlIssues').value = "";
+                if (document.getElementById('jqlPreview')) {
+                    document.getElementById('jqlPreview').textContent = "-";
+                }
             }
         }
 
