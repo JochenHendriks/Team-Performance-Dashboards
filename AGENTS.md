@@ -1,6 +1,6 @@
 # Team Performance Dashboards - AI Agent Guidelines & Workflow Rules
 
-## Versioning & Git Commit Protocol
+## Versioning, Git Commit & Tagging Protocol
 
 Whenever modifying the dashboard or preparing commits for GitHub:
 
@@ -11,6 +11,7 @@ Whenever modifying the dashboard or preparing commits for GitHub:
      - Footer (`<footer>`)
      - JS Constant (`const DASHBOARD_VERSION`)
 
-2. **Git Commit Message Format:**
-   - Always format commit messages with the version number:
-     `release(v10.X.Y): <beschrijving van de wijzigingen>`
+2. **Git Commit & Tagging Steps:**
+   - **Commit format:** `release(v10.X.Y): <beschrijving van de wijzigingen>`
+   - **Git Tag format:** `git tag -a v10.X.Y -m "Release v10.X.Y: <beschrijving>"`
+   - **Push command:** `git push origin main --tags`

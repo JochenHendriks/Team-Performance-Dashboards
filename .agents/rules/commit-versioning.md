@@ -1,4 +1,4 @@
-# Git Commit & Version Management Rule
+# Git Commit, Versioning & Tagging Rule
 
 Whenever creating git commits, releasing updates, or modifying dashboard files in this repository:
 
@@ -14,10 +14,14 @@ Before creating a commit for changes in `Capgemini/Klanten/Politie/DPC/Loki/Dash
   2. **Footer**: `DORA & Performance Dashboard V10 • Versie 10.X.Y (DD-MM-YYYY)`
   3. **JavaScript Constant**: `const DASHBOARD_VERSION = "10.X.Y";`
 
-## 2. Commit Message Structure
-Always include the version tag at the beginning of the Git commit message:
-- Format: `release(v10.X.Y): <korte beschrijving van de wijzigingen>`
-- Example: `release(v10.2.0): Flexibele JQL API filters toegevoegd voor status, team en datumrange`
+## 2. Commit & Tag Protocol
+When releasing a change:
+1. **Commit Message Format:**
+   `git commit -m "release(v10.X.Y): <korte beschrijving van de wijzigingen>"`
+2. **Git Tag Creation:**
+   `git tag -a v10.X.Y -m "Release v10.X.Y: <korte beschrijving>"`
+3. **Push Commits and Tags:**
+   `git push origin main --tags`
 
-## 3. Pre-Commit Verification
-- Verify that the version string in `Dashboard V10.html` and the version tag in the commit message match 1-on-1.
+## 3. Pre-Push Verification
+- Verify that the HTML version string, git commit message tag, and git release tag (`v10.X.Y`) match 1-on-1 before pushing.
