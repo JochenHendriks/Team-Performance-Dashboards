@@ -1366,6 +1366,15 @@
                     allIssuesRaw = allIssuesRaw.concat(issuesData.issues);
                 }
 
+                // Deduplicate issues by key across multiple uploaded JSON files:
+                const uniqueIssuesMap = new Map();
+                allIssuesRaw.forEach(issue => {
+                    if (issue.key && !uniqueIssuesMap.has(issue.key)) {
+                        uniqueIssuesMap.set(issue.key, issue);
+                    }
+                });
+                allIssuesRaw = Array.from(uniqueIssuesMap.values());
+
                 discoveredTeams.clear();
                 discoveredIssueTypes.clear();
 
