@@ -382,14 +382,6 @@
                 <label for="projectKey">Project Key</label>
                 <input type="text" id="projectKey" placeholder="Bijv: WEB" oninput="generateUrls(); renderTableRows();">
             </div>
-            <div class="input-group">
-                <label for="startDate">Releases vanaf</label>
-                <input type="date" id="startDate" value="2026-01-01" onchange="generateUrls()">
-            </div>
-            <div class="input-group">
-                <label for="endDate">Releases tot en met</label>
-                <input type="date" id="endDate" value="2026-12-31" onchange="generateUrls()">
-            </div>
             <div class="input-group full-width">
                 <label for="teamFieldKey">Jira Veldnaam voor 'Team'</label>
                 <input type="text" id="teamFieldKey" value="team" oninput="generateUrls()">
@@ -691,15 +683,13 @@
         function generateUrls() {
             const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
             const projectKey = document.getElementById('projectKey').value.trim();
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
             const teamField = document.getElementById('teamFieldKey').value.trim() || 'team';
 
             localStorage.setItem('dora_jiraUrl', baseUrlRaw);
             localStorage.setItem('dora_projectKey', projectKey);
             localStorage.setItem('dora_teamFieldKey', document.getElementById('teamFieldKey').value.trim());
 
-            if (baseUrlRaw && projectKey && startDate && endDate) {
+            if (baseUrlRaw && projectKey) {
                 const baseUrl = baseUrlRaw.replace(/\/$/, "");
                 document.getElementById('urlVersions').value = `${baseUrl}/rest/api/2/project/${projectKey}/versions`;
 
@@ -1331,8 +1321,6 @@
         async function calculateMetrics() {
             const versionsFile = document.getElementById('versionsFile').files[0];
             const issuesFiles = document.getElementById('issuesFile').files;
-            const startDateStr = document.getElementById('startDate').value;
-            const endDateStr = document.getElementById('endDate').value;
 
             const errorMsg = document.getElementById('errorMessage');
             const dashboard = document.getElementById('summaryDashboard');
@@ -1342,7 +1330,7 @@
 
             globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
 
-            if (!versionsFile || issuesFiles.length === 0 || !startDateStr || !endDateStr) {
+            if (!versionsFile || issuesFiles.length === 0) {
                 errorMsg.textContent = "Upload a.u.b. de JSON-bestanden (versies en minimaal één issues bestand) in Stap 2.";
                 errorMsg.style.display = "block";
                 dashboard.style.display = "none";
@@ -1417,15 +1405,11 @@
                     return selectedTeams.has(team);
                 });
 
-                const startLimit = new Date(startDateStr);
-                const endLimit = new Date(endDateStr);
-                endLimit.setHours(23, 59, 59, 999);
-
                 const customStartVal = document.getElementById('filterStartDate') ? document.getElementById('filterStartDate').value : '';
                 const customEndVal = document.getElementById('filterEndDate') ? document.getElementById('filterEndDate').value : '';
 
-                const filterStartLimit = customStartVal ? new Date(customStartVal) : startLimit;
-                const filterEndLimit = customEndVal ? new Date(customEndVal + "T23:59:59") : endLimit;
+                const filterStartLimit = customStartVal ? new Date(customStartVal) : null;
+                const filterEndLimit = customEndVal ? new Date(customEndVal + "T23:59:59") : null;
 
                 const incReleased = document.getElementById('chkStatusReleased') ? document.getElementById('chkStatusReleased').checked : true;
                 const incUnreleased = document.getElementById('chkStatusUnreleased') ? document.getElementById('chkStatusUnreleased').checked : false;
@@ -1470,7 +1454,10 @@
                         }
                     }
 
-                    if (rDate && rDate >= filterStartLimit && rDate <= filterEndLimit) {
+                    if (rDate) {
+                        if (filterStartLimit && rDate < filterStartLimit) return;
+                        if (filterEndLimit && rDate > filterEndLimit) return;
+
                         validVersions[v.name] = {
                             id: v.id,
                             name: v.name,
