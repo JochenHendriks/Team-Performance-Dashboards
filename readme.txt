@@ -245,14 +245,3 @@ V: Kan ik data van meerdere projecten combineren?
 A: Ja! Je kunt in Stap 2 meerdere 'issues.json' bestanden tegelijk selecteren. 
    Het dashboard ontdubbelt automatisch dubbele tickets op basis van Issue Key.
 
-==============================================================================
-8. VERSIEBEHEER & GIT PROTOCOL
-==============================================================================
-- Repository: https://github.com/JochenHendriks/Team-Performance-Dashboards
-- Huidige Dashboard Versie: v10.1.0 (14-08-2026)
-- Bij elke commit naar GitHub geldt de verplichte conventie:
-  1. Update versienummer in Dashboard V10.html (#versionBadge, footer, DASHBOARD_VERSION).
-  2. Git commit: release(v10.X.Y): <omschrijving>
-  3. Git tag   : git tag -a v10.X.Y -m "Release v10.X.Y: <omschrijving>"
-  4. Push      : git push origin main --tags
-==============================================================================
