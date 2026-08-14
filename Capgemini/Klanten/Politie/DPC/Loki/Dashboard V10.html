@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DORA Metrics Dashboard (Zuivere CFR & Teams)</title>
+    <title>DORA & Performance Dashboard V10</title>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
@@ -363,7 +363,7 @@
 <body>
 
     <div class="container">
-        <h1>DORA Metrics Dashboard (Zuivere CFR)</h1>
+        <h1>DORA & Performance Dashboard V10</h1>
 
         <h2>Stap 1: Genereer de API-links</h2>
         <div class="grid-layout">
@@ -443,12 +443,69 @@
             </p>
 
             <div class="grid-layout">
+                <!-- 6. Periode Filter -->
+                <div class="stat-box" style="margin-bottom:1rem; grid-column: 1 / -1;">
+                    <span class="stat-label" title="Periode Filter: Filter alle cijfers op een specifieke datumreeks of kies een snelfilter.">Periode Filter</span>
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px;">
+                        <button class="copy-btn" onclick="setDatePreset('all')">Alles in Data</button>
+                        <button class="copy-btn" onclick="setDatePreset('3m')">Laatste 3 Maanden</button>
+                        <button class="copy-btn" onclick="setDatePreset('6m')">Laatste 6 Maanden</button>
+                        <button class="copy-btn" onclick="setDatePreset('1y')">Dit Jaar (2026)</button>
+                        <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
+                            <label style="font-size:0.8rem;margin:0;">Van:</label>
+                            <input type="date" id="filterStartDate" onchange="calculateMetrics()" style="width:140px;padding:4px;">
+                            <label style="font-size:0.8rem;margin:0;">Tot:</label>
+                            <input type="date" id="filterEndDate" onchange="calculateMetrics()" style="width:140px;padding:4px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 1. Release Status Filter -->
                 <div class="stat-box" style="margin-bottom:1rem;">
-                    <span class="stat-label">Prioriteiten die meetellen voor CFR</span>
+                    <span class="stat-label" title="Release Status: Kies welke release statussen meegenomen worden in de berekeningen.">Release Status Filter</span>
+                    <div id="releaseStatusSelector" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;">
+                        <label style="display:flex;align-items:center;gap:4px;font-weight:normal;">
+                            <input type="checkbox" id="chkStatusReleased" value="released" checked onchange="calculateMetrics()"> Released
+                        </label>
+                        <label style="display:flex;align-items:center;gap:4px;font-weight:normal;">
+                            <input type="checkbox" id="chkStatusUnreleased" value="unreleased" onchange="calculateMetrics()"> Unreleased (Concept)
+                        </label>
+                        <label style="display:flex;align-items:center;gap:4px;font-weight:normal;">
+                            <input type="checkbox" id="chkStatusArchived" value="archived" onchange="calculateMetrics()"> Archived
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 5. LTC Definitie Schakelaar -->
+                <div class="stat-box" style="margin-bottom:1rem;">
+                    <span class="stat-label" title="LTC Eindpunt: Bepaal tot welke datum de doorlooptijd (Lead Time for Changes) wordt berekend.">LTC Eindpunt (Doorlooptijd)</span>
+                    <select id="ltcModeSelect" onchange="calculateMetrics()" style="padding:6px;border-radius:4px;border:1px solid #dfe1e6;font-size:0.85rem;margin-top:4px;width:100%;">
+                        <option value="release">Ticket Aanmaak ➔ Releasedatum (DORA E2E)</option>
+                        <option value="done">Ticket Aanmaak ➔ Ticket Afgerond (Done Datum)</option>
+                    </select>
+                </div>
+
+                <!-- 2. Issue Types Changes Selector -->
+                <div class="stat-box" style="margin-bottom:1rem;">
+                    <span class="stat-label" title="Change Types: Vink aan welke issue types meetellen als opleveringen / features.">Issue Types: Changes / Features</span>
+                    <div id="changeTypeSelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+                </div>
+
+                <!-- 3. Issue Types Bugs Selector -->
+                <div class="stat-box" style="margin-bottom:1rem;">
+                    <span class="stat-label" title="Bug Types: Vink aan welke issue types meetellen als fouten / bugs.">Issue Types: Bugs / Defects</span>
+                    <div id="bugTypeSelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+                </div>
+
+                <!-- CFR Priority Selector -->
+                <div class="stat-box" style="margin-bottom:1rem;">
+                    <span class="stat-label" title="CFR Prioriteiten: Selecteer welke bug prioriteiten een release laten falen.">Prioriteiten die meetellen voor CFR</span>
                     <div id="cfrPrioritySelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
                 </div>
+
+                <!-- Team Selector -->
                 <div class="stat-box" style="margin-bottom:1rem;">
-                    <span class="stat-label">Filter op Team(s)</span>
+                    <span class="stat-label" title="Team Filter: Filter het dashboard op specifieke teams.">Filter op Team(s)</span>
                     <div id="teamSelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
                 </div>
             </div>
@@ -546,6 +603,10 @@
         let selectedQualityPriorities = new Set();
         let selectedCfrPriorities = new Set();
         let discoveredPriorities = new Set();
+
+        let selectedChangeTypes = new Set();
+        let selectedBugTypes = new Set();
+        let discoveredIssueTypes = new Set();
 
         let selectedTeams = new Set();
         let discoveredTeams = new Set();
@@ -720,12 +781,15 @@
 
             tableData.forEach(data => {
                 let statusBadgeHtml = '';
+                if (data.isUnreleased) {
+                    statusBadgeHtml += `<span class="status-badge" style="background:#ffab00;color:white;margin-right:4px;">Unreleased</span>`;
+                }
                 if (data.isHotfix) {
-                    statusBadgeHtml = `<span class="status-badge bg-red">Hotfix</span>`;
+                    statusBadgeHtml += `<span class="status-badge bg-red">Hotfix</span>`;
                 } else if (data.isFailed) {
-                    statusBadgeHtml = `<span class="status-badge bg-red">Gefaald</span>`;
+                    statusBadgeHtml += `<span class="status-badge bg-red">Gefaald</span>`;
                 } else {
-                    statusBadgeHtml = `<span class="status-badge bg-green">Geslaagd</span>`;
+                    statusBadgeHtml += `<span class="status-badge bg-green">Geslaagd</span>`;
                 }
 
                 const vId = data.name.replace(/[^a-zA-Z0-9]/g, '');
@@ -1045,30 +1109,74 @@
             });
         }
 
-        function renderTeamSelector(teams) {
-            const container = document.getElementById('teamSelector');
-            if (!container) return;
+        function setDatePreset(preset) {
+            const startInput = document.getElementById('filterStartDate');
+            const endInput = document.getElementById('filterEndDate');
+            const refDate = new Date(2026, 11, 31);
 
-            const sortedTeams = teams.slice().sort();
-            const existingInputs = Array.from(container.querySelectorAll('input')).map(i => i.value);
+            if (preset === 'all') {
+                if (startInput) startInput.value = '';
+                if (endInput) endInput.value = '';
+            } else if (preset === '3m') {
+                let d = new Date(refDate);
+                d.setMonth(d.getMonth() - 3);
+                if (startInput) startInput.value = d.toISOString().split('T')[0];
+                if (endInput) endInput.value = refDate.toISOString().split('T')[0];
+            } else if (preset === '6m') {
+                let d = new Date(refDate);
+                d.setMonth(d.getMonth() - 6);
+                if (startInput) startInput.value = d.toISOString().split('T')[0];
+                if (endInput) endInput.value = refDate.toISOString().split('T')[0];
+            } else if (preset === '1y') {
+                if (startInput) startInput.value = '2026-01-01';
+                if (endInput) endInput.value = '2026-12-31';
+            }
+            calculateMetrics();
+        }
 
-            if (existingInputs.join(',') === sortedTeams.join(',')) return;
+        function renderIssueTypeSelectors(discoveredTypes) {
+            const changeContainer = document.getElementById('changeTypeSelector');
+            const bugContainer = document.getElementById('bugTypeSelector');
+            if (!changeContainer || !bugContainer) return;
 
-            container.innerHTML = '';
-            sortedTeams.forEach(team => {
-                const checked = selectedTeams.has(team.toLowerCase()) ? 'checked' : '';
-                container.innerHTML += `
+            const sortedTypes = Array.from(discoveredTypes).sort();
+
+            changeContainer.innerHTML = '';
+            bugContainer.innerHTML = '';
+
+            sortedTypes.forEach(tName => {
+                const lower = tName.toLowerCase().trim();
+                const checkedChange = selectedChangeTypes.has(lower) ? 'checked' : '';
+                const checkedBug = selectedBugTypes.has(lower) ? 'checked' : '';
+
+                changeContainer.innerHTML += `
                     <label style="display:flex;align-items:center;gap:4px;font-weight:normal;">
-                        <input type="checkbox" value="${team}" ${checked}>
-                        ${team}
+                        <input type="checkbox" value="${tName}" ${checkedChange}>
+                        ${tName}
+                    </label>`;
+
+                bugContainer.innerHTML += `
+                    <label style="display:flex;align-items:center;gap:4px;font-weight:normal;">
+                        <input type="checkbox" value="${tName}" ${checkedBug}>
+                        ${tName}
                     </label>`;
             });
 
-            container.querySelectorAll('input').forEach(cb => {
+            changeContainer.querySelectorAll('input').forEach(cb => {
                 cb.addEventListener('change', () => {
-                    selectedTeams.clear();
-                    container.querySelectorAll('input:checked').forEach(i =>
-                        selectedTeams.add(i.value.toLowerCase().trim())
+                    selectedChangeTypes.clear();
+                    changeContainer.querySelectorAll('input:checked').forEach(i =>
+                        selectedChangeTypes.add(i.value.toLowerCase().trim())
+                    );
+                    calculateMetrics();
+                });
+            });
+
+            bugContainer.querySelectorAll('input').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedBugTypes.clear();
+                    bugContainer.querySelectorAll('input:checked').forEach(i =>
+                        selectedBugTypes.add(i.value.toLowerCase().trim())
                     );
                     calculateMetrics();
                 });
@@ -1114,11 +1222,26 @@
                 }
 
                 discoveredTeams.clear();
+                discoveredIssueTypes.clear();
+
                 allIssuesRaw.forEach(issue => {
                     const priority = issue.fields.priority ? issue.fields.priority.name : "Onbekend";
+                    const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
                     discoveredPriorities.add(priority);
                     discoveredTeams.add(extractTeam(issue));
+                    discoveredIssueTypes.add(typeName);
                 });
+
+                if (selectedChangeTypes.size === 0 && selectedBugTypes.size === 0) {
+                    discoveredIssueTypes.forEach(tName => {
+                        const lower = tName.toLowerCase().trim();
+                        if (['bug', 'incident', 'defect', 'problem', 'bevinding'].some(b => lower.includes(b))) {
+                            selectedBugTypes.add(lower);
+                        } else {
+                            selectedChangeTypes.add(lower);
+                        }
+                    });
+                }
 
                 if (selectedCfrPriorities.size === 0) {
                     discoveredPriorities.forEach(p => {
@@ -1133,6 +1256,7 @@
 
                 renderCfrPrioritySelector(Array.from(discoveredPriorities));
                 renderTeamSelector(Array.from(discoveredTeams));
+                renderIssueTypeSelectors(Array.from(discoveredIssueTypes));
 
                 let teamFilteredIssues = allIssuesRaw.filter(issue => {
                     const team = extractTeam(issue).toLowerCase().trim();
@@ -1143,32 +1267,75 @@
                 const endLimit = new Date(endDateStr);
                 endLimit.setHours(23, 59, 59, 999);
 
+                const customStartVal = document.getElementById('filterStartDate') ? document.getElementById('filterStartDate').value : '';
+                const customEndVal = document.getElementById('filterEndDate') ? document.getElementById('filterEndDate').value : '';
+
+                const filterStartLimit = customStartVal ? new Date(customStartVal) : startLimit;
+                const filterEndLimit = customEndVal ? new Date(customEndVal + "T23:59:59") : endLimit;
+
+                const incReleased = document.getElementById('chkStatusReleased') ? document.getElementById('chkStatusReleased').checked : true;
+                const incUnreleased = document.getElementById('chkStatusUnreleased') ? document.getElementById('chkStatusUnreleased').checked : false;
+                const incArchived = document.getElementById('chkStatusArchived') ? document.getElementById('chkStatusArchived').checked : false;
+
+                const ltcModeSelect = document.getElementById('ltcModeSelect');
+                const ltcMode = ltcModeSelect ? ltcModeSelect.value : 'release';
+
                 const validVersions = {};
                 let minDate = null;
                 let maxDate = null;
 
                 allVersions.forEach(v => {
-                    if (v.released && v.releaseDate) {
-                        const rDate = new Date(v.releaseDate);
-                        if (rDate >= startLimit && rDate <= endLimit) {
-                            validVersions[v.name] = {
-                                id: v.id,
-                                name: v.name,
-                                releaseDate: rDate,
-                                changes: 0,
-                                bugs: 0,
-                                hasSeverePostBug: false,
-                                hasSevereBug: false,
-                                issues: []
-                            };
-                            if (!minDate || rDate < minDate) minDate = rDate;
-                            if (!maxDate || rDate > maxDate) maxDate = rDate;
+                    const isReleased = v.released === true;
+                    const isArchived = v.archived === true;
+                    const isUnreleased = !v.released && !v.archived;
+
+                    let matchesStatus = false;
+                    if (isReleased && incReleased) matchesStatus = true;
+                    if (isUnreleased && incUnreleased) matchesStatus = true;
+                    if (isArchived && incArchived) matchesStatus = true;
+
+                    if (!matchesStatus) return;
+
+                    let rDate = v.releaseDate ? new Date(v.releaseDate) : null;
+                    let isFallbackDate = false;
+
+                    if (!rDate) {
+                        let maxDateInVersion = null;
+                        allIssuesRaw.forEach(issue => {
+                            const fixV = issue.fields.fixVersions || [];
+                            if (fixV.some(fv => fv.name === v.name)) {
+                                let d = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : (issue.fields.updated ? new Date(issue.fields.updated) : new Date(issue.fields.created));
+                                if (d && (!maxDateInVersion || d > maxDateInVersion)) {
+                                    maxDateInVersion = d;
+                                }
+                            }
+                        });
+                        if (maxDateInVersion) {
+                            rDate = maxDateInVersion;
+                            isFallbackDate = true;
                         }
+                    }
+
+                    if (rDate && rDate >= filterStartLimit && rDate <= filterEndLimit) {
+                        validVersions[v.name] = {
+                            id: v.id,
+                            name: v.name,
+                            releaseDate: rDate,
+                            isFallbackDate: isFallbackDate,
+                            isUnreleased: isUnreleased,
+                            changes: 0,
+                            bugs: 0,
+                            hasSeverePostBug: false,
+                            hasSevereBug: false,
+                            issues: []
+                        };
+                        if (!minDate || rDate < minDate) minDate = rDate;
+                        if (!maxDate || rDate > maxDate) maxDate = rDate;
                     }
                 });
 
                 if (Object.keys(validVersions).length === 0) {
-                    throw new Error("Er zijn geen vrijgegeven (released) versies gevonden binnen deze datums in het versies.json bestand.");
+                    throw new Error("Er zijn geen versies gevonden binnen de gekozen status- en datumfilters.");
                 }
 
                 let uniqueChanges = new Set();
@@ -1178,8 +1345,53 @@
 
                 teamFilteredIssues.forEach(issue => {
                     const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
-                    const isBug = typeName.toLowerCase() === 'bug';
-                    if (isBug) return;
+                    const typeLower = typeName.toLowerCase().trim();
+
+                    const isBug = selectedBugTypes.has(typeLower);
+                    const isChange = selectedChangeTypes.has(typeLower);
+
+                    if (!isChange) return;
+
+                    const key = issue.key;
+                    const summary = issue.fields.summary || "Geen titel";
+                    const createdDate = new Date(issue.fields.created);
+                    let resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
+
+                    let earliestReleaseDate = null;
+                    if (issue.fields.fixVersions) {
+                        issue.fields.fixVersions.forEach(fv => {
+                            const vName = fv.name;
+                            if (validVersions[vName]) {
+                                validVersions[vName].changes += 1;
+                                uniqueChanges.add(key);
+                                validVersions[vName].issues.push({ key, summary, type: 'Change' });
+
+                                const rDate = validVersions[vName].releaseDate;
+                                if (!earliestReleaseDate || rDate < earliestReleaseDate) {
+                                    earliestReleaseDate = rDate;
+                                }
+                            }
+                        });
+                    }
+
+                    const targetDate = ltcMode === 'done' ? resolvedDate : (earliestReleaseDate || resolvedDate);
+                    if (targetDate && createdDate && targetDate >= createdDate) {
+                        let diffDays = (targetDate - createdDate) / (1000 * 60 * 60 * 24);
+                        totalLtcDays += diffDays;
+                        ltcCount++;
+                    }
+                });
+
+                let postReleaseBugsCount = 0;
+                let totalMttdHours = 0;
+                let mttdCount = 0;
+
+                teamFilteredIssues.forEach(issue => {
+                    const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
+                    const typeLower = typeName.toLowerCase().trim();
+
+                    const isBug = selectedBugTypes.has(typeLower);
+                    if (!isBug) return;
 
                     const key = issue.key;
                     const summary = issue.fields.summary || "Geen titel";
@@ -1381,7 +1593,8 @@
 
                     tableData.push({
                         id: data.id, name: data.name, releaseDate: data.releaseDate,
-                        changes: data.changes, bugs: data.bugs, isHotfix: isHotfix, isFailed: isFailed, issues: data.issues
+                        changes: data.changes, bugs: data.bugs, isHotfix: isHotfix, isFailed: isFailed,
+                        isUnreleased: data.isUnreleased, isFallbackDate: data.isFallbackDate, issues: data.issues
                     });
                 });
 
