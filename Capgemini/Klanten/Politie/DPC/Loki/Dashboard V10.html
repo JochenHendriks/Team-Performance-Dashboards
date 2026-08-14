@@ -363,9 +363,15 @@
 <body>
 
     <div class="container">
-        <h1>DORA & Performance Dashboard V10</h1>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
+            <h1 style="margin:0;">DORA & Performance Dashboard V10</h1>
+            <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
+                ⚙️ Toon Import &amp; API Instellingen
+            </button>
+        </div>
 
-        <h2>Stap 1: Genereer de API-links</h2>
+        <div id="setupSection">
+            <h2>Stap 1: Genereer de API-links</h2>
         <div class="grid-layout">
             <div class="input-group">
                 <label for="jiraUrl">Jira Base URL</label>
@@ -421,7 +427,9 @@
             </div>
         </div>
 
-        <button onclick="calculateMetrics()">Bereken Metrics</button>
+        <button onclick="calculateMetrics()" style="margin-top: 1.5rem;">Bereken Metrics</button>
+    </div>
+
         <div id="errorMessage" class="error"></div>
 
         <div id="summaryDashboard" class="dashboard">
@@ -487,25 +495,49 @@
 
                 <!-- 2. Issue Types Changes Selector -->
                 <div class="stat-box" style="margin-bottom:1rem;">
-                    <span class="stat-label" title="Change Types: Vink aan welke issue types meetellen als opleveringen / features.">Issue Types: Changes / Features</span>
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                        <span class="stat-label" title="Change Types: Vink aan welke issue types meetellen als opleveringen / features.">Issue Types: Changes / Features</span>
+                        <div style="font-size:0.75rem;display:flex;gap:4px;">
+                            <a href="#" onclick="toggleAllChangeTypes(true); return false;" style="color:#0052cc;text-decoration:none;font-weight:bold;">Alles</a> |
+                            <a href="#" onclick="toggleAllChangeTypes(false); return false;" style="color:#0052cc;text-decoration:none;font-weight:bold;">Geen</a>
+                        </div>
+                    </div>
                     <div id="changeTypeSelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
                 </div>
 
                 <!-- 3. Issue Types Bugs Selector -->
                 <div class="stat-box" style="margin-bottom:1rem;">
-                    <span class="stat-label" title="Bug Types: Vink aan welke issue types meetellen als fouten / bugs.">Issue Types: Bugs / Defects</span>
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                        <span class="stat-label" title="Bug Types: Vink aan welke issue types meetellen als fouten / bugs.">Issue Types: Bugs / Defects</span>
+                        <div style="font-size:0.75rem;display:flex;gap:4px;">
+                            <a href="#" onclick="toggleAllBugTypes(true); return false;" style="color:#0052cc;text-decoration:none;font-weight:bold;">Alles</a> |
+                            <a href="#" onclick="toggleAllBugTypes(false); return false;" style="color:#0052cc;text-decoration:none;font-weight:bold;">Geen</a>
+                        </div>
+                    </div>
                     <div id="bugTypeSelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
                 </div>
 
                 <!-- CFR Priority Selector -->
                 <div class="stat-box" style="margin-bottom:1rem;">
-                    <span class="stat-label" title="CFR Prioriteiten: Selecteer welke bug prioriteiten een release laten falen.">Prioriteiten die meetellen voor CFR</span>
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                        <span class="stat-label" title="CFR Prioriteiten: Selecteer welke bug prioriteiten een release laten falen.">Prioriteiten die meetellen voor CFR</span>
+                        <div style="font-size:0.75rem;display:flex;gap:4px;">
+                            <a href="#" onclick="toggleAllCfrPriorities(true); return false;" style="color:#0052cc;text-decoration:none;font-weight:bold;">Alles</a> |
+                            <a href="#" onclick="toggleAllCfrPriorities(false); return false;" style="color:#0052cc;text-decoration:none;font-weight:bold;">Geen</a>
+                        </div>
+                    </div>
                     <div id="cfrPrioritySelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
                 </div>
 
                 <!-- Team Selector -->
                 <div class="stat-box" style="margin-bottom:1rem;">
-                    <span class="stat-label" title="Team Filter: Filter het dashboard op specifieke teams.">Filter op Team(s)</span>
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                        <span class="stat-label" title="Team Filter: Filter het dashboard op specifieke teams.">Filter op Team(s)</span>
+                        <div style="font-size:0.75rem;display:flex;gap:4px;">
+                            <a href="#" onclick="toggleAllTeams(true); return false;" style="color:#0052cc;text-decoration:none;font-weight:bold;">Selecteer Alles</a> |
+                            <a href="#" onclick="toggleAllTeams(false); return false;" style="color:#0052cc;text-decoration:none;font-weight:bold;">Deselecteer Alles</a>
+                        </div>
+                    </div>
                     <div id="teamSelector" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
                 </div>
             </div>
@@ -1130,6 +1162,20 @@
             });
         }
 
+        function toggleSetupSection() {
+            const setup = document.getElementById('setupSection');
+            const btn = document.getElementById('toggleSetupBtn');
+            if (!setup || !btn) return;
+
+            if (setup.style.display === 'none') {
+                setup.style.display = 'block';
+                btn.innerHTML = '⚙️ Verberg Import &amp; API Instellingen';
+            } else {
+                setup.style.display = 'none';
+                btn.innerHTML = '⚙️ Toon Import &amp; API Instellingen';
+            }
+        }
+
         function setDatePreset(preset) {
             const startInput = document.getElementById('filterStartDate');
             const endInput = document.getElementById('filterEndDate');
@@ -1151,6 +1197,54 @@
             } else if (preset === '1y') {
                 if (startInput) startInput.value = '2026-01-01';
                 if (endInput) endInput.value = '2026-12-31';
+            }
+            calculateMetrics();
+        }
+
+        function toggleAllTeams(selectAll) {
+            selectedTeams.clear();
+            if (selectAll) {
+                discoveredTeams.forEach(t => selectedTeams.add(t.toLowerCase().trim()));
+            }
+            const container = document.getElementById('teamSelector');
+            if (container) {
+                container.querySelectorAll('input').forEach(cb => { cb.checked = selectAll; });
+            }
+            calculateMetrics();
+        }
+
+        function toggleAllCfrPriorities(selectAll) {
+            selectedCfrPriorities.clear();
+            if (selectAll) {
+                discoveredPriorities.forEach(p => selectedCfrPriorities.add(p.toLowerCase().trim()));
+            }
+            const container = document.getElementById('cfrPrioritySelector');
+            if (container) {
+                container.querySelectorAll('input').forEach(cb => { cb.checked = selectAll; });
+            }
+            calculateMetrics();
+        }
+
+        function toggleAllChangeTypes(selectAll) {
+            selectedChangeTypes.clear();
+            if (selectAll) {
+                discoveredIssueTypes.forEach(t => selectedChangeTypes.add(t.toLowerCase().trim()));
+            }
+            const container = document.getElementById('changeTypeSelector');
+            if (container) {
+                container.querySelectorAll('input').forEach(cb => { cb.checked = selectAll; });
+            }
+            calculateMetrics();
+        }
+
+        function toggleAllBugTypes(selectAll) {
+            selectedBugTypes.clear();
+            if (selectAll) {
+                discoveredIssueTypes.forEach(t => selectedBugTypes.add(t.toLowerCase().trim()));
+            }
+            const container = document.getElementById('bugTypeSelector');
+            if (container) {
+                container.querySelectorAll('input').forEach(cb => { cb.checked = selectAll; });
             }
             calculateMetrics();
         }
@@ -1657,6 +1751,15 @@
 
                 dashboard.style.display = "block";
                 resultsTable.style.display = "table";
+
+                // Auto-hide Step 1 & Step 2 for a clean view!
+                const setupSec = document.getElementById('setupSection');
+                const toggleBtn = document.getElementById('toggleSetupBtn');
+                if (setupSec) setupSec.style.display = "none";
+                if (toggleBtn) {
+                    toggleBtn.style.display = "inline-block";
+                    toggleBtn.innerHTML = "⚙️ Toon Import &amp; API Instellingen";
+                }
 
                 sortTable('date', true);
                 updateQualityMetricsDisplay();
