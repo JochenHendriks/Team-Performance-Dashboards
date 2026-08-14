@@ -181,6 +181,13 @@
             margin-bottom: 0.5rem;
         }
 
+        .stat-label[title] {
+            cursor: help;
+            border-bottom: 1px dashed #a5adba;
+            display: inline-block;
+            width: fit-content;
+        }
+
         .stat-value {
             font-size: 1.5rem;
             font-weight: bold;
@@ -224,22 +231,14 @@
             margin-top: 2rem;
         }
 
-        .dora-badge {
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            color: white;
-            margin-left: 6px;
-            vertical-align: middle;
-            display: inline-block;
-            text-transform: uppercase;
-        }
-
         .stat-subtext {
             font-size: 0.75rem;
             color: #5e6c84;
             margin-top: 4px;
+        }
+
+        .stat-subtext[title] {
+            cursor: help;
         }
 
         .section-title {
@@ -458,37 +457,27 @@
             <div class="section-title">De 4 DORA Metrics</div>
             <div class="stats-grid">
                 <div class="stat-box">
-                    <span class="stat-label">Deployment Freq. (DF)</span>
-                    <div>
-                        <span class="stat-value" id="sumDf">0/mnd</span>
-                        <span class="dora-badge" id="badgeDf"></span>
-                    </div>
+                    <span class="stat-label" title="Deployment Frequency (DF): Het gemiddeld aantal uitgebrachte releases per maand. Formule: Totaal Actieve Releases / Aantal Maanden in de gekozen periode.">Deployment Freq. (DF)</span>
+                    <span class="stat-value" id="sumDf">0/mnd</span>
                     <div class="stat-subtext">Snelheid van opleveren</div>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-label">Lead Time for Changes (LTC)</span>
-                    <div>
-                        <span class="stat-value" id="sumLtc">0 dagen</span>
-                        <span class="dora-badge" id="badgeLtc"></span>
-                    </div>
+                    <span class="stat-label" title="Lead Time for Changes (LTC): De gemiddelde tijdsduur vanaf het aanmaken van een ticket (Story/Task) tot de officiële releasedatum. Formule: Som(releaseDate - created) / Aantal Changes.">Lead Time for Changes (LTC)</span>
+                    <span class="stat-value" id="sumLtc">0 dagen</span>
                     <div class="stat-subtext">Aanmaak tot livegang</div>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-label">Change Failure Rate (CFR)</span>
+                    <span class="stat-label" title="Change Failure Rate (CFR): Het percentage van alle actieve releases dat is gefaald (door een Hotfix of een aangevinkte kritieke bug). Formule: (Gefaalde Releases / Actieve Releases) * 100.">Change Failure Rate (CFR)</span>
                     <div>
                         <span class="stat-value" id="sumCfr"
                             style="padding: 4px 8px; border-radius: 4px; color: white; display: inline-block;">0%</span>
-                        <span class="dora-badge" id="badgeCfr"></span>
                     </div>
                     <div class="stat-subtext" id="subCfr">Gefaalde releases %</div>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-label">Mean Time to Restore (MTTR)</span>
-                    <div>
-                        <span class="stat-value" id="sumMttr">N/A</span>
-                        <span class="dora-badge" id="badgeMttr"></span>
-                    </div>
-                    <div class="stat-subtext">Aanpak tot herstel (Bugs)</div>
+                    <span class="stat-label" title="Mean Time to Restore (MTTR): De gemiddelde hersteltijd van gemelde fouten/bugs (van aanmaak tot afronding). Formule: Som(resolutionDate - created) / Aantal Bugs.">Mean Time to Restore (MTTR)</span>
+                    <span class="stat-value" id="sumMttr">N/A</span>
+                    <div class="stat-subtext" id="subMttr">Aanpak tot herstel</div>
                 </div>
             </div>
 
@@ -496,27 +485,27 @@
             <div class="section-title">Kwaliteit &amp; Capaciteit Inzicht</div>
             <div class="stats-grid">
                 <div class="stat-box">
-                    <span class="stat-label">Defect Escape Rate</span>
+                    <span class="stat-label" title="Defect Escape Rate: Het percentage van alle bugs dat pas in productie is ontdekt (Post-release). Formule: (Post-release Bugs / Totaal Aantal Bugs) * 100.">Defect Escape Rate</span>
                     <span class="stat-value" id="sumEscapeRate" style="color: #de350b;">0%</span>
                     <div class="stat-subtext" id="subEscapeRate">Post-release vs Totaal</div>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-label">Time to Detect (MTTD)</span>
+                    <span class="stat-label" title="Mean Time to Detect (MTTD): De gemiddelde tijd tussen de livegang van een release en het moment dat de post-release bug is gemeld. Formule: Som(created - releaseDate) / Aantal Post-release Bugs.">Time to Detect (MTTD)</span>
                     <span class="stat-value" id="sumMttd">N/A</span>
-                    <div class="stat-subtext">Livegang tot bugmelding</div>
+                    <div class="stat-subtext" id="subMttd">Livegang tot bugmelding</div>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-label">Investment Mix</span>
+                    <span class="stat-label" title="Investment Mix: De verhouding van de teamcapaciteit besteed aan nieuwe functionaliteit (Stories/Tasks) vs. foutherstel (Bugs). Formule: Features % vs. Bugs % van alle verwerkte tickets.">Investment Mix</span>
                     <span class="stat-value" id="sumMix">0% / 0%</span>
                     <div class="stat-subtext" id="subMix">Features % / Bugs %</div>
                 </div>
                 <div class="stat-box">
-                    <span class="stat-label">Releases &amp; Changes</span>
+                    <span class="stat-label" title="Releases &amp; Changes: Totaaloverzicht van het aantal unieke actieve releases en de hoeveelheid verwerkte changes/functionaliteiten in de gekozen periode.">Releases &amp; Changes</span>
                     <span class="stat-value" id="sumReleasesSummary">0 / 0</span>
                     <div class="stat-subtext" id="subReleasesSummary">Actieve releases / Changes</div>
                 </div>
                 <div class="stat-box" style="flex: 1; min-width: 250px;">
-                    <span class="stat-label">Bug Severity (Klikbaar voor MTTR)</span>
+                    <span class="stat-label" title="Bug Severity Filter: Klik op een of meerdere prioriteiten om MTTR, MTTD en Defect Escape Rate dynamisch te filteren op specifieke bug prioriteiten.">Bug Severity (Klikbaar filter: MTTR, MTTD, Escape Rate)</span>
                     <div id="sumSeverity"></div>
                 </div>
             </div>
@@ -549,8 +538,12 @@
         let tableData = [];
         let currentSortColumn = 'date';
         let isSortDescending = true;
-        let globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
+        let globalSeverityMetrics = {
+            total: { mttrHours: 0, mttrCount: 0, mttdHours: 0, mttdCount: 0, totalBugs: 0, postReleaseBugs: 0 },
+            byPriority: {}
+        };
 
+        let selectedQualityPriorities = new Set();
         let selectedCfrPriorities = new Set();
         let discoveredPriorities = new Set();
 
@@ -915,74 +908,111 @@
             });
         }
 
-        function filterMTTR(priorityRaw) {
-            document.querySelectorAll('.severity-pill').forEach(el => el.classList.remove('active'));
-
-            let safeId = priorityRaw === 'All' ? 'All' : priorityRaw.replace(/[^a-zA-Z0-9]/g, '-');
-            const activeBtn = document.getElementById(`sev-filter-${safeId}`);
-            if (activeBtn) activeBtn.classList.add('active');
-
-            let hrs = 0;
-            let count = 0;
+        function toggleQualitySeverity(priorityRaw) {
+            const allPriorities = Object.keys(globalSeverityMetrics.byPriority);
 
             if (priorityRaw === 'All') {
-                hrs = globalMttrData.total.hours;
-                count = globalMttrData.total.count;
-            } else if (globalMttrData.byPriority[priorityRaw]) {
-                hrs = globalMttrData.byPriority[priorityRaw].hours;
-                count = globalMttrData.byPriority[priorityRaw].count;
+                selectedQualityPriorities.clear();
+            } else {
+                if (selectedQualityPriorities.has(priorityRaw)) {
+                    selectedQualityPriorities.delete(priorityRaw);
+                } else {
+                    selectedQualityPriorities.add(priorityRaw);
+                }
+
+                if (selectedQualityPriorities.size === 0 || selectedQualityPriorities.size === allPriorities.length) {
+                    selectedQualityPriorities.clear();
+                }
             }
 
+            updateQualityMetricsDisplay();
+        }
+
+        function updateQualityMetricsDisplay() {
+            document.querySelectorAll('.severity-pill').forEach(el => el.classList.remove('active'));
+
+            const isAllSelected = selectedQualityPriorities.size === 0;
+
+            if (isAllSelected) {
+                const allBtn = document.getElementById('sev-filter-All');
+                if (allBtn) allBtn.classList.add('active');
+            } else {
+                selectedQualityPriorities.forEach(prio => {
+                    let safeId = prio.replace(/[^a-zA-Z0-9]/g, '-');
+                    const btn = document.getElementById(`sev-filter-${safeId}`);
+                    if (btn) btn.classList.add('active');
+                });
+            }
+
+            let combined = { mttrHours: 0, mttrCount: 0, mttdHours: 0, mttdCount: 0, totalBugs: 0, postReleaseBugs: 0 };
+
+            if (isAllSelected) {
+                combined = globalSeverityMetrics.total;
+            } else {
+                selectedQualityPriorities.forEach(prio => {
+                    let m = globalSeverityMetrics.byPriority[prio];
+                    if (m) {
+                        combined.mttrHours += m.mttrHours;
+                        combined.mttrCount += m.mttrCount;
+                        combined.mttdHours += m.mttdHours;
+                        combined.mttdCount += m.mttdCount;
+                        combined.totalBugs += m.totalBugs;
+                        combined.postReleaseBugs += m.postReleaseBugs;
+                    }
+                });
+            }
+
+            // Generate compact subtext & tooltip string
+            let filterLabel = "Alle severities";
+            let fullList = Array.from(selectedQualityPriorities).join(', ');
+            let tooltipText = isAllSelected ? "Gefilterd op: Alle severities" : `Gefilterd op: ${fullList}`;
+
+            if (!isAllSelected) {
+                if (selectedQualityPriorities.size <= 2) {
+                    filterLabel = fullList;
+                } else {
+                    filterLabel = `${selectedQualityPriorities.size} severities`;
+                }
+            }
+
+            // 1. MTTR
             let mttrText = "N/A";
-            if (count > 0) {
-                let avgHrs = hrs / count;
+            if (combined.mttrCount > 0) {
+                let avgHrs = combined.mttrHours / combined.mttrCount;
                 mttrText = avgHrs > 48 ? (avgHrs / 24).toFixed(1) + " dagen" : avgHrs.toFixed(1) + " uur";
-                setDoraBadge('badgeMttr', getMttrBenchmark(avgHrs));
-            } else {
-                setDoraBadge('badgeMttr', null);
             }
-
             document.getElementById('sumMttr').textContent = mttrText;
-        }
-
-        function setDoraBadge(elementId, benchmark) {
-            const badge = document.getElementById(elementId);
-            if (!badge) return;
-            if (benchmark && benchmark.label) {
-                badge.textContent = benchmark.label;
-                badge.style.backgroundColor = benchmark.color;
-                badge.style.display = 'inline-block';
-            } else {
-                badge.style.display = 'none';
+            const subMttr = document.getElementById('subMttr');
+            if (subMttr) {
+                subMttr.textContent = isAllSelected ? "Aanpak tot herstel" : `Herstel (${filterLabel})`;
+                subMttr.title = tooltipText;
             }
-        }
 
-        function getDfBenchmark(perMonth) {
-            if (perMonth >= 30) return { label: 'Elite', color: '#00875a' };
-            if (perMonth >= 4) return { label: 'High', color: '#36b37e' };
-            if (perMonth >= 1) return { label: 'Medium', color: '#ff8b00' };
-            return { label: 'Low', color: '#de350b' };
-        }
+            // 2. MTTD
+            let mttdText = "N/A";
+            if (combined.mttdCount > 0) {
+                let avgMttdHrs = combined.mttdHours / combined.mttdCount;
+                mttdText = avgMttdHrs > 48 ? (avgMttdHrs / 24).toFixed(1) + " dagen" : avgMttdHrs.toFixed(1) + " uur";
+            }
+            document.getElementById('sumMttd').textContent = mttdText;
+            const subMttd = document.getElementById('subMttd');
+            if (subMttd) {
+                subMttd.textContent = isAllSelected ? "Livegang tot bugmelding" : `Detectie (${filterLabel})`;
+                subMttd.title = tooltipText;
+            }
 
-        function getLtcBenchmark(avgDays) {
-            if (avgDays <= 1) return { label: 'Elite', color: '#00875a' };
-            if (avgDays <= 7) return { label: 'High', color: '#36b37e' };
-            if (avgDays <= 30) return { label: 'Medium', color: '#ff8b00' };
-            return { label: 'Low', color: '#de350b' };
-        }
-
-        function getCfrBenchmark(cfr) {
-            if (cfr <= 5) return { label: 'Elite', color: '#00875a' };
-            if (cfr <= 15) return { label: 'High', color: '#36b37e' };
-            if (cfr <= 30) return { label: 'Medium', color: '#ff8b00' };
-            return { label: 'Low', color: '#de350b' };
-        }
-
-        function getMttrBenchmark(avgHrs) {
-            if (avgHrs <= 1) return { label: 'Elite', color: '#00875a' };
-            if (avgHrs <= 24) return { label: 'High', color: '#36b37e' };
-            if (avgHrs <= 168) return { label: 'Medium', color: '#ff8b00' };
-            return { label: 'Low', color: '#de350b' };
+            // 3. Defect Escape Rate
+            let escapeRate = combined.totalBugs > 0 ? ((combined.postReleaseBugs / combined.totalBugs) * 100) : 0;
+            document.getElementById('sumEscapeRate').textContent = escapeRate.toFixed(1) + "%";
+            const subEscapeRate = document.getElementById('subEscapeRate');
+            if (subEscapeRate) {
+                if (isAllSelected) {
+                    subEscapeRate.textContent = `${combined.postReleaseBugs} van ${combined.totalBugs} bugs in prod`;
+                } else {
+                    subEscapeRate.textContent = `${combined.postReleaseBugs} van ${combined.totalBugs} in prod (${filterLabel})`;
+                }
+                subEscapeRate.title = tooltipText;
+            }
         }
 
         function renderCfrPrioritySelector(priorities) {
@@ -1206,6 +1236,8 @@
                     const isFallbackNeeded = affectedVersions.length === 0;
 
                     let belongsToValidVersion = false;
+                    let bugIsFailureTrigger = false;
+                    let bugReleaseDate = null;
 
                     Object.keys(validVersions).forEach(vName => {
                         const versionData = validVersions[vName];
@@ -1236,6 +1268,8 @@
                             }
 
                             if (isFailureTrigger) {
+                                bugIsFailureTrigger = true;
+                                bugReleaseDate = versionData.releaseDate;
                                 versionData.bugs += 1;
                                 postReleaseBugsCount++;
 
@@ -1260,7 +1294,13 @@
 
                     if (belongsToValidVersion) {
                         if (!allUniqueBugs.has(key)) {
-                            allUniqueBugs.set(key, { createdDate, resolvedDate, priority });
+                            allUniqueBugs.set(key, {
+                                createdDate,
+                                resolvedDate,
+                                priority,
+                                isFailureTrigger: bugIsFailureTrigger,
+                                releaseDate: bugReleaseDate
+                            });
                         }
                     }
                 });
@@ -1269,30 +1309,57 @@
                 const totalNumBugs = allUniqueBugs.size;
                 let prioritiesCount = {};
 
+                globalSeverityMetrics = {
+                    total: { mttrHours: 0, mttrCount: 0, mttdHours: 0, mttdCount: 0, totalBugs: 0, postReleaseBugs: 0 },
+                    byPriority: {}
+                };
+
                 allUniqueBugs.forEach((data, key) => {
-                    let prio = data.priority;
+                    let prio = data.priority || "Onbekend";
                     prioritiesCount[prio] = (prioritiesCount[prio] || 0) + 1;
 
-                    if (!globalMttrData.byPriority[prio]) {
-                        globalMttrData.byPriority[prio] = { hours: 0, count: 0 };
+                    if (!globalSeverityMetrics.byPriority[prio]) {
+                        globalSeverityMetrics.byPriority[prio] = {
+                            mttrHours: 0, mttrCount: 0,
+                            mttdHours: 0, mttdCount: 0,
+                            totalBugs: 0, postReleaseBugs: 0
+                        };
+                    }
+
+                    globalSeverityMetrics.total.totalBugs++;
+                    globalSeverityMetrics.byPriority[prio].totalBugs++;
+
+                    if (data.isFailureTrigger) {
+                        globalSeverityMetrics.total.postReleaseBugs++;
+                        globalSeverityMetrics.byPriority[prio].postReleaseBugs++;
+
+                        if (data.createdDate && data.releaseDate && data.createdDate >= data.releaseDate) {
+                            let diffHrs = (data.createdDate - data.releaseDate) / (1000 * 60 * 60);
+                            if (diffHrs >= 0) {
+                                globalSeverityMetrics.total.mttdHours += diffHrs;
+                                globalSeverityMetrics.total.mttdCount++;
+                                globalSeverityMetrics.byPriority[prio].mttdHours += diffHrs;
+                                globalSeverityMetrics.byPriority[prio].mttdCount++;
+                            }
+                        }
                     }
 
                     if (data.createdDate && data.resolvedDate) {
                         let diffHrs = (data.resolvedDate - data.createdDate) / (1000 * 60 * 60);
                         if (diffHrs >= 0) {
-                            globalMttrData.total.hours += diffHrs;
-                            globalMttrData.total.count++;
-                            globalMttrData.byPriority[prio].hours += diffHrs;
-                            globalMttrData.byPriority[prio].count++;
+                            globalSeverityMetrics.total.mttrHours += diffHrs;
+                            globalSeverityMetrics.total.mttrCount++;
+                            globalSeverityMetrics.byPriority[prio].mttrHours += diffHrs;
+                            globalSeverityMetrics.byPriority[prio].mttrCount++;
                         }
                     }
                 });
 
                 let severityHtml = `<div class="severity-pills">`;
-                severityHtml += `<div class="severity-pill active" id="sev-filter-All" onclick="filterMTTR('All')"><strong>Alles</strong></div>`;
+                severityHtml += `<div class="severity-pill active" id="sev-filter-All" onclick="toggleQualitySeverity('All')"><strong>Alles</strong></div>`;
                 Object.keys(prioritiesCount).sort((a, b) => prioritiesCount[b] - prioritiesCount[a]).forEach(p => {
                     let safeId = p.replace(/[^a-zA-Z0-9]/g, '-');
-                    severityHtml += `<div class="severity-pill" id="sev-filter-${safeId}" onclick="filterMTTR('${p}')"><strong>${p}</strong>: ${prioritiesCount[p]}</div>`;
+                    severityHtml += `<div class="severity-pill" id="sev-filter-${safeId}" onclick="toggleQualitySeverity('${p}')"><strong>${p}</strong>: ${prioritiesCount[p]}</div>`;
                 });
                 severityHtml += `</div>`;
 
@@ -1338,16 +1405,8 @@
                 if (ltcCount > 0) {
                     avgLtcDays = totalLtcDays / ltcCount;
                     ltcText = avgLtcDays > 60 ? (avgLtcDays / 30.44).toFixed(1) + " mnd" : avgLtcDays.toFixed(1) + " dagen";
-                    setDoraBadge('badgeLtc', getLtcBenchmark(avgLtcDays));
-                } else {
-                    setDoraBadge('badgeLtc', null);
                 }
                 document.getElementById('sumLtc').textContent = ltcText;
-
-                // Defect Escape Rate
-                let escapeRate = totalNumBugs > 0 ? ((postReleaseBugsCount / totalNumBugs) * 100) : 0;
-                document.getElementById('sumEscapeRate').textContent = escapeRate.toFixed(1) + "%";
-                document.getElementById('subEscapeRate').textContent = `${postReleaseBugsCount} van ${totalNumBugs} bugs in prod`;
 
                 // Investment Mix
                 let totalWork = numChanges + totalNumBugs;
@@ -1356,18 +1415,6 @@
                 document.getElementById('sumMix').textContent = `${featurePct}% / ${bugPct}%`;
                 document.getElementById('subMix').textContent = `${numChanges} feat / ${totalNumBugs} bugs`;
 
-                // MTTD
-                let mttdText = "N/A";
-                if (mttdCount > 0) {
-                    let avgMttdHrs = totalMttdHours / mttdCount;
-                    mttdText = avgMttdHrs > 48 ? (avgMttdHrs / 24).toFixed(1) + " dagen" : avgMttdHrs.toFixed(1) + " uur";
-                }
-                document.getElementById('sumMttd').textContent = mttdText;
-
-                // DORA Badges
-                setDoraBadge('badgeDf', perMonthVal > 0 ? getDfBenchmark(perMonthVal) : null);
-                setDoraBadge('badgeCfr', getCfrBenchmark(totalCFR));
-                
                 document.getElementById('sumReleasesSummary').textContent = `${activeReleasesCount} / ${numChanges}`;
                 document.getElementById('subReleasesSummary').textContent = `${failedReleasesCount} gefaald (${totalCFR.toFixed(1)}%)`;
 
@@ -1382,7 +1429,7 @@
                 resultsTable.style.display = "table";
 
                 sortTable('date', true);
-                filterMTTR('All');
+                updateQualityMetricsDisplay();
                 renderCfrChart();
 
             } catch (error) {
