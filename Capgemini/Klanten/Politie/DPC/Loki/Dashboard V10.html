@@ -1079,6 +1079,27 @@
             }
         }
 
+        function resetStatsToZero() {
+            document.getElementById('sumDf').textContent = "0/mnd";
+            document.getElementById('sumLtc').textContent = "0 dagen";
+            const sumCfrEl = document.getElementById('sumCfr');
+            if (sumCfrEl) {
+                sumCfrEl.textContent = "0%";
+                sumCfrEl.style.backgroundColor = getCfrColor(0);
+            }
+            document.getElementById('sumMttr').textContent = "N/A";
+            document.getElementById('sumEscapeRate').textContent = "0%";
+            document.getElementById('sumMttd').textContent = "N/A";
+            document.getElementById('sumMix').textContent = "0% / 0%";
+            document.getElementById('sumReleasesSummary').textContent = "0 / 0";
+            document.getElementById('subReleasesSummary').textContent = "0 gefaald (0%)";
+            document.getElementById('sumSeverity').innerHTML = "";
+            if (cfrChart) {
+                cfrChart.destroy();
+                cfrChart = null;
+            }
+        }
+
         function renderCfrPrioritySelector(priorities) {
             const container = document.getElementById('cfrPrioritySelector');
             if (!container) return;
@@ -1132,6 +1153,36 @@
                 if (endInput) endInput.value = '2026-12-31';
             }
             calculateMetrics();
+        }
+
+        function renderTeamSelector(teams) {
+            const container = document.getElementById('teamSelector');
+            if (!container) return;
+
+            const sortedTeams = teams.slice().sort();
+            const existingInputs = Array.from(container.querySelectorAll('input')).map(i => i.value);
+
+            if (existingInputs.join(',') === sortedTeams.join(',')) return;
+
+            container.innerHTML = '';
+            sortedTeams.forEach(team => {
+                const checked = selectedTeams.has(team.toLowerCase()) ? 'checked' : '';
+                container.innerHTML += `
+                    <label style="display:flex;align-items:center;gap:4px;font-weight:normal;">
+                        <input type="checkbox" value="${team}" ${checked}>
+                        ${team}
+                    </label>`;
+            });
+
+            container.querySelectorAll('input').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    selectedTeams.clear();
+                    container.querySelectorAll('input:checked').forEach(i =>
+                        selectedTeams.add(i.value.toLowerCase().trim())
+                    );
+                    calculateMetrics();
+                });
+            });
         }
 
         function renderIssueTypeSelectors(discoveredTypes) {
@@ -1335,7 +1386,12 @@
                 });
 
                 if (Object.keys(validVersions).length === 0) {
-                    throw new Error("Er zijn geen versies gevonden binnen de gekozen status- en datumfilters.");
+                    errorMsg.textContent = "Geen versies gevonden voor de huidige filtercombinatie. Vink minimaal één release status aan of kies een ruimere periode.";
+                    errorMsg.style.display = "block";
+                    dashboard.style.display = "block";
+                    resultsTable.style.display = "none";
+                    resetStatsToZero();
+                    return;
                 }
 
                 let uniqueChanges = new Set();
@@ -1391,45 +1447,6 @@
                     const typeLower = typeName.toLowerCase().trim();
 
                     const isBug = selectedBugTypes.has(typeLower);
-                    if (!isBug) return;
-
-                    const key = issue.key;
-                    const summary = issue.fields.summary || "Geen titel";
-                    const createdDate = new Date(issue.fields.created);
-                    let resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
-
-                    let earliestReleaseDate = null;
-                    if (issue.fields.fixVersions) {
-                        issue.fields.fixVersions.forEach(fv => {
-                            const vName = fv.name;
-                            if (validVersions[vName]) {
-                                validVersions[vName].changes += 1;
-                                uniqueChanges.add(key);
-                                validVersions[vName].issues.push({ key, summary, type: 'Change' });
-
-                                const rDate = validVersions[vName].releaseDate;
-                                if (!earliestReleaseDate || rDate < earliestReleaseDate) {
-                                    earliestReleaseDate = rDate;
-                                }
-                            }
-                        });
-                    }
-
-                    const targetDate = earliestReleaseDate || resolvedDate;
-                    if (targetDate && createdDate && targetDate >= createdDate) {
-                        let diffDays = (targetDate - createdDate) / (1000 * 60 * 60 * 24);
-                        totalLtcDays += diffDays;
-                        ltcCount++;
-                    }
-                });
-
-                let postReleaseBugsCount = 0;
-                let totalMttdHours = 0;
-                let mttdCount = 0;
-
-                teamFilteredIssues.forEach(issue => {
-                    const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
-                    const isBug = typeName.toLowerCase() === 'bug';
                     if (!isBug) return;
 
                     const key = issue.key;
