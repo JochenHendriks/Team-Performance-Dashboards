@@ -394,6 +394,25 @@
             background: rgba(11, 87, 208, 0.15);
             color: #b3261e;
         }
+
+        .filter-chip.filter-chip-exclude {
+            background: #ffebe6;
+            color: #de350b;
+            border-color: #ffbdad;
+        }
+
+        .filter-chip.filter-chip-exclude:hover {
+            background: #ffd2cc;
+        }
+
+        .filter-chip.filter-chip-exclude .chip-remove {
+            color: #de350b;
+        }
+
+        .filter-chip.filter-chip-exclude .chip-remove:hover {
+            background: rgba(222, 53, 11, 0.15);
+            color: #bf2600;
+        }
     </style>
 </head>
 
@@ -403,7 +422,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V11</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.0.0 (17-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.1.0 (17-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -541,14 +560,14 @@
                     </div>
                     <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap;">
                         <div style="display:flex;flex:1;min-width:280px;gap:6px;">
-                            <input type="text" id="releaseSearchInput" placeholder="Typ prefix, app-naam of versie (bijv: WEB | Zoekdienst of 2.) en druk op Enter..." style="padding:6px 10px;font-size:0.85rem;font-family:inherit;" oninput="onReleaseSearchInput()" onkeydown="handleReleaseSearchKeydown(event)">
+                            <input type="text" id="releaseSearchInput" placeholder="Typ prefix, app of versie (bijv: Zoekdienst, 2., of -hotfix om uit te sluiten)..." style="padding:6px 10px;font-size:0.85rem;font-family:inherit;" oninput="onReleaseSearchInput()" onkeydown="handleReleaseSearchKeydown(event)">
                             <button type="button" class="copy-btn" id="addReleaseFilterBtn" onclick="addReleaseSearchChip()" style="width:auto;padding:6px 14px;font-size:0.85rem;white-space:nowrap;">+ Toevoegen</button>
                         </div>
                         <button type="button" class="copy-btn" id="clearReleaseFiltersBtn" onclick="clearReleaseNameFilters()" style="display:none;width:auto;padding:6px 12px;font-size:0.85rem;color:#de350b;">Wis filters</button>
                     </div>
                     <div id="releaseFilterChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
                     <div style="font-size:0.75rem;color:#6b778c;margin-top:6px;">
-                        💡 <strong>Tip:</strong> Druk op <kbd style="background:#eaecf0;border:1px solid #dfe1e6;padding:1px 5px;border-radius:3px;font-family:monospace;">Enter</kbd> of komma om een filter toe te voegen. Meerdere filters werken als <em>OF</em> (bijv. Zoekdienst OF Portaal). Binnen één filter worden woorden gecombineerd (bijv. <em>WEB Zoekdienst 2.</em>).
+                        💡 <strong>Tip:</strong> Druk op <kbd style="background:#eaecf0;border:1px solid #dfe1e6;padding:1px 5px;border-radius:3px;font-family:monospace;">Enter</kbd> of komma om een filter toe te voegen. Meerdere filters werken als <em>OF</em>. Begin met <kbd style="background:#eaecf0;border:1px solid #dfe1e6;padding:1px 5px;border-radius:3px;font-family:monospace;">-</kbd> om termen <strong>uit te sluiten</strong> (bijv. <code>-hotfix</code> of <code>-Zoekdienst</code>).
                     </div>
                 </div>
 
@@ -753,9 +772,17 @@
 
             releaseNameFilters.forEach((term, idx) => {
                 const chip = document.createElement('span');
-                chip.className = 'filter-chip';
+                const isExclude = term.startsWith('-') && term.trim().length > 1;
+                chip.className = isExclude ? 'filter-chip filter-chip-exclude' : 'filter-chip';
+                const displayLabel = isExclude
+                    ? `&minus; ${escapeHtml(term.slice(1).trim())}`
+                    : escapeHtml(term);
+                const tooltip = isExclude
+                    ? `Uitsluiten: releases die '${term.slice(1).trim()}' bevatten worden gefilterd`
+                    : `Insluiten: matcht releases met '${term}'`;
+                chip.title = tooltip;
                 chip.innerHTML = `
-                    <span>${escapeHtml(term)}</span>
+                    <span>${displayLabel}</span>
                     <span class="chip-remove" onclick="removeReleaseNameFilter(${idx})" title="Verwijder filter">&times;</span>
                 `;
                 container.appendChild(chip);
@@ -768,8 +795,8 @@
             const val = input.value.trim();
             if (!val) return;
 
-            // Support comma-separated input like "WEB | Zoekdienst, WEB | Portaal"
-            const terms = val.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            // Support comma-separated input like "WEB | Zoekdienst, WEB | Portaal, -hotfix"
+            const terms = val.split(',').map(s => s.trim()).filter(s => s.length > 0 && s !== '-');
             let added = false;
             terms.forEach(term => {
                 if (!releaseNameFilters.some(t => t.toLowerCase() === term.toLowerCase())) {
@@ -837,11 +864,19 @@
             renderReleaseFilterChips();
         }
 
+        function matchSingleFilterTerm(versionNameLower, term) {
+            const tokens = term.toLowerCase().split(/\s+/).filter(t => t && t !== '|' && t !== '-');
+            if (tokens.length === 0) {
+                return versionNameLower.includes(term.toLowerCase().trim());
+            }
+            return tokens.every(token => versionNameLower.includes(token));
+        }
+
         function matchesReleaseFilter(versionName, filters, currentInput) {
             const activeTerms = [...filters];
             const trimmedInput = currentInput ? currentInput.trim() : '';
-            if (trimmedInput && !activeTerms.some(t => t.toLowerCase() === trimmedInput.toLowerCase())) {
-                trimmedInput.split(',').map(s => s.trim()).filter(s => s).forEach(t => {
+            if (trimmedInput && trimmedInput !== '-' && !activeTerms.some(t => t.toLowerCase() === trimmedInput.toLowerCase())) {
+                trimmedInput.split(',').map(s => s.trim()).filter(s => s && s !== '-').forEach(t => {
                     if (!activeTerms.some(existing => existing.toLowerCase() === t.toLowerCase())) {
                         activeTerms.push(t);
                     }
@@ -852,16 +887,31 @@
 
             const vName = (versionName || '').toLowerCase();
 
-            // OR-relatie tussen tags/termen: release moet aan minimaal één term voldoen
-            return activeTerms.some(term => {
-                // Tokenizeer de zoekterm op spaties (negeer losse pipe- en mintekens)
-                const tokens = term.toLowerCase().split(/\s+/).filter(t => t && t !== '|' && t !== '-');
-                if (tokens.length === 0) {
-                    return vName.includes(term.toLowerCase().trim());
+            const includeTerms = [];
+            const excludeTerms = [];
+
+            activeTerms.forEach(t => {
+                if (t.startsWith('-') && t.trim().length > 1) {
+                    const clean = t.slice(1).trim();
+                    if (clean) excludeTerms.push(clean);
+                } else if (t.trim().length > 0 && t.trim() !== '-') {
+                    includeTerms.push(t.trim());
                 }
-                // EN-relatie binnen één zoekterm: alle woorden/tokens moeten voorkomen
-                return tokens.every(token => vName.includes(token));
             });
+
+            // 1. Uitsluitingscheck (negatieve filtering): release mag GEEN ENKELE uitsluit-term matchen
+            if (excludeTerms.some(exTerm => matchSingleFilterTerm(vName, exTerm))) {
+                return false;
+            }
+
+            // 2. Insluitingscheck (positieve filtering):
+            // Als er geen insluit-termen zijn (alleen uitsluitingen), mag alles wat niet uitgesloten is door
+            if (includeTerms.length === 0) {
+                return true;
+            }
+
+            // Als er wel insluit-termen zijn: moet aan minimaal één insluit-term voldoen (OF-relatie)
+            return includeTerms.some(inTerm => matchSingleFilterTerm(vName, inTerm));
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -2101,10 +2151,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "11.0.0";
+        const DASHBOARD_VERSION = "11.1.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V11 &bull; Versie 11.0.0 (17-09-2026)
+        DORA &amp; Performance Dashboard V11 &bull; Versie 11.1.0 (17-09-2026)
     </footer>
 </body>
 </html>
