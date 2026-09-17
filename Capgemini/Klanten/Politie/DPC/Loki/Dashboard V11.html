@@ -456,7 +456,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V11</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.2.0 (17-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.2.1 (17-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -1814,7 +1814,9 @@
                 if (!cStartVal && !cEndVal) return null;
                 const cs = cStartVal ? parseLocalDate(cStartVal) : null;
                 const ce = cEndVal ? parseLocalDate(cEndVal) : null;
+                const isIncomplete = !cStartVal || !cEndVal;
                 return {
+                    incomplete: isIncomplete,
                     startLimit: cs,
                     endLimit: ce ? new Date(cEndVal + "T23:59:59") : null,
                     startStr: cStartVal,
@@ -2490,56 +2492,89 @@
                 } else {
                     const compRange = getComparisonDateRange(customStartVal, customEndVal, comparisonMode, currentPeriodMetrics.minDate, currentPeriodMetrics.maxDate);
                     if (compRange) {
-                        const formatDateNl = d => d.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                        if (compLabelEl) {
-                            compLabelEl.textContent = `Ref: ${formatDateNl(compRange.startLimit)} t/m ${formatDateNl(compRange.endLimit)}`;
+                        const formatDateNl = d => (d && typeof d.getTime === 'function' && !isNaN(d.getTime())) ? d.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '';
+
+                        if (compRange.incomplete) {
+                            comparisonPeriodMetrics = null;
+                            hideAllTrendBadges();
+                            if (compLabelEl) {
+                                if (compRange.startLimit) {
+                                    compLabelEl.textContent = `Ref: Vanaf ${formatDateNl(compRange.startLimit)} (kies ook einddatum)`;
+                                    compLabelEl.style.color = '#5e6c84';
+                                } else if (compRange.endLimit) {
+                                    compLabelEl.textContent = `Ref: Tot ${formatDateNl(compRange.endLimit)} (kies ook begindatum)`;
+                                    compLabelEl.style.color = '#5e6c84';
+                                } else {
+                                    compLabelEl.textContent = 'Ref: Selecteer begindatum en einddatum';
+                                    compLabelEl.style.color = '#5e6c84';
+                                }
+                            }
+                        } else if (compRange.startLimit && compRange.endLimit && compRange.startLimit > compRange.endLimit) {
+                            comparisonPeriodMetrics = null;
+                            hideAllTrendBadges();
+                            if (compLabelEl) {
+                                compLabelEl.textContent = `⚠️ Referentie begindatum ligt na einddatum`;
+                                compLabelEl.style.color = '#de350b';
+                            }
+                        } else {
+                            if (compLabelEl) {
+                                compLabelEl.textContent = `Ref: ${formatDateNl(compRange.startLimit)} t/m ${formatDateNl(compRange.endLimit)}`;
+                                compLabelEl.style.color = '#0b57d0';
+                            }
+
+                            comparisonPeriodMetrics = computePeriodMetrics(allVersions, allIssuesRaw, compRange.startLimit, compRange.endLimit, ltcMode, statusConfig, releaseNameFilters, currentSearchInput);
+
+                            // DF Trend (hoger is beter)
+                            renderTrendBadge('trendDf', currentPeriodMetrics.dfVal, comparisonPeriodMetrics.dfVal, {
+                                invert: false,
+                                unit: ' /mnd',
+                                decimals: 1,
+                                threshold: 0.1
+                            });
+
+                            // LTC Trend (lager is beter)
+                            const curLtc = currentPeriodMetrics.ltcCount > 0 ? currentPeriodMetrics.avgLtcDays : null;
+                            const compLtc = comparisonPeriodMetrics.ltcCount > 0 ? comparisonPeriodMetrics.avgLtcDays : null;
+                            renderTrendBadge('trendLtc', curLtc, compLtc, {
+                                invert: true,
+                                unit: ' dgn',
+                                decimals: 1,
+                                threshold: 0.2
+                            });
+
+                            // CFR Trend (lager is beter)
+                            const curCfr = currentPeriodMetrics.activeReleasesCount > 0 ? currentPeriodMetrics.totalCFR : null;
+                            const compCfr = comparisonPeriodMetrics.activeReleasesCount > 0 ? comparisonPeriodMetrics.totalCFR : null;
+                            renderTrendBadge('trendCfr', curCfr, compCfr, {
+                                invert: true,
+                                unit: '%pt',
+                                decimals: 1,
+                                threshold: 0.1
+                            });
+
+                            // Investment Mix Trend (Features capaciteit: hoger is beter)
+                            const curMix = (currentPeriodMetrics.numChanges + currentPeriodMetrics.totalNumBugs) > 0 ? currentPeriodMetrics.featurePct : null;
+                            const compMix = (comparisonPeriodMetrics.numChanges + comparisonPeriodMetrics.totalNumBugs) > 0 ? comparisonPeriodMetrics.featurePct : null;
+                            renderTrendBadge('trendMix', curMix, compMix, {
+                                invert: false,
+                                unit: '%pt feat',
+                                decimals: 0,
+                                threshold: 0.5
+                            });
+
+                            // Releases & Changes Trend
+                            renderReleasesSummaryTrendBadge(currentPeriodMetrics, comparisonPeriodMetrics);
                         }
-
-                        comparisonPeriodMetrics = computePeriodMetrics(allVersions, allIssuesRaw, compRange.startLimit, compRange.endLimit, ltcMode, statusConfig, releaseNameFilters, currentSearchInput);
-
-                        // DF Trend (hoger is beter)
-                        renderTrendBadge('trendDf', currentPeriodMetrics.dfVal, comparisonPeriodMetrics.dfVal, {
-                            invert: false,
-                            unit: ' /mnd',
-                            decimals: 1,
-                            threshold: 0.1
-                        });
-
-                        // LTC Trend (lager is beter)
-                        const curLtc = currentPeriodMetrics.ltcCount > 0 ? currentPeriodMetrics.avgLtcDays : null;
-                        const compLtc = comparisonPeriodMetrics.ltcCount > 0 ? comparisonPeriodMetrics.avgLtcDays : null;
-                        renderTrendBadge('trendLtc', curLtc, compLtc, {
-                            invert: true,
-                            unit: ' dgn',
-                            decimals: 1,
-                            threshold: 0.2
-                        });
-
-                        // CFR Trend (lager is beter)
-                        const curCfr = currentPeriodMetrics.activeReleasesCount > 0 ? currentPeriodMetrics.totalCFR : null;
-                        const compCfr = comparisonPeriodMetrics.activeReleasesCount > 0 ? comparisonPeriodMetrics.totalCFR : null;
-                        renderTrendBadge('trendCfr', curCfr, compCfr, {
-                            invert: true,
-                            unit: '%pt',
-                            decimals: 1,
-                            threshold: 0.1
-                        });
-
-                        // Investment Mix Trend (Features capaciteit: hoger is beter)
-                        const curMix = (currentPeriodMetrics.numChanges + currentPeriodMetrics.totalNumBugs) > 0 ? currentPeriodMetrics.featurePct : null;
-                        const compMix = (comparisonPeriodMetrics.numChanges + comparisonPeriodMetrics.totalNumBugs) > 0 ? comparisonPeriodMetrics.featurePct : null;
-                        renderTrendBadge('trendMix', curMix, compMix, {
-                            invert: false,
-                            unit: '%pt feat',
-                            decimals: 0,
-                            threshold: 0.5
-                        });
-
-                        // Releases & Changes Trend
-                        renderReleasesSummaryTrendBadge(currentPeriodMetrics, comparisonPeriodMetrics);
                     } else {
                         comparisonPeriodMetrics = null;
-                        if (compLabelEl) compLabelEl.textContent = '';
+                        if (compLabelEl) {
+                            if (comparisonMode === 'custom') {
+                                compLabelEl.textContent = 'Ref: Selecteer begindatum en einddatum';
+                                compLabelEl.style.color = '#5e6c84';
+                            } else {
+                                compLabelEl.textContent = '';
+                            }
+                        }
                         hideAllTrendBadges();
                     }
                 }
@@ -2564,15 +2599,17 @@
                 console.error(error);
                 errorMsg.textContent = error.message;
                 errorMsg.style.display = "block";
-                dashboard.style.display = "none";
-                resultsTable.style.display = "none";
+                if (!cachedAllVersions || !cachedAllIssuesRaw) {
+                    dashboard.style.display = "none";
+                    resultsTable.style.display = "none";
+                }
             }
         }
 
-        const DASHBOARD_VERSION = "11.2.0";
+        const DASHBOARD_VERSION = "11.2.1";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V11 &bull; Versie 11.2.0 (17-09-2026)
+        DORA &amp; Performance Dashboard V11 &bull; Versie 11.2.1 (17-09-2026)
     </footer>
 </body>
 </html>
