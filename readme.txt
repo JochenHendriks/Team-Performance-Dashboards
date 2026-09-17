@@ -1,5 +1,5 @@
 ==============================================================================
-                    DORA & PERFORMANCE DASHBOARD V10
+                    DORA & PERFORMANCE DASHBOARD V11
                          GEBRUIKERSHANDLEIDING & MANIFEST
 ==============================================================================
 
@@ -16,7 +16,7 @@ Inhoudsopgave:
 ==============================================================================
 1. OVERZICHT & DOEL
 ==============================================================================
-Het DORA & Performance Dashboard V10 is een self-contained, offline HTML5 
+Het DORA & Performance Dashboard V11 is een self-contained, offline HTML5 
 dashboard ontworpen voor softwareteams, Agile Coaches, Scrum Masters en Management.
 
 Het dashboard biedt diepgaand inzicht in:
@@ -88,7 +88,7 @@ Stappen:
 
 --- MANIER 2: HANDMATIG VIA DE URL-GENERATOR IN HET DASHBOARD ---
 Als je geen PowerShell kunt/wilt gebruiken:
-1. Open 'Dashboard V10.html' in je browser.
+1. Open 'Dashboard V11.html' in je browser.
 2. Vul in Stap 1 jouw Jira Base URL en Project Key in.
 3. Stel de gewenste filters in (Versies filter, Team filter, Datum range).
 4. Kopieer Link 1 (Versies) en geef deze in een ingelogde browser in. Sla de 
@@ -100,7 +100,7 @@ Als je geen PowerShell kunt/wilt gebruiken:
 ==============================================================================
 Stap 1: Data Inladen
 --------------------
-1. Open 'Dashboard V10.html' in de browser.
+1. Open 'Dashboard V11.html' in de browser.
 2. Ga naar "Stap 2: Upload en Bereken".
 3. Selecteer het bestand 'versies.json' bij "Upload versies.json".
 4. Selecteer het bestand 'issues.json' bij "Upload issues.json" (je kunt hier 
