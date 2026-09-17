@@ -357,6 +357,43 @@
             text-decoration: underline;
             color: #0047b3;
         }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            background: #e8f0fe;
+            color: #0b57d0;
+            border: 1px solid #c2e7ff;
+            border-radius: 16px;
+            padding: 3px 10px 3px 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            gap: 6px;
+            transition: background 0.15s ease;
+        }
+
+        .filter-chip:hover {
+            background: #d3e3fd;
+        }
+
+        .filter-chip .chip-remove {
+            cursor: pointer;
+            color: #0b57d0;
+            font-weight: bold;
+            font-size: 1rem;
+            line-height: 1;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-chip .chip-remove:hover {
+            background: rgba(11, 87, 208, 0.15);
+            color: #b3261e;
+        }
     </style>
 </head>
 
@@ -366,7 +403,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V10</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v10.1.0 (14-08-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v10.2.0 (17-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -493,6 +530,25 @@
                             <label style="font-size:0.8rem;margin:0;">Tot:</label>
                             <input type="date" id="filterEndDate" onchange="calculateMetrics()" style="width:140px;padding:4px;">
                         </div>
+                    </div>
+                </div>
+
+                <!-- Releasenaam Filter -->
+                <div class="stat-box" style="margin-bottom:1rem; grid-column: 1 / -1;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                        <span class="stat-label" title="Filter op Releasenaam: Filter alle cijfers op specifieke applicatienamen, prefixen of versies. Meerdere filters mogelijk (OF-relatie).">Filter op Releasenaam / Applicatie</span>
+                        <span id="releaseFilterCountBadge" style="font-size:0.75rem; color:#5e6c84; font-weight:normal;">Alle versies actief</span>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap;">
+                        <div style="display:flex;flex:1;min-width:280px;gap:6px;">
+                            <input type="text" id="releaseSearchInput" placeholder="Typ prefix, app-naam of versie (bijv: WEB | Zoekdienst of 2.) en druk op Enter..." style="padding:6px 10px;font-size:0.85rem;font-family:inherit;" oninput="onReleaseSearchInput()" onkeydown="handleReleaseSearchKeydown(event)">
+                            <button type="button" class="copy-btn" id="addReleaseFilterBtn" onclick="addReleaseSearchChip()" style="width:auto;padding:6px 14px;font-size:0.85rem;white-space:nowrap;">+ Toevoegen</button>
+                        </div>
+                        <button type="button" class="copy-btn" id="clearReleaseFiltersBtn" onclick="clearReleaseNameFilters()" style="display:none;width:auto;padding:6px 12px;font-size:0.85rem;color:#de350b;">Wis filters</button>
+                    </div>
+                    <div id="releaseFilterChips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+                    <div style="font-size:0.75rem;color:#6b778c;margin-top:6px;">
+                        💡 <strong>Tip:</strong> Druk op <kbd style="background:#eaecf0;border:1px solid #dfe1e6;padding:1px 5px;border-radius:3px;font-family:monospace;">Enter</kbd> of komma om een filter toe te voegen. Meerdere filters werken als <em>OF</em> (bijv. Zoekdienst OF Portaal). Binnen één filter worden woorden gecombineerd (bijv. <em>WEB Zoekdienst 2.</em>).
                     </div>
                 </div>
 
@@ -673,6 +729,141 @@
 
         let cfrChart = null;
 
+        let releaseNameFilters = [];
+        let cachedAllVersions = null;
+        let cachedAllIssuesRaw = null;
+        let releaseSearchInputDebounce = null;
+
+        function escapeHtml(str) {
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        function renderReleaseFilterChips() {
+            const container = document.getElementById('releaseFilterChips');
+            const clearBtn = document.getElementById('clearReleaseFiltersBtn');
+            if (!container) return;
+
+            container.innerHTML = '';
+            if (releaseNameFilters.length === 0) {
+                if (clearBtn) clearBtn.style.display = 'none';
+                return;
+            }
+
+            if (clearBtn) clearBtn.style.display = 'inline-block';
+
+            releaseNameFilters.forEach((term, idx) => {
+                const chip = document.createElement('span');
+                chip.className = 'filter-chip';
+                chip.innerHTML = `
+                    <span>${escapeHtml(term)}</span>
+                    <span class="chip-remove" onclick="removeReleaseNameFilter(${idx})" title="Verwijder filter">&times;</span>
+                `;
+                container.appendChild(chip);
+            });
+        }
+
+        function addReleaseSearchChip() {
+            const input = document.getElementById('releaseSearchInput');
+            if (!input) return;
+            const val = input.value.trim();
+            if (!val) return;
+
+            // Support comma-separated input like "WEB | Zoekdienst, WEB | Portaal"
+            const terms = val.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            let added = false;
+            terms.forEach(term => {
+                if (!releaseNameFilters.some(t => t.toLowerCase() === term.toLowerCase())) {
+                    releaseNameFilters.push(term);
+                    added = true;
+                }
+            });
+
+            input.value = '';
+            if (added) {
+                saveReleaseFilters();
+                renderReleaseFilterChips();
+                calculateMetrics();
+            }
+        }
+
+        function handleReleaseSearchKeydown(event) {
+            if (event.key === 'Enter' || event.key === ',') {
+                event.preventDefault();
+                addReleaseSearchChip();
+            }
+        }
+
+        function onReleaseSearchInput() {
+            clearTimeout(releaseSearchInputDebounce);
+            releaseSearchInputDebounce = setTimeout(() => {
+                calculateMetrics();
+            }, 250);
+        }
+
+        function removeReleaseNameFilter(index) {
+            if (index >= 0 && index < releaseNameFilters.length) {
+                releaseNameFilters.splice(index, 1);
+                saveReleaseFilters();
+                renderReleaseFilterChips();
+                calculateMetrics();
+            }
+        }
+
+        function clearReleaseNameFilters() {
+            releaseNameFilters = [];
+            const input = document.getElementById('releaseSearchInput');
+            if (input) input.value = '';
+            saveReleaseFilters();
+            renderReleaseFilterChips();
+            calculateMetrics();
+        }
+
+        function saveReleaseFilters() {
+            localStorage.setItem('dora_releaseNameFilters', JSON.stringify(releaseNameFilters));
+        }
+
+        function loadReleaseFilters() {
+            const saved = localStorage.getItem('dora_releaseNameFilters');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed)) {
+                        releaseNameFilters = parsed;
+                    }
+                } catch (e) {
+                    console.error('Fout bij het laden van opgeslagen release filters', e);
+                }
+            }
+            renderReleaseFilterChips();
+        }
+
+        function matchesReleaseFilter(versionName, filters, currentInput) {
+            const activeTerms = [...filters];
+            const trimmedInput = currentInput ? currentInput.trim() : '';
+            if (trimmedInput && !activeTerms.some(t => t.toLowerCase() === trimmedInput.toLowerCase())) {
+                trimmedInput.split(',').map(s => s.trim()).filter(s => s).forEach(t => {
+                    if (!activeTerms.some(existing => existing.toLowerCase() === t.toLowerCase())) {
+                        activeTerms.push(t);
+                    }
+                });
+            }
+
+            if (activeTerms.length === 0) return true;
+
+            const vName = (versionName || '').toLowerCase();
+
+            // OR-relatie tussen tags/termen: release moet aan minimaal één term voldoen
+            return activeTerms.some(term => {
+                // Tokenizeer de zoekterm op spaties (negeer losse pipe- en mintekens)
+                const tokens = term.toLowerCase().split(/\s+/).filter(t => t && t !== '|' && t !== '-');
+                if (tokens.length === 0) {
+                    return vName.includes(term.toLowerCase().trim());
+                }
+                // EN-relatie binnen één zoekterm: alle woorden/tokens moeten voorkomen
+                return tokens.every(token => vName.includes(token));
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const savedUrl = localStorage.getItem('dora_jiraUrl');
             const savedProject = localStorage.getItem('dora_projectKey');
@@ -691,6 +882,17 @@
             if (savedStartDate && document.getElementById('apiStartDate')) document.getElementById('apiStartDate').value = savedStartDate;
             if (savedEndDate && document.getElementById('apiEndDate')) document.getElementById('apiEndDate').value = savedEndDate;
             if (savedDateField && document.getElementById('apiDateField')) document.getElementById('apiDateField').value = savedDateField;
+
+            loadReleaseFilters();
+
+            const versionsFileInput = document.getElementById('versionsFile');
+            const issuesFileInput = document.getElementById('issuesFile');
+            if (versionsFileInput) {
+                versionsFileInput.addEventListener('change', () => { cachedAllVersions = null; });
+            }
+            if (issuesFileInput) {
+                issuesFileInput.addEventListener('change', () => { cachedAllIssuesRaw = null; });
+            }
 
             generateUrls();
         });
@@ -1403,8 +1605,8 @@
         }
 
         async function calculateMetrics() {
-            const versionsFile = document.getElementById('versionsFile').files[0];
-            const issuesFiles = document.getElementById('issuesFile').files;
+            const versionsFileInput = document.getElementById('versionsFile');
+            const issuesFileInput = document.getElementById('issuesFile');
 
             const errorMsg = document.getElementById('errorMessage');
             const dashboard = document.getElementById('summaryDashboard');
@@ -1414,38 +1616,55 @@
 
             globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
 
-            if (!versionsFile || issuesFiles.length === 0) {
-                errorMsg.textContent = "Upload a.u.b. de JSON-bestanden (versies en minimaal één issues bestand) in Stap 2.";
-                errorMsg.style.display = "block";
-                dashboard.style.display = "none";
-                resultsTable.style.display = "none";
-                return;
+            // Als cache leeg is, verifieer of bestanden geselecteerd zijn
+            if (!cachedAllVersions || !cachedAllIssuesRaw) {
+                const versionsFile = versionsFileInput ? versionsFileInput.files[0] : null;
+                const issuesFiles = issuesFileInput ? issuesFileInput.files : [];
+
+                if (!versionsFile || issuesFiles.length === 0) {
+                    errorMsg.textContent = "Upload a.u.b. de JSON-bestanden (versies en minimaal één issues bestand) in Stap 2.";
+                    errorMsg.style.display = "block";
+                    dashboard.style.display = "none";
+                    resultsTable.style.display = "none";
+                    return;
+                }
+
+                try {
+                    const allVersionsData = await readFileAsJson(versionsFile);
+
+                    if (!Array.isArray(allVersionsData)) {
+                        throw new Error("versies.json heeft niet het verwachte formaat (geen array van versies).");
+                    }
+
+                    let allIssuesData = [];
+                    for (let i = 0; i < issuesFiles.length; i++) {
+                        const issuesData = await readFileAsJson(issuesFiles[i]);
+                        if (!issuesData.issues || !Array.isArray(issuesData.issues)) {
+                            throw new Error(`Bestand ${issuesFiles[i].name} heeft niet het verwachte formaat (mist de 'issues' array).`);
+                        }
+                        allIssuesData = allIssuesData.concat(issuesData.issues);
+                    }
+
+                    // Dedupliceer issues op key over meerdere JSON-bestanden
+                    const uniqueIssuesMap = new Map();
+                    allIssuesData.forEach(issue => {
+                        if (issue.key && !uniqueIssuesMap.has(issue.key)) {
+                            uniqueIssuesMap.set(issue.key, issue);
+                        }
+                    });
+
+                    cachedAllVersions = allVersionsData;
+                    cachedAllIssuesRaw = Array.from(uniqueIssuesMap.values());
+                } catch (err) {
+                    cachedAllVersions = null;
+                    cachedAllIssuesRaw = null;
+                    throw err;
+                }
             }
 
             try {
-                const allVersions = await readFileAsJson(versionsFile);
-
-                if (!Array.isArray(allVersions)) {
-                    throw new Error("versies.json heeft niet het verwachte formaat (geen array van versies).");
-                }
-
-                let allIssuesRaw = [];
-                for (let i = 0; i < issuesFiles.length; i++) {
-                    const issuesData = await readFileAsJson(issuesFiles[i]);
-                    if (!issuesData.issues || !Array.isArray(issuesData.issues)) {
-                        throw new Error(`Bestand ${issuesFiles[i].name} heeft niet het verwachte formaat (mist de 'issues' array).`);
-                    }
-                    allIssuesRaw = allIssuesRaw.concat(issuesData.issues);
-                }
-
-                // Deduplicate issues by key across multiple uploaded JSON files:
-                const uniqueIssuesMap = new Map();
-                allIssuesRaw.forEach(issue => {
-                    if (issue.key && !uniqueIssuesMap.has(issue.key)) {
-                        uniqueIssuesMap.set(issue.key, issue);
-                    }
-                });
-                allIssuesRaw = Array.from(uniqueIssuesMap.values());
+                const allVersions = cachedAllVersions;
+                let allIssuesRaw = cachedAllIssuesRaw;
 
                 discoveredTeams.clear();
                 discoveredIssueTypes.clear();
@@ -1506,6 +1725,10 @@
                 let minDate = null;
                 let maxDate = null;
 
+                const currentSearchInput = document.getElementById('releaseSearchInput') ? document.getElementById('releaseSearchInput').value : '';
+                let totalAvailableReleases = 0;
+                let totalMatchingReleases = 0;
+
                 allVersions.forEach(v => {
                     const isReleased = v.released === true;
                     const isArchived = v.archived === true;
@@ -1517,6 +1740,15 @@
                     if (isArchived && incArchived) matchesStatus = true;
 
                     if (!matchesStatus) return;
+
+                    totalAvailableReleases++;
+
+                    // Releasenaam filter check (vrije tekst & meervoudige chips)
+                    if (!matchesReleaseFilter(v.name, releaseNameFilters, currentSearchInput)) {
+                        return;
+                    }
+
+                    totalMatchingReleases++;
 
                     let rDate = v.releaseDate ? new Date(v.releaseDate) : null;
                     let isFallbackDate = false;
@@ -1559,8 +1791,23 @@
                     }
                 });
 
+                // Update teller badge voor releasenaam filter
+                const countBadge = document.getElementById('releaseFilterCountBadge');
+                if (countBadge) {
+                    const hasActiveFilter = releaseNameFilters.length > 0 || (currentSearchInput && currentSearchInput.trim().length > 0);
+                    if (hasActiveFilter) {
+                        countBadge.textContent = `${totalMatchingReleases} van ${totalAvailableReleases} versies actief`;
+                        countBadge.style.color = '#0b57d0';
+                        countBadge.style.fontWeight = 'bold';
+                    } else {
+                        countBadge.textContent = `${totalAvailableReleases} versies actief (geen filter)`;
+                        countBadge.style.color = '#5e6c84';
+                        countBadge.style.fontWeight = 'normal';
+                    }
+                }
+
                 if (Object.keys(validVersions).length === 0) {
-                    errorMsg.textContent = "Geen versies gevonden voor de huidige filtercombinatie. Vink minimaal één release status aan of kies een ruimere periode.";
+                    errorMsg.textContent = "Geen versies gevonden voor de huidige filtercombinatie. Controleer je releasenaam-filter, release status of datumselectie.";
                     errorMsg.style.display = "block";
                     dashboard.style.display = "block";
                     resultsTable.style.display = "none";
@@ -1854,10 +2101,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "10.1.0";
+        const DASHBOARD_VERSION = "10.2.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V10 &bull; Versie 10.1.0 (14-08-2026)
+        DORA &amp; Performance Dashboard V10 &bull; Versie 10.2.0 (17-09-2026)
     </footer>
 </body>
 </html>
