@@ -456,7 +456,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V11</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.2.1 (17-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.3.0 (17-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -573,10 +573,12 @@
                 <div class="stat-box" style="margin-bottom:1rem; grid-column: 1 / -1;">
                     <span class="stat-label" title="Periode Filter: Filter alle cijfers op een specifieke datumreeks of kies een snelfilter.">Periode Filter</span>
                     <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px;">
-                        <button class="copy-btn" onclick="setDatePreset('all')">Alles in Data</button>
-                        <button class="copy-btn" onclick="setDatePreset('3m')">Laatste 3 Maanden</button>
-                        <button class="copy-btn" onclick="setDatePreset('6m')">Laatste 6 Maanden</button>
-                        <button class="copy-btn" onclick="setDatePreset('1y')">Dit Jaar (2026)</button>
+                        <button type="button" class="copy-btn" onclick="setDatePreset('current_month')">Deze Maand</button>
+                        <button type="button" class="copy-btn" onclick="setDatePreset('prev_month')">Vorige Maand</button>
+                        <button type="button" class="copy-btn" onclick="setDatePreset('ytd')">YTD (Jaar t/m Heden)</button>
+                        <button type="button" class="copy-btn" onclick="setDatePreset('3m')">Laatste 3 Mnd</button>
+                        <button type="button" class="copy-btn" onclick="setDatePreset('6m')">Laatste 6 Mnd</button>
+                        <button type="button" class="copy-btn" onclick="setDatePreset('all')">Alles in Data</button>
                         <div style="display:flex;align-items:center;gap:6px;margin-left:auto;">
                             <label style="font-size:0.8rem;margin:0;">Van:</label>
                             <input type="date" id="filterStartDate" onchange="calculateMetrics()" style="width:140px;padding:4px;">
@@ -592,6 +594,7 @@
                             <select id="comparisonMode" onchange="onComparisonModeChange()" style="padding:5px 8px;border-radius:4px;border:1px solid #dfe1e6;font-size:0.85rem;font-family:inherit;">
                                 <option value="none">Geen vergelijking</option>
                                 <option value="prev_month">Vorige maand (MoM)</option>
+                                <option value="ytd_prev_month">Cumulatief t.o.v. vorige maand (YTD MoM)</option>
                                 <option value="prev_quarter">Vorig kwartaal (QoQ)</option>
                                 <option value="prev_halfyear">Afgelopen half jaar</option>
                                 <option value="prev_year">Afgelopen jaar (YoY)</option>
@@ -1642,24 +1645,56 @@
         function setDatePreset(preset) {
             const startInput = document.getElementById('filterStartDate');
             const endInput = document.getElementById('filterEndDate');
-            const refDate = new Date(2026, 11, 31);
+
+            // Bepaal referentiedatum dynamisch op basis van de nieuwste release in geladen data, of val terug op heden
+            let refDate = new Date();
+            if (cachedAllVersions && cachedAllVersions.length > 0) {
+                let maxDataDate = null;
+                cachedAllVersions.forEach(v => {
+                    if (v.releaseDate) {
+                        const d = new Date(v.releaseDate);
+                        if (!isNaN(d.getTime()) && (!maxDataDate || d > maxDataDate)) {
+                            maxDataDate = d;
+                        }
+                    }
+                });
+                if (maxDataDate) refDate = maxDataDate;
+            }
+
+            const y = refDate.getFullYear();
+            const m = refDate.getMonth(); // 0-indexed
 
             if (preset === 'all') {
                 if (startInput) startInput.value = '';
                 if (endInput) endInput.value = '';
+            } else if (preset === 'current_month') {
+                const firstDay = new Date(y, m, 1);
+                const lastDay = new Date(y, m + 1, 0);
+                if (startInput) startInput.value = formatLocalDate(firstDay);
+                if (endInput) endInput.value = formatLocalDate(lastDay);
+            } else if (preset === 'prev_month') {
+                const firstDay = new Date(y, m - 1, 1);
+                const lastDay = new Date(y, m, 0);
+                if (startInput) startInput.value = formatLocalDate(firstDay);
+                if (endInput) endInput.value = formatLocalDate(lastDay);
+            } else if (preset === 'ytd') {
+                const firstDay = new Date(y, 0, 1);
+                const lastDay = new Date(y, m + 1, 0);
+                if (startInput) startInput.value = formatLocalDate(firstDay);
+                if (endInput) endInput.value = formatLocalDate(lastDay);
             } else if (preset === '3m') {
-                let d = new Date(refDate);
-                d.setMonth(d.getMonth() - 3);
-                if (startInput) startInput.value = d.toISOString().split('T')[0];
-                if (endInput) endInput.value = refDate.toISOString().split('T')[0];
+                const lastDay = new Date(y, m + 1, 0);
+                let d = new Date(y, m - 2, 1);
+                if (startInput) startInput.value = formatLocalDate(d);
+                if (endInput) endInput.value = formatLocalDate(lastDay);
             } else if (preset === '6m') {
-                let d = new Date(refDate);
-                d.setMonth(d.getMonth() - 6);
-                if (startInput) startInput.value = d.toISOString().split('T')[0];
-                if (endInput) endInput.value = refDate.toISOString().split('T')[0];
+                const lastDay = new Date(y, m + 1, 0);
+                let d = new Date(y, m - 5, 1);
+                if (startInput) startInput.value = formatLocalDate(d);
+                if (endInput) endInput.value = formatLocalDate(lastDay);
             } else if (preset === '1y') {
-                if (startInput) startInput.value = '2026-01-01';
-                if (endInput) endInput.value = '2026-12-31';
+                if (startInput) startInput.value = `${y}-01-01`;
+                if (endInput) endInput.value = `${y}-12-31`;
             }
             calculateMetrics();
         }
@@ -1841,6 +1876,19 @@
                     cs = new Date(s.getFullYear(), s.getMonth() - 1, s.getDate());
                     ce = new Date(e.getFullYear(), e.getMonth() - 1, e.getDate());
                 }
+            } else if (mode === 'ytd_prev_month') {
+                // Cumulatief t.o.v. vorige maand: zelfde startdatum als huidige periode,
+                // maar de referentie-einddatum schuift 1 maand terug (bijv 1 jan - 30 sep vs 1 jan - 31 aug).
+                cs = new Date(s.getFullYear(), s.getMonth(), s.getDate());
+                let isEndLast = new Date(e.getFullYear(), e.getMonth() + 1, 0).getDate() === e.getDate();
+                if (isEndLast) {
+                    ce = new Date(e.getFullYear(), e.getMonth(), 0);
+                } else {
+                    ce = new Date(e.getFullYear(), e.getMonth() - 1, e.getDate());
+                }
+                if (cs > ce) {
+                    return { invalidYtd: true, isYtdMoM: true };
+                }
             } else if (mode === 'prev_quarter') {
                 cs = new Date(s.getFullYear(), s.getMonth() - 3, s.getDate());
                 ce = new Date(e.getFullYear(), e.getMonth() - 3, e.getDate());
@@ -1865,7 +1913,8 @@
                 startLimit: cs,
                 endLimit: new Date(endFormatted + "T23:59:59"),
                 startStr: startFormatted,
-                endStr: endFormatted
+                endStr: endFormatted,
+                isYtdMoM: mode === 'ytd_prev_month'
             };
         }
 
@@ -2509,6 +2558,13 @@
                                     compLabelEl.style.color = '#5e6c84';
                                 }
                             }
+                        } else if (compRange.invalidYtd) {
+                            comparisonPeriodMetrics = null;
+                            hideAllTrendBadges();
+                            if (compLabelEl) {
+                                compLabelEl.textContent = `⚠️ Cumulatief MoM vereist een periode van minimaal 2 maanden`;
+                                compLabelEl.style.color = '#de350b';
+                            }
                         } else if (compRange.startLimit && compRange.endLimit && compRange.startLimit > compRange.endLimit) {
                             comparisonPeriodMetrics = null;
                             hideAllTrendBadges();
@@ -2518,7 +2574,8 @@
                             }
                         } else {
                             if (compLabelEl) {
-                                compLabelEl.textContent = `Ref: ${formatDateNl(compRange.startLimit)} t/m ${formatDateNl(compRange.endLimit)}`;
+                                const suffix = compRange.isYtdMoM ? ' (YTD t/m vorige mnd)' : '';
+                                compLabelEl.textContent = `Ref: ${formatDateNl(compRange.startLimit)} t/m ${formatDateNl(compRange.endLimit)}${suffix}`;
                                 compLabelEl.style.color = '#0b57d0';
                             }
 
@@ -2606,10 +2663,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "11.2.1";
+        const DASHBOARD_VERSION = "11.3.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V11 &bull; Versie 11.2.1 (17-09-2026)
+        DORA &amp; Performance Dashboard V11 &bull; Versie 11.3.0 (17-09-2026)
     </footer>
 </body>
 </html>
