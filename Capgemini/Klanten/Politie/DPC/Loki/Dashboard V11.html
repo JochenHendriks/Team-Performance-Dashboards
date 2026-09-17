@@ -241,6 +241,40 @@
             cursor: help;
         }
 
+        .trend-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-top: 4px;
+            margin-bottom: 2px;
+            width: fit-content;
+            line-height: 1.3;
+            user-select: none;
+            cursor: default;
+        }
+
+        .trend-good {
+            background: #e3fcef;
+            color: #006644;
+            border: 1px solid #abf5d1;
+        }
+
+        .trend-bad {
+            background: #ffebe6;
+            color: #bf2600;
+            border: 1px solid #ffbdad;
+        }
+
+        .trend-neutral {
+            background: #f4f5f7;
+            color: #5e6c84;
+            border: 1px solid #dfe1e6;
+        }
+
         .section-title {
             font-size: 0.95rem;
             font-weight: bold;
@@ -422,7 +456,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V11</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.1.1 (17-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.2.0 (17-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -550,6 +584,29 @@
                             <input type="date" id="filterEndDate" onchange="calculateMetrics()" style="width:140px;padding:4px;">
                         </div>
                     </div>
+
+                    <!-- Vergelijkingsperiode Selectie -->
+                    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px;padding-top:10px;border-top:1px dashed #dfe1e6;">
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <label for="comparisonMode" style="font-size:0.85rem;margin:0;font-weight:600;white-space:nowrap;">⚖️ Vergelijk met:</label>
+                            <select id="comparisonMode" onchange="onComparisonModeChange()" style="padding:5px 8px;border-radius:4px;border:1px solid #dfe1e6;font-size:0.85rem;font-family:inherit;">
+                                <option value="none">Geen vergelijking</option>
+                                <option value="prev_month">Vorige maand (MoM)</option>
+                                <option value="prev_quarter">Vorig kwartaal (QoQ)</option>
+                                <option value="prev_halfyear">Afgelopen half jaar</option>
+                                <option value="prev_year">Afgelopen jaar (YoY)</option>
+                                <option value="previous_period">Voorgaande periode (gelijke lengte)</option>
+                                <option value="custom">Aangepaste referentieperiode...</option>
+                            </select>
+                        </div>
+                        <div id="customCompDates" style="display:none;align-items:center;gap:6px;">
+                            <label style="font-size:0.8rem;margin:0;">Ref Van:</label>
+                            <input type="date" id="compStartDate" onchange="calculateMetrics()" style="width:140px;padding:4px;">
+                            <label style="font-size:0.8rem;margin:0;">Ref Tot:</label>
+                            <input type="date" id="compEndDate" onchange="calculateMetrics()" style="width:140px;padding:4px;">
+                        </div>
+                        <div id="comparisonPeriodLabel" style="font-size:0.78rem;color:#0b57d0;font-weight:500;margin-left:auto;"></div>
+                    </div>
                 </div>
 
                 <!-- Releasenaam Filter -->
@@ -651,11 +708,13 @@
                 <div class="stat-box">
                     <span class="stat-label" title="Deployment Frequency (DF): Het gemiddeld aantal uitgebrachte releases per maand. Formule: Totaal Actieve Releases / Aantal Maanden in de gekozen periode.">Deployment Freq. (DF)</span>
                     <span class="stat-value" id="sumDf">0/mnd</span>
+                    <span class="trend-badge" id="trendDf" style="display:none;"></span>
                     <div class="stat-subtext">Snelheid van opleveren</div>
                 </div>
                 <div class="stat-box">
                     <span class="stat-label" title="Lead Time for Changes (LTC): De gemiddelde tijdsduur vanaf het aanmaken van een ticket (Story/Task) tot de officiële releasedatum. Formule: Som(releaseDate - created) / Aantal Changes.">Lead Time for Changes (LTC)</span>
                     <span class="stat-value" id="sumLtc">0 dagen</span>
+                    <span class="trend-badge" id="trendLtc" style="display:none;"></span>
                     <div class="stat-subtext">Aanmaak tot livegang</div>
                 </div>
                 <div class="stat-box">
@@ -664,11 +723,13 @@
                         <span class="stat-value" id="sumCfr"
                             style="padding: 4px 8px; border-radius: 4px; color: white; display: inline-block;">0%</span>
                     </div>
+                    <span class="trend-badge" id="trendCfr" style="display:none;"></span>
                     <div class="stat-subtext" id="subCfr">Gefaalde releases %</div>
                 </div>
                 <div class="stat-box">
                     <span class="stat-label" title="Mean Time to Restore (MTTR): De gemiddelde hersteltijd van gemelde fouten/bugs (van aanmaak tot afronding). Formule: Som(resolutionDate - created) / Aantal Bugs.">Mean Time to Restore (MTTR)</span>
                     <span class="stat-value" id="sumMttr">N/A</span>
+                    <span class="trend-badge" id="trendMttr" style="display:none;"></span>
                     <div class="stat-subtext" id="subMttr">Aanpak tot herstel</div>
                 </div>
             </div>
@@ -679,21 +740,25 @@
                 <div class="stat-box">
                     <span class="stat-label" title="Defect Escape Rate: Het percentage van alle bugs dat pas in productie is ontdekt (Post-release). Formule: (Post-release Bugs / Totaal Aantal Bugs) * 100.">Defect Escape Rate</span>
                     <span class="stat-value" id="sumEscapeRate" style="color: #de350b;">0%</span>
+                    <span class="trend-badge" id="trendEscapeRate" style="display:none;"></span>
                     <div class="stat-subtext" id="subEscapeRate">Post-release vs Totaal</div>
                 </div>
                 <div class="stat-box">
                     <span class="stat-label" title="Mean Time to Detect (MTTD): De gemiddelde tijd tussen de livegang van een release en het moment dat de post-release bug is gemeld. Formule: Som(created - releaseDate) / Aantal Post-release Bugs.">Time to Detect (MTTD)</span>
                     <span class="stat-value" id="sumMttd">N/A</span>
+                    <span class="trend-badge" id="trendMttd" style="display:none;"></span>
                     <div class="stat-subtext" id="subMttd">Livegang tot bugmelding</div>
                 </div>
                 <div class="stat-box">
                     <span class="stat-label" title="Investment Mix: De verhouding van de teamcapaciteit besteed aan nieuwe functionaliteit (Stories/Tasks) vs. foutherstel (Bugs). Formule: Features % vs. Bugs % van alle verwerkte tickets.">Investment Mix</span>
                     <span class="stat-value" id="sumMix">0% / 0%</span>
+                    <span class="trend-badge" id="trendMix" style="display:none;"></span>
                     <div class="stat-subtext" id="subMix">Features % / Bugs %</div>
                 </div>
                 <div class="stat-box">
                     <span class="stat-label" title="Releases &amp; Changes: Totaaloverzicht van het aantal unieke actieve releases en de hoeveelheid verwerkte changes/functionaliteiten in de gekozen periode.">Releases &amp; Changes</span>
                     <span class="stat-value" id="sumReleasesSummary">0 / 0</span>
+                    <span class="trend-badge" id="trendReleasesSummary" style="display:none;"></span>
                     <div class="stat-subtext" id="subReleasesSummary">Actieve releases / Changes</div>
                 </div>
                 <div class="stat-box" style="flex: 1; min-width: 250px;">
@@ -752,6 +817,8 @@
         let cachedAllVersions = null;
         let cachedAllIssuesRaw = null;
         let releaseSearchInputDebounce = null;
+        let currentPeriodMetrics = null;
+        let comparisonPeriodMetrics = null;
 
         function escapeHtml(str) {
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -1402,9 +1469,10 @@
 
             // 1. MTTR
             let mttrText = "N/A";
+            let curAvgMttrHrs = null;
             if (combined.mttrCount > 0) {
-                let avgHrs = combined.mttrHours / combined.mttrCount;
-                mttrText = avgHrs > 48 ? (avgHrs / 24).toFixed(1) + " dagen" : avgHrs.toFixed(1) + " uur";
+                curAvgMttrHrs = combined.mttrHours / combined.mttrCount;
+                mttrText = curAvgMttrHrs > 48 ? (curAvgMttrHrs / 24).toFixed(1) + " dagen" : curAvgMttrHrs.toFixed(1) + " uur";
             }
             document.getElementById('sumMttr').textContent = mttrText;
             const subMttr = document.getElementById('subMttr');
@@ -1415,9 +1483,10 @@
 
             // 2. MTTD
             let mttdText = "N/A";
+            let curAvgMttdHrs = null;
             if (combined.mttdCount > 0) {
-                let avgMttdHrs = combined.mttdHours / combined.mttdCount;
-                mttdText = avgMttdHrs > 48 ? (avgMttdHrs / 24).toFixed(1) + " dagen" : avgMttdHrs.toFixed(1) + " uur";
+                curAvgMttdHrs = combined.mttdHours / combined.mttdCount;
+                mttdText = curAvgMttdHrs > 48 ? (curAvgMttdHrs / 24).toFixed(1) + " dagen" : curAvgMttdHrs.toFixed(1) + " uur";
             }
             document.getElementById('sumMttd').textContent = mttdText;
             const subMttd = document.getElementById('subMttd');
@@ -1438,6 +1507,70 @@
                 }
                 subEscapeRate.title = tooltipText;
             }
+
+            // Update Comparison Trend Badges for Quality Metrics
+            if (comparisonPeriodMetrics && comparisonPeriodMetrics.severityMetrics) {
+                let compCombined = { mttrHours: 0, mttrCount: 0, mttdHours: 0, mttdCount: 0, totalBugs: 0, postReleaseBugs: 0 };
+                if (isAllSelected) {
+                    compCombined = comparisonPeriodMetrics.severityMetrics.total;
+                } else {
+                    selectedQualityPriorities.forEach(prio => {
+                        let m = comparisonPeriodMetrics.severityMetrics.byPriority[prio];
+                        if (m) {
+                            compCombined.mttrHours += m.mttrHours;
+                            compCombined.mttrCount += m.mttrCount;
+                            compCombined.mttdHours += m.mttdHours;
+                            compCombined.mttdCount += m.mttdCount;
+                            compCombined.totalBugs += m.totalBugs;
+                            compCombined.postReleaseBugs += m.postReleaseBugs;
+                        }
+                    });
+                }
+
+                const compEscapeRate = compCombined.totalBugs > 0 ? ((compCombined.postReleaseBugs / compCombined.totalBugs) * 100) : null;
+                const curEscapeRateVal = combined.totalBugs > 0 ? escapeRate : null;
+                renderTrendBadge('trendEscapeRate', curEscapeRateVal, compEscapeRate, {
+                    invert: true,
+                    unit: '%pt',
+                    decimals: 1,
+                    threshold: 0.1
+                });
+
+                const compAvgMttrHrs = compCombined.mttrCount > 0 ? (compCombined.mttrHours / compCombined.mttrCount) : null;
+                if (curAvgMttrHrs !== null && compAvgMttrHrs !== null) {
+                    const curMttrDays = curAvgMttrHrs / 24;
+                    const compMttrDays = compAvgMttrHrs / 24;
+                    renderTrendBadge('trendMttr', curMttrDays, compMttrDays, {
+                        invert: true,
+                        unit: ' dgn',
+                        decimals: 1,
+                        threshold: 0.1
+                    });
+                } else {
+                    const el = document.getElementById('trendMttr');
+                    if (el) el.style.display = 'none';
+                }
+
+                const compAvgMttdHrs = compCombined.mttdCount > 0 ? (compCombined.mttdHours / compCombined.mttdCount) : null;
+                if (curAvgMttdHrs !== null && compAvgMttdHrs !== null) {
+                    const curMttdDays = curAvgMttdHrs / 24;
+                    const compMttdDays = compAvgMttdHrs / 24;
+                    renderTrendBadge('trendMttd', curMttdDays, compMttdDays, {
+                        invert: true,
+                        unit: ' dgn',
+                        decimals: 1,
+                        threshold: 0.1
+                    });
+                } else {
+                    const el = document.getElementById('trendMttd');
+                    if (el) el.style.display = 'none';
+                }
+            } else {
+                ['trendEscapeRate', 'trendMttr', 'trendMttd'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.style.display = 'none';
+                });
+            }
         }
 
         function resetStatsToZero() {
@@ -1455,6 +1588,7 @@
             document.getElementById('sumReleasesSummary').textContent = "0 / 0";
             document.getElementById('subReleasesSummary').textContent = "0 gefaald (0%)";
             document.getElementById('sumSeverity').innerHTML = "";
+            hideAllTrendBadges();
             if (cfrChart) {
                 cfrChart.destroy();
                 cfrChart = null;
@@ -1657,6 +1791,503 @@
             });
         }
 
+        function parseLocalDate(str) {
+            if (!str) return null;
+            if (str instanceof Date) return new Date(str.getFullYear(), str.getMonth(), str.getDate());
+            const parts = str.split("T")[0].split("-").map(Number);
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+        }
+
+        function formatLocalDate(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            return `${y}-${m}-${day}`;
+        }
+
+        function getComparisonDateRange(startStr, endStr, mode, datasetMin, datasetMax) {
+            if (mode === 'none') return null;
+
+            if (mode === 'custom') {
+                const cStartVal = document.getElementById('compStartDate') ? document.getElementById('compStartDate').value : '';
+                const cEndVal = document.getElementById('compEndDate') ? document.getElementById('compEndDate').value : '';
+                if (!cStartVal && !cEndVal) return null;
+                const cs = cStartVal ? parseLocalDate(cStartVal) : null;
+                const ce = cEndVal ? parseLocalDate(cEndVal) : null;
+                return {
+                    startLimit: cs,
+                    endLimit: ce ? new Date(cEndVal + "T23:59:59") : null,
+                    startStr: cStartVal,
+                    endStr: cEndVal
+                };
+            }
+
+            let s = startStr ? parseLocalDate(startStr) : (datasetMin ? new Date(datasetMin.getFullYear(), datasetMin.getMonth(), datasetMin.getDate()) : null);
+            let e = endStr ? parseLocalDate(endStr) : (datasetMax ? new Date(datasetMax.getFullYear(), datasetMax.getMonth(), datasetMax.getDate()) : null);
+
+            if (!s || !e) return null;
+
+            let cs, ce;
+
+            if (mode === 'prev_month') {
+                let isStartFirst = s.getDate() === 1;
+                let isEndLast = new Date(e.getFullYear(), e.getMonth() + 1, 0).getDate() === e.getDate();
+                if (isStartFirst && isEndLast && s.getMonth() === e.getMonth() && s.getFullYear() === e.getFullYear()) {
+                    cs = new Date(s.getFullYear(), s.getMonth() - 1, 1);
+                    ce = new Date(s.getFullYear(), s.getMonth(), 0);
+                } else {
+                    cs = new Date(s.getFullYear(), s.getMonth() - 1, s.getDate());
+                    ce = new Date(e.getFullYear(), e.getMonth() - 1, e.getDate());
+                }
+            } else if (mode === 'prev_quarter') {
+                cs = new Date(s.getFullYear(), s.getMonth() - 3, s.getDate());
+                ce = new Date(e.getFullYear(), e.getMonth() - 3, e.getDate());
+            } else if (mode === 'prev_halfyear') {
+                cs = new Date(s.getFullYear(), s.getMonth() - 6, s.getDate());
+                ce = new Date(e.getFullYear(), e.getMonth() - 6, e.getDate());
+            } else if (mode === 'prev_year') {
+                cs = new Date(s.getFullYear() - 1, s.getMonth(), s.getDate());
+                ce = new Date(e.getFullYear() - 1, e.getMonth(), e.getDate());
+            } else if (mode === 'previous_period') {
+                let dur = e.getTime() - s.getTime();
+                ce = new Date(s.getTime() - 24 * 60 * 60 * 1000);
+                cs = new Date(ce.getTime() - dur);
+            } else {
+                return null;
+            }
+
+            const startFormatted = formatLocalDate(cs);
+            const endFormatted = formatLocalDate(ce);
+
+            return {
+                startLimit: cs,
+                endLimit: new Date(endFormatted + "T23:59:59"),
+                startStr: startFormatted,
+                endStr: endFormatted
+            };
+        }
+
+        function hideAllTrendBadges() {
+            ['trendDf', 'trendLtc', 'trendCfr', 'trendMttr', 'trendEscapeRate', 'trendMttd', 'trendMix', 'trendReleasesSummary'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+        }
+
+        function onComparisonModeChange() {
+            const mode = document.getElementById('comparisonMode') ? document.getElementById('comparisonMode').value : 'none';
+            const customDiv = document.getElementById('customCompDates');
+            if (customDiv) {
+                customDiv.style.display = mode === 'custom' ? 'inline-flex' : 'none';
+            }
+            calculateMetrics();
+        }
+
+        function renderTrendBadge(badgeId, currentVal, compVal, options = {}) {
+            const el = document.getElementById(badgeId);
+            if (!el) return;
+
+            if (currentVal === null || currentVal === undefined || isNaN(currentVal) ||
+                compVal === null || compVal === undefined || isNaN(compVal)) {
+                el.style.display = 'none';
+                return;
+            }
+
+            const {
+                invert = false,
+                unit = '',
+                decimals = 1,
+                threshold = 0.05
+            } = options;
+
+            const diff = currentVal - compVal;
+            const absDiff = Math.abs(diff);
+
+            el.className = 'trend-badge';
+
+            if (absDiff <= threshold) {
+                el.classList.add('trend-neutral');
+                el.innerHTML = `— Gelijk (${diff >= 0 ? '+' : ''}${diff.toFixed(decimals)}${unit})`;
+                el.title = `Gelijk gebleven t.o.v. vergelijkingsperiode (was ${compVal.toFixed(decimals)}${unit})`;
+            } else if (diff > 0) {
+                const isGood = !invert;
+                el.classList.add(isGood ? 'trend-good' : 'trend-bad');
+                el.innerHTML = `▲ +${diff.toFixed(decimals)}${unit}`;
+                el.title = `Gestegen van ${compVal.toFixed(decimals)}${unit} naar ${currentVal.toFixed(decimals)}${unit} (+${diff.toFixed(decimals)}${unit})`;
+            } else {
+                const isGood = invert;
+                el.classList.add(isGood ? 'trend-good' : 'trend-bad');
+                el.innerHTML = `▼ ${diff.toFixed(decimals)}${unit}`;
+                el.title = `Gedaald van ${compVal.toFixed(decimals)}${unit} naar ${currentVal.toFixed(decimals)}${unit} (${diff.toFixed(decimals)}${unit})`;
+            }
+
+            el.style.display = 'inline-flex';
+        }
+
+        function renderReleasesSummaryTrendBadge(cur, comp) {
+            const el = document.getElementById('trendReleasesSummary');
+            if (!el) return;
+            if (!cur || !comp) {
+                el.style.display = 'none';
+                return;
+            }
+            const diffRel = cur.activeReleasesCount - comp.activeReleasesCount;
+            const diffChg = cur.numChanges - comp.numChanges;
+            el.className = 'trend-badge';
+
+            if (diffRel === 0 && diffChg === 0) {
+                el.classList.add('trend-neutral');
+                el.innerHTML = `— Gelijk`;
+            } else if (diffRel >= 0 && diffChg >= 0) {
+                el.classList.add('trend-good');
+                el.innerHTML = `▲ +${diffRel} rel / +${diffChg} chg`;
+            } else if (diffRel <= 0 && diffChg <= 0) {
+                el.classList.add('trend-bad');
+                el.innerHTML = `▼ ${diffRel} rel / ${diffChg} chg`;
+            } else {
+                el.classList.add('trend-neutral');
+                el.innerHTML = `${diffRel >= 0 ? '▲ +' : '▼ '}${diffRel} rel / ${diffChg >= 0 ? '+' : ''}${diffChg} chg`;
+            }
+            el.title = `Referentie: ${comp.activeReleasesCount} releases en ${comp.numChanges} changes`;
+            el.style.display = 'inline-flex';
+        }
+
+        function computePeriodMetrics(allVersions, allIssuesRaw, filterStartLimit, filterEndLimit, ltcMode, statusConfig, releaseFilters, currentSearchInput) {
+            const { incReleased, incUnreleased, incArchived } = statusConfig;
+            const validVersions = {};
+            let minDate = null;
+            let maxDate = null;
+            let totalAvailableReleases = 0;
+            let totalMatchingReleases = 0;
+
+            allVersions.forEach(v => {
+                const isReleased = v.released === true;
+                const isArchived = v.archived === true;
+                const isUnreleased = !v.released && !v.archived;
+
+                let matchesStatus = false;
+                if (isReleased && incReleased) matchesStatus = true;
+                if (isUnreleased && incUnreleased) matchesStatus = true;
+                if (isArchived && incArchived) matchesStatus = true;
+
+                if (!matchesStatus) return;
+
+                let rDate = v.releaseDate ? new Date(v.releaseDate) : null;
+                let isFallbackDate = false;
+
+                if (!rDate) {
+                    let maxDateInVersion = null;
+                    allIssuesRaw.forEach(issue => {
+                        const fixV = issue.fields.fixVersions || [];
+                        if (fixV.some(fv => fv.name === v.name)) {
+                            let d = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : (issue.fields.updated ? new Date(issue.fields.updated) : new Date(issue.fields.created));
+                            if (d && (!maxDateInVersion || d > maxDateInVersion)) {
+                                maxDateInVersion = d;
+                            }
+                        }
+                    });
+                    if (maxDateInVersion) {
+                        rDate = maxDateInVersion;
+                        isFallbackDate = true;
+                    }
+                }
+
+                if (!rDate) return;
+                if (filterStartLimit && rDate < filterStartLimit) return;
+                if (filterEndLimit && rDate > filterEndLimit) return;
+
+                totalAvailableReleases++;
+
+                if (!matchesReleaseFilter(v.name, releaseFilters, currentSearchInput)) {
+                    return;
+                }
+
+                totalMatchingReleases++;
+
+                validVersions[v.name] = {
+                    id: v.id,
+                    name: v.name,
+                    releaseDate: rDate,
+                    isFallbackDate: isFallbackDate,
+                    isUnreleased: isUnreleased,
+                    changes: 0,
+                    bugs: 0,
+                    hasSeverePostBug: false,
+                    hasSevereBug: false,
+                    issues: []
+                };
+                if (!minDate || rDate < minDate) minDate = rDate;
+                if (!maxDate || rDate > maxDate) maxDate = rDate;
+            });
+
+            let teamFilteredIssues = allIssuesRaw.filter(issue => {
+                const team = extractTeam(issue).toLowerCase().trim();
+                return selectedTeams.has(team);
+            });
+
+            let uniqueChanges = new Set();
+            let allUniqueBugs = new Map();
+            let totalLtcDays = 0;
+            let ltcCount = 0;
+
+            teamFilteredIssues.forEach(issue => {
+                const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
+                const typeLower = typeName.toLowerCase().trim();
+
+                const isChange = selectedChangeTypes.has(typeLower);
+                if (!isChange) return;
+
+                const key = issue.key;
+                const summary = issue.fields.summary || "Geen titel";
+                const createdDate = new Date(issue.fields.created);
+                let resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
+
+                let earliestReleaseDate = null;
+                if (issue.fields.fixVersions) {
+                    issue.fields.fixVersions.forEach(fv => {
+                        const vName = fv.name;
+                        if (validVersions[vName]) {
+                            validVersions[vName].changes += 1;
+                            uniqueChanges.add(key);
+                            validVersions[vName].issues.push({ key, summary, type: 'Change' });
+
+                            const rDate = validVersions[vName].releaseDate;
+                            if (!earliestReleaseDate || rDate < earliestReleaseDate) {
+                                earliestReleaseDate = rDate;
+                            }
+                        }
+                    });
+                }
+
+                const targetDate = ltcMode === 'done' ? resolvedDate : (earliestReleaseDate || resolvedDate);
+                if (targetDate && createdDate && targetDate >= createdDate) {
+                    let diffDays = (targetDate - createdDate) / (1000 * 60 * 60 * 24);
+                    totalLtcDays += diffDays;
+                    ltcCount++;
+                }
+            });
+
+            let postReleaseBugsCount = 0;
+            let totalMttdHours = 0;
+            let mttdCount = 0;
+
+            teamFilteredIssues.forEach(issue => {
+                const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
+                const typeLower = typeName.toLowerCase().trim();
+
+                const isBug = selectedBugTypes.has(typeLower);
+                if (!isBug) return;
+
+                const key = issue.key;
+                const createdDate = new Date(issue.fields.created);
+                let resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
+
+                if (!resolvedDate && issue.fields.status && issue.fields.status.statusCategory && issue.fields.status.statusCategory.key === 'done') {
+                    if (issue.fields.updated) resolvedDate = new Date(issue.fields.updated);
+                }
+
+                const summary = issue.fields.summary || "Geen titel";
+                const priority = issue.fields.priority ? issue.fields.priority.name : "Onbekend";
+
+                const affectedVersions = issue.fields.versions || [];
+                const fixVersions = issue.fields.fixVersions || [];
+                const isFallbackNeeded = affectedVersions.length === 0;
+
+                let belongsToValidVersion = false;
+                let bugIsFailureTrigger = false;
+                let bugReleaseDate = null;
+
+                Object.keys(validVersions).forEach(vName => {
+                    const versionData = validVersions[vName];
+                    const isAffected = affectedVersions.some(v => v.name === vName);
+                    const isFixed = fixVersions.some(v => v.name === vName);
+
+                    if (isAffected || isFixed) {
+                        belongsToValidVersion = true;
+                        let isFailureTrigger = false;
+                        let displayTag = '';
+
+                        if (isAffected) {
+                            isFailureTrigger = true;
+                            displayTag = 'Oorzaak: deze release';
+                        } else if (isFixed && isFallbackNeeded) {
+                            if (versionData.changes === 0 || createdDate >= versionData.releaseDate) {
+                                isFailureTrigger = true;
+                                displayTag = 'Post-release (Fallback)';
+                            } else {
+                                displayTag = 'Pre-release';
+                            }
+                        } else if (isFixed && !isFallbackNeeded) {
+                            displayTag = 'Fix voor oudere release';
+                        }
+
+                        if (isFixed && isSeverePriority(priority)) {
+                            versionData.hasSevereBug = true;
+                        }
+
+                        if (isFailureTrigger) {
+                            bugIsFailureTrigger = true;
+                            bugReleaseDate = versionData.releaseDate;
+                            versionData.bugs += 1;
+                            postReleaseBugsCount++;
+
+                            if (isSeverePriority(priority)) {
+                                versionData.hasSeverePostBug = true;
+                            }
+
+                            if (createdDate && versionData.releaseDate && createdDate >= versionData.releaseDate) {
+                                let diffHrs = (createdDate - versionData.releaseDate) / (1000 * 60 * 60);
+                                if (diffHrs >= 0) {
+                                    totalMttdHours += diffHrs;
+                                    mttdCount++;
+                                }
+                            }
+                        }
+
+                        versionData.issues.push({
+                            key, summary, type: 'Bug', priority, displayTag, isFailureTrigger
+                        });
+                    }
+                });
+
+                if (belongsToValidVersion) {
+                    if (!allUniqueBugs.has(key)) {
+                        allUniqueBugs.set(key, {
+                            createdDate,
+                            resolvedDate,
+                            priority,
+                            isFailureTrigger: bugIsFailureTrigger,
+                            releaseDate: bugReleaseDate
+                        });
+                    }
+                }
+            });
+
+            const numChanges = uniqueChanges.size;
+            const totalNumBugs = allUniqueBugs.size;
+            let prioritiesCount = {};
+
+            const severityMetrics = {
+                total: { mttrHours: 0, mttrCount: 0, mttdHours: 0, mttdCount: 0, totalBugs: 0, postReleaseBugs: 0 },
+                byPriority: {}
+            };
+
+            allUniqueBugs.forEach((data, key) => {
+                let prio = data.priority || "Onbekend";
+                prioritiesCount[prio] = (prioritiesCount[prio] || 0) + 1;
+
+                if (!severityMetrics.byPriority[prio]) {
+                    severityMetrics.byPriority[prio] = {
+                        mttrHours: 0, mttrCount: 0,
+                        mttdHours: 0, mttdCount: 0,
+                        totalBugs: 0, postReleaseBugs: 0
+                    };
+                }
+
+                severityMetrics.total.totalBugs++;
+                severityMetrics.byPriority[prio].totalBugs++;
+
+                if (data.isFailureTrigger) {
+                    severityMetrics.total.postReleaseBugs++;
+                    severityMetrics.byPriority[prio].postReleaseBugs++;
+
+                    if (data.createdDate && data.releaseDate && data.createdDate >= data.releaseDate) {
+                        let diffHrs = (data.createdDate - data.releaseDate) / (1000 * 60 * 60);
+                        if (diffHrs >= 0) {
+                            severityMetrics.total.mttdHours += diffHrs;
+                            severityMetrics.total.mttdCount++;
+                            severityMetrics.byPriority[prio].mttdHours += diffHrs;
+                            severityMetrics.byPriority[prio].mttdCount++;
+                        }
+                    }
+                }
+
+                if (data.createdDate && data.resolvedDate) {
+                    let diffHrs = (data.resolvedDate - data.createdDate) / (1000 * 60 * 60);
+                    if (diffHrs >= 0) {
+                        severityMetrics.total.mttrHours += diffHrs;
+                        severityMetrics.total.mttrCount++;
+                        severityMetrics.byPriority[prio].mttrHours += diffHrs;
+                        severityMetrics.byPriority[prio].mttrCount++;
+                    }
+                }
+            });
+
+            let failedReleasesCount = 0;
+            let activeReleasesCount = 0;
+            const tableData = [];
+
+            Object.keys(validVersions).forEach(versionName => {
+                const data = validVersions[versionName];
+
+                if (data.changes === 0 && data.bugs === 0 && data.issues.length === 0) return;
+
+                activeReleasesCount++;
+
+                const isHotfix = data.changes === 0 && data.hasSevereBug;
+                const isFailed = isHotfix || data.hasSeverePostBug;
+
+                if (isFailed) failedReleasesCount++;
+
+                tableData.push({
+                    id: data.id, name: data.name, releaseDate: data.releaseDate,
+                    changes: data.changes, bugs: data.bugs, isHotfix: isHotfix, isFailed: isFailed,
+                    isUnreleased: data.isUnreleased, isFallbackDate: data.isFallbackDate, issues: data.issues
+                });
+            });
+
+            const totalCFR = activeReleasesCount > 0 ? ((failedReleasesCount / activeReleasesCount) * 100) : 0;
+
+            let dfText = "N/A";
+            let dfVal = 0;
+            if (minDate && maxDate && activeReleasesCount > 0) {
+                let diffDays = (filterStartLimit && filterEndLimit)
+                    ? (filterEndLimit - filterStartLimit) / (1000 * 60 * 60 * 24)
+                    : (maxDate - minDate) / (1000 * 60 * 60 * 24);
+                if (diffDays > 0) {
+                    dfVal = activeReleasesCount / (diffDays / 30.44);
+                    dfText = dfVal.toFixed(1) + " / mnd";
+                } else {
+                    dfVal = activeReleasesCount;
+                    dfText = activeReleasesCount + " op één dag";
+                }
+            }
+
+            let ltcText = "N/A";
+            let avgLtcDays = 0;
+            if (ltcCount > 0) {
+                avgLtcDays = totalLtcDays / ltcCount;
+                ltcText = avgLtcDays > 60 ? (avgLtcDays / 30.44).toFixed(1) + " mnd" : avgLtcDays.toFixed(1) + " dagen";
+            }
+
+            let totalWork = numChanges + totalNumBugs;
+            let featurePct = totalWork > 0 ? Math.round((numChanges / totalWork) * 100) : 0;
+            let bugPct = totalWork > 0 ? Math.round((totalNumBugs / totalWork) * 100) : 0;
+
+            return {
+                validVersions,
+                minDate,
+                maxDate,
+                totalAvailableReleases,
+                totalMatchingReleases,
+                activeReleasesCount,
+                failedReleasesCount,
+                totalCFR,
+                dfVal,
+                dfText,
+                avgLtcDays,
+                ltcCount,
+                ltcText,
+                numChanges,
+                totalNumBugs,
+                featurePct,
+                bugPct,
+                severityMetrics,
+                prioritiesCount,
+                tableData
+            };
+        }
+
         async function calculateMetrics() {
             const versionsFileInput = document.getElementById('versionsFile');
             const issuesFileInput = document.getElementById('issuesFile');
@@ -1764,86 +2395,21 @@
                 const customStartVal = document.getElementById('filterStartDate') ? document.getElementById('filterStartDate').value : '';
                 const customEndVal = document.getElementById('filterEndDate') ? document.getElementById('filterEndDate').value : '';
 
-                const filterStartLimit = customStartVal ? new Date(customStartVal) : null;
+                const filterStartLimit = customStartVal ? parseLocalDate(customStartVal) : null;
                 const filterEndLimit = customEndVal ? new Date(customEndVal + "T23:59:59") : null;
 
-                const incReleased = document.getElementById('chkStatusReleased') ? document.getElementById('chkStatusReleased').checked : true;
-                const incUnreleased = document.getElementById('chkStatusUnreleased') ? document.getElementById('chkStatusUnreleased').checked : false;
-                const incArchived = document.getElementById('chkStatusArchived') ? document.getElementById('chkStatusArchived').checked : false;
+                const statusConfig = {
+                    incReleased: document.getElementById('chkStatusReleased') ? document.getElementById('chkStatusReleased').checked : true,
+                    incUnreleased: document.getElementById('chkStatusUnreleased') ? document.getElementById('chkStatusUnreleased').checked : false,
+                    incArchived: document.getElementById('chkStatusArchived') ? document.getElementById('chkStatusArchived').checked : false
+                };
 
                 const ltcModeSelect = document.getElementById('ltcModeSelect');
                 const ltcMode = ltcModeSelect ? ltcModeSelect.value : 'release';
-
-                const validVersions = {};
-                let minDate = null;
-                let maxDate = null;
-
                 const currentSearchInput = document.getElementById('releaseSearchInput') ? document.getElementById('releaseSearchInput').value : '';
-                let totalAvailableReleases = 0;
-                let totalMatchingReleases = 0;
 
-                allVersions.forEach(v => {
-                    const isReleased = v.released === true;
-                    const isArchived = v.archived === true;
-                    const isUnreleased = !v.released && !v.archived;
-
-                    let matchesStatus = false;
-                    if (isReleased && incReleased) matchesStatus = true;
-                    if (isUnreleased && incUnreleased) matchesStatus = true;
-                    if (isArchived && incArchived) matchesStatus = true;
-
-                    if (!matchesStatus) return;
-
-                    let rDate = v.releaseDate ? new Date(v.releaseDate) : null;
-                    let isFallbackDate = false;
-
-                    if (!rDate) {
-                        let maxDateInVersion = null;
-                        allIssuesRaw.forEach(issue => {
-                            const fixV = issue.fields.fixVersions || [];
-                            if (fixV.some(fv => fv.name === v.name)) {
-                                let d = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : (issue.fields.updated ? new Date(issue.fields.updated) : new Date(issue.fields.created));
-                                if (d && (!maxDateInVersion || d > maxDateInVersion)) {
-                                    maxDateInVersion = d;
-                                }
-                            }
-                        });
-                        if (maxDateInVersion) {
-                            rDate = maxDateInVersion;
-                            isFallbackDate = true;
-                        }
-                    }
-
-                    // Eerst datum checken zodat het periodefilter éérst effect heeft:
-                    if (!rDate) return;
-                    if (filterStartLimit && rDate < filterStartLimit) return;
-                    if (filterEndLimit && rDate > filterEndLimit) return;
-
-                    // Release valt binnen status en gekozen periode:
-                    totalAvailableReleases++;
-
-                    // Releasenaam filter check (vrije tekst, tags & uitsluitingen):
-                    if (!matchesReleaseFilter(v.name, releaseNameFilters, currentSearchInput)) {
-                        return;
-                    }
-
-                    totalMatchingReleases++;
-
-                    validVersions[v.name] = {
-                        id: v.id,
-                        name: v.name,
-                        releaseDate: rDate,
-                        isFallbackDate: isFallbackDate,
-                        isUnreleased: isUnreleased,
-                        changes: 0,
-                        bugs: 0,
-                        hasSeverePostBug: false,
-                        hasSevereBug: false,
-                        issues: []
-                    };
-                    if (!minDate || rDate < minDate) minDate = rDate;
-                    if (!maxDate || rDate > maxDate) maxDate = rDate;
-                });
+                // Bereken primaire (huidige) periode metrics
+                currentPeriodMetrics = computePeriodMetrics(allVersions, allIssuesRaw, filterStartLimit, filterEndLimit, ltcMode, statusConfig, releaseNameFilters, currentSearchInput);
 
                 // Update actieve datums in dashboard header titel
                 const sumDatesEl = document.getElementById('sumDates');
@@ -1855,8 +2421,8 @@
                         sumDatesEl.textContent = `Vanaf ${formatDateStr(new Date(customStartVal))}`;
                     } else if (customEndVal) {
                         sumDatesEl.textContent = `Tot ${formatDateStr(new Date(customEndVal))}`;
-                    } else if (minDate && maxDate) {
-                        sumDatesEl.textContent = `${formatDateStr(minDate)} t/m ${formatDateStr(maxDate)}`;
+                    } else if (currentPeriodMetrics.minDate && currentPeriodMetrics.maxDate) {
+                        sumDatesEl.textContent = `${formatDateStr(currentPeriodMetrics.minDate)} t/m ${formatDateStr(currentPeriodMetrics.maxDate)}`;
                     } else {
                         sumDatesEl.textContent = "Gehele dataset";
                     }
@@ -1867,17 +2433,17 @@
                 if (countBadge) {
                     const hasActiveFilter = releaseNameFilters.length > 0 || (currentSearchInput && currentSearchInput.trim().length > 0);
                     if (hasActiveFilter) {
-                        countBadge.textContent = `${totalMatchingReleases} van ${totalAvailableReleases} versies actief in deze periode`;
+                        countBadge.textContent = `${currentPeriodMetrics.totalMatchingReleases} van ${currentPeriodMetrics.totalAvailableReleases} versies actief in deze periode`;
                         countBadge.style.color = '#0b57d0';
                         countBadge.style.fontWeight = 'bold';
                     } else {
-                        countBadge.textContent = `${totalAvailableReleases} versies actief in deze periode`;
+                        countBadge.textContent = `${currentPeriodMetrics.totalAvailableReleases} versies actief in deze periode`;
                         countBadge.style.color = '#5e6c84';
                         countBadge.style.fontWeight = 'normal';
                     }
                 }
 
-                if (Object.keys(validVersions).length === 0) {
+                if (Object.keys(currentPeriodMetrics.validVersions).length === 0) {
                     errorMsg.textContent = "Geen versies gevonden voor de huidige filtercombinatie. Controleer je releasenaam-filter, release status of datumselectie.";
                     errorMsg.style.display = "block";
                     dashboard.style.display = "block";
@@ -1886,266 +2452,97 @@
                     return;
                 }
 
-                let uniqueChanges = new Set();
-                let allUniqueBugs = new Map();
-                let totalLtcDays = 0;
-                let ltcCount = 0;
-
-                teamFilteredIssues.forEach(issue => {
-                    const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
-                    const typeLower = typeName.toLowerCase().trim();
-
-                    const isBug = selectedBugTypes.has(typeLower);
-                    const isChange = selectedChangeTypes.has(typeLower);
-
-                    if (!isChange) return;
-
-                    const key = issue.key;
-                    const summary = issue.fields.summary || "Geen titel";
-                    const createdDate = new Date(issue.fields.created);
-                    let resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
-
-                    let earliestReleaseDate = null;
-                    if (issue.fields.fixVersions) {
-                        issue.fields.fixVersions.forEach(fv => {
-                            const vName = fv.name;
-                            if (validVersions[vName]) {
-                                validVersions[vName].changes += 1;
-                                uniqueChanges.add(key);
-                                validVersions[vName].issues.push({ key, summary, type: 'Change' });
-
-                                const rDate = validVersions[vName].releaseDate;
-                                if (!earliestReleaseDate || rDate < earliestReleaseDate) {
-                                    earliestReleaseDate = rDate;
-                                }
-                            }
-                        });
-                    }
-
-                    const targetDate = ltcMode === 'done' ? resolvedDate : (earliestReleaseDate || resolvedDate);
-                    if (targetDate && createdDate && targetDate >= createdDate) {
-                        let diffDays = (targetDate - createdDate) / (1000 * 60 * 60 * 24);
-                        totalLtcDays += diffDays;
-                        ltcCount++;
-                    }
-                });
-
-                let postReleaseBugsCount = 0;
-                let totalMttdHours = 0;
-                let mttdCount = 0;
-
-                teamFilteredIssues.forEach(issue => {
-                    const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
-                    const typeLower = typeName.toLowerCase().trim();
-
-                    const isBug = selectedBugTypes.has(typeLower);
-                    if (!isBug) return;
-
-                    const key = issue.key;
-                    const createdDate = new Date(issue.fields.created);
-                    let resolvedDate = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
-
-                    if (!resolvedDate && issue.fields.status && issue.fields.status.statusCategory && issue.fields.status.statusCategory.key === 'done') {
-                        if (issue.fields.updated) resolvedDate = new Date(issue.fields.updated);
-                    }
-
-                    const summary = issue.fields.summary || "Geen titel";
-                    const priority = issue.fields.priority ? issue.fields.priority.name : "Onbekend";
-
-                    const affectedVersions = issue.fields.versions || [];
-                    const fixVersions = issue.fields.fixVersions || [];
-                    const isFallbackNeeded = affectedVersions.length === 0;
-
-                    let belongsToValidVersion = false;
-                    let bugIsFailureTrigger = false;
-                    let bugReleaseDate = null;
-
-                    Object.keys(validVersions).forEach(vName => {
-                        const versionData = validVersions[vName];
-                        const isAffected = affectedVersions.some(v => v.name === vName);
-                        const isFixed = fixVersions.some(v => v.name === vName);
-
-                        if (isAffected || isFixed) {
-                            belongsToValidVersion = true;
-                            let isFailureTrigger = false;
-                            let displayTag = '';
-
-                            if (isAffected) {
-                                isFailureTrigger = true;
-                                displayTag = 'Oorzaak: deze release';
-                            } else if (isFixed && isFallbackNeeded) {
-                                if (versionData.changes === 0 || createdDate >= versionData.releaseDate) {
-                                    isFailureTrigger = true;
-                                    displayTag = 'Post-release (Fallback)';
-                                } else {
-                                    displayTag = 'Pre-release';
-                                }
-                            } else if (isFixed && !isFallbackNeeded) {
-                                displayTag = 'Fix voor oudere release';
-                            }
-
-                            if (isFixed && isSeverePriority(priority)) {
-                                versionData.hasSevereBug = true;
-                            }
-
-                            if (isFailureTrigger) {
-                                bugIsFailureTrigger = true;
-                                bugReleaseDate = versionData.releaseDate;
-                                versionData.bugs += 1;
-                                postReleaseBugsCount++;
-
-                                if (isSeverePriority(priority)) {
-                                    versionData.hasSeverePostBug = true;
-                                }
-
-                                if (createdDate && versionData.releaseDate && createdDate >= versionData.releaseDate) {
-                                    let diffHrs = (createdDate - versionData.releaseDate) / (1000 * 60 * 60);
-                                    if (diffHrs >= 0) {
-                                        totalMttdHours += diffHrs;
-                                        mttdCount++;
-                                    }
-                                }
-                            }
-
-                            versionData.issues.push({
-                                key, summary, type: 'Bug', priority, displayTag, isFailureTrigger
-                            });
-                        }
-                    });
-
-                    if (belongsToValidVersion) {
-                        if (!allUniqueBugs.has(key)) {
-                            allUniqueBugs.set(key, {
-                                createdDate,
-                                resolvedDate,
-                                priority,
-                                isFailureTrigger: bugIsFailureTrigger,
-                                releaseDate: bugReleaseDate
-                            });
-                        }
-                    }
-                });
-
-                const numChanges = uniqueChanges.size;
-                const totalNumBugs = allUniqueBugs.size;
-                let prioritiesCount = {};
-
-                globalSeverityMetrics = {
-                    total: { mttrHours: 0, mttrCount: 0, mttdHours: 0, mttdCount: 0, totalBugs: 0, postReleaseBugs: 0 },
-                    byPriority: {}
-                };
-
-                allUniqueBugs.forEach((data, key) => {
-                    let prio = data.priority || "Onbekend";
-                    prioritiesCount[prio] = (prioritiesCount[prio] || 0) + 1;
-
-                    if (!globalSeverityMetrics.byPriority[prio]) {
-                        globalSeverityMetrics.byPriority[prio] = {
-                            mttrHours: 0, mttrCount: 0,
-                            mttdHours: 0, mttdCount: 0,
-                            totalBugs: 0, postReleaseBugs: 0
-                        };
-                    }
-
-                    globalSeverityMetrics.total.totalBugs++;
-                    globalSeverityMetrics.byPriority[prio].totalBugs++;
-
-                    if (data.isFailureTrigger) {
-                        globalSeverityMetrics.total.postReleaseBugs++;
-                        globalSeverityMetrics.byPriority[prio].postReleaseBugs++;
-
-                        if (data.createdDate && data.releaseDate && data.createdDate >= data.releaseDate) {
-                            let diffHrs = (data.createdDate - data.releaseDate) / (1000 * 60 * 60);
-                            if (diffHrs >= 0) {
-                                globalSeverityMetrics.total.mttdHours += diffHrs;
-                                globalSeverityMetrics.total.mttdCount++;
-                                globalSeverityMetrics.byPriority[prio].mttdHours += diffHrs;
-                                globalSeverityMetrics.byPriority[prio].mttdCount++;
-                            }
-                        }
-                    }
-
-                    if (data.createdDate && data.resolvedDate) {
-                        let diffHrs = (data.resolvedDate - data.createdDate) / (1000 * 60 * 60);
-                        if (diffHrs >= 0) {
-                            globalSeverityMetrics.total.mttrHours += diffHrs;
-                            globalSeverityMetrics.total.mttrCount++;
-                            globalSeverityMetrics.byPriority[prio].mttrHours += diffHrs;
-                            globalSeverityMetrics.byPriority[prio].mttrCount++;
-                        }
-                    }
-                });
+                // Wijs globale waarden toe voor Chart, Table en Severity
+                globalSeverityMetrics = currentPeriodMetrics.severityMetrics;
+                tableData = currentPeriodMetrics.tableData;
 
                 let severityHtml = `<div class="severity-pills">`;
                 severityHtml += `<div class="severity-pill active" id="sev-filter-All" onclick="toggleQualitySeverity('All')"><strong>Alles</strong></div>`;
-                Object.keys(prioritiesCount).sort((a, b) => prioritiesCount[b] - prioritiesCount[a]).forEach(p => {
+                Object.keys(currentPeriodMetrics.prioritiesCount).sort((a, b) => currentPeriodMetrics.prioritiesCount[b] - currentPeriodMetrics.prioritiesCount[a]).forEach(p => {
                     let safeId = p.replace(/[^a-zA-Z0-9]/g, '-');
-                    severityHtml += `<div class="severity-pill" id="sev-filter-${safeId}" onclick="toggleQualitySeverity('${p}')"><strong>${p}</strong>: ${prioritiesCount[p]}</div>`;
+                    severityHtml += `<div class="severity-pill" id="sev-filter-${safeId}" onclick="toggleQualitySeverity('${p}')"><strong>${p}</strong>: ${currentPeriodMetrics.prioritiesCount[p]}</div>`;
                 });
                 severityHtml += `</div>`;
+                document.getElementById('sumSeverity').innerHTML = severityHtml;
 
-                let failedReleasesCount = 0;
-                let activeReleasesCount = 0;
-                tableData = [];
-
-                Object.keys(validVersions).forEach(versionName => {
-                    const data = validVersions[versionName];
-
-                    if (data.changes === 0 && data.bugs === 0 && data.issues.length === 0) return;
-
-                    activeReleasesCount++;
-
-                    const isHotfix = data.changes === 0 && data.hasSevereBug;
-                    const isFailed = isHotfix || data.hasSeverePostBug;
-
-                    if (isFailed) failedReleasesCount++;
-
-                    tableData.push({
-                        id: data.id, name: data.name, releaseDate: data.releaseDate,
-                        changes: data.changes, bugs: data.bugs, isHotfix: isHotfix, isFailed: isFailed,
-                        isUnreleased: data.isUnreleased, isFallbackDate: data.isFallbackDate, issues: data.issues
-                    });
-                });
-
-                const totalCFR = activeReleasesCount > 0 ? ((failedReleasesCount / activeReleasesCount) * 100) : 0;
-
-                let dfText = "N/A";
-                let perMonthVal = 0;
-                if (minDate && maxDate && activeReleasesCount > 0) {
-                    let diffDays = (maxDate - minDate) / (1000 * 60 * 60 * 24);
-                    if (diffDays > 0) {
-                        perMonthVal = activeReleasesCount / (diffDays / 30.44);
-                        dfText = perMonthVal.toFixed(1) + " / mnd";
-                    } else {
-                        dfText = activeReleasesCount + " op één dag";
-                    }
-                }
-
-                // LTC calculation
-                let ltcText = "N/A";
-                let avgLtcDays = 0;
-                if (ltcCount > 0) {
-                    avgLtcDays = totalLtcDays / ltcCount;
-                    ltcText = avgLtcDays > 60 ? (avgLtcDays / 30.44).toFixed(1) + " mnd" : avgLtcDays.toFixed(1) + " dagen";
-                }
-                document.getElementById('sumLtc').textContent = ltcText;
-
-                // Investment Mix
-                let totalWork = numChanges + totalNumBugs;
-                let featurePct = totalWork > 0 ? Math.round((numChanges / totalWork) * 100) : 0;
-                let bugPct = totalWork > 0 ? Math.round((totalNumBugs / totalWork) * 100) : 0;
-                document.getElementById('sumMix').textContent = `${featurePct}% / ${bugPct}%`;
-                document.getElementById('subMix').textContent = `${numChanges} feat / ${totalNumBugs} bugs`;
-
-                document.getElementById('sumReleasesSummary').textContent = `${activeReleasesCount} / ${numChanges}`;
-                document.getElementById('subReleasesSummary').textContent = `${failedReleasesCount} gefaald (${totalCFR.toFixed(1)}%)`;
+                // Primaire KPI weergave
+                document.getElementById('sumDf').textContent = currentPeriodMetrics.dfText;
+                document.getElementById('sumLtc').textContent = currentPeriodMetrics.ltcText;
 
                 const sumCfrElement = document.getElementById('sumCfr');
-                sumCfrElement.textContent = totalCFR.toFixed(2) + '%';
-                sumCfrElement.style.backgroundColor = getCfrColor(totalCFR);
+                sumCfrElement.textContent = currentPeriodMetrics.totalCFR.toFixed(2) + '%';
+                sumCfrElement.style.backgroundColor = getCfrColor(currentPeriodMetrics.totalCFR);
 
-                document.getElementById('sumDf').textContent = dfText;
-                document.getElementById('sumSeverity').innerHTML = severityHtml;
+                document.getElementById('sumMix').textContent = `${currentPeriodMetrics.featurePct}% / ${currentPeriodMetrics.bugPct}%`;
+                document.getElementById('subMix').textContent = `${currentPeriodMetrics.numChanges} feat / ${currentPeriodMetrics.totalNumBugs} bugs`;
+
+                document.getElementById('sumReleasesSummary').textContent = `${currentPeriodMetrics.activeReleasesCount} / ${currentPeriodMetrics.numChanges}`;
+                document.getElementById('subReleasesSummary').textContent = `${currentPeriodMetrics.failedReleasesCount} gefaald (${currentPeriodMetrics.totalCFR.toFixed(1)}%)`;
+
+                // Bereken Trend / Vergelijkingsperiode
+                const comparisonMode = document.getElementById('comparisonMode') ? document.getElementById('comparisonMode').value : 'none';
+                const compLabelEl = document.getElementById('comparisonPeriodLabel');
+
+                if (comparisonMode === 'none') {
+                    comparisonPeriodMetrics = null;
+                    if (compLabelEl) compLabelEl.textContent = '';
+                    hideAllTrendBadges();
+                } else {
+                    const compRange = getComparisonDateRange(customStartVal, customEndVal, comparisonMode, currentPeriodMetrics.minDate, currentPeriodMetrics.maxDate);
+                    if (compRange) {
+                        const formatDateNl = d => d.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                        if (compLabelEl) {
+                            compLabelEl.textContent = `Ref: ${formatDateNl(compRange.startLimit)} t/m ${formatDateNl(compRange.endLimit)}`;
+                        }
+
+                        comparisonPeriodMetrics = computePeriodMetrics(allVersions, allIssuesRaw, compRange.startLimit, compRange.endLimit, ltcMode, statusConfig, releaseNameFilters, currentSearchInput);
+
+                        // DF Trend (hoger is beter)
+                        renderTrendBadge('trendDf', currentPeriodMetrics.dfVal, comparisonPeriodMetrics.dfVal, {
+                            invert: false,
+                            unit: ' /mnd',
+                            decimals: 1,
+                            threshold: 0.1
+                        });
+
+                        // LTC Trend (lager is beter)
+                        const curLtc = currentPeriodMetrics.ltcCount > 0 ? currentPeriodMetrics.avgLtcDays : null;
+                        const compLtc = comparisonPeriodMetrics.ltcCount > 0 ? comparisonPeriodMetrics.avgLtcDays : null;
+                        renderTrendBadge('trendLtc', curLtc, compLtc, {
+                            invert: true,
+                            unit: ' dgn',
+                            decimals: 1,
+                            threshold: 0.2
+                        });
+
+                        // CFR Trend (lager is beter)
+                        const curCfr = currentPeriodMetrics.activeReleasesCount > 0 ? currentPeriodMetrics.totalCFR : null;
+                        const compCfr = comparisonPeriodMetrics.activeReleasesCount > 0 ? comparisonPeriodMetrics.totalCFR : null;
+                        renderTrendBadge('trendCfr', curCfr, compCfr, {
+                            invert: true,
+                            unit: '%pt',
+                            decimals: 1,
+                            threshold: 0.1
+                        });
+
+                        // Investment Mix Trend (Features capaciteit: hoger is beter)
+                        const curMix = (currentPeriodMetrics.numChanges + currentPeriodMetrics.totalNumBugs) > 0 ? currentPeriodMetrics.featurePct : null;
+                        const compMix = (comparisonPeriodMetrics.numChanges + comparisonPeriodMetrics.totalNumBugs) > 0 ? comparisonPeriodMetrics.featurePct : null;
+                        renderTrendBadge('trendMix', curMix, compMix, {
+                            invert: false,
+                            unit: '%pt feat',
+                            decimals: 0,
+                            threshold: 0.5
+                        });
+
+                        // Releases & Changes Trend
+                        renderReleasesSummaryTrendBadge(currentPeriodMetrics, comparisonPeriodMetrics);
+                    } else {
+                        comparisonPeriodMetrics = null;
+                        if (compLabelEl) compLabelEl.textContent = '';
+                        hideAllTrendBadges();
+                    }
+                }
 
                 dashboard.style.display = "block";
                 resultsTable.style.display = "table";
@@ -2172,10 +2569,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "11.1.1";
+        const DASHBOARD_VERSION = "11.2.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V11 &bull; Versie 11.1.1 (17-09-2026)
+        DORA &amp; Performance Dashboard V11 &bull; Versie 11.2.0 (17-09-2026)
     </footer>
 </body>
 </html>
