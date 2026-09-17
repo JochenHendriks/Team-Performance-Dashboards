@@ -5,16 +5,72 @@ $startDate = [DateTime]"2026-01-05"
 $teams = @("Team Alpha", "Team Beta", "Team Gamma", "Team Delta")
 $priorities = @("Highest", "High", "Critical", "Major", "Medium", "Low", "Minor")
 
-for ($i = 1; $i -le 55; $i++) {
-    $rDate = $startDate.AddDays(($i - 1) * 6.5)
-    $versionName = "v$([Math]::Floor(($i-1)/5) + 1).$(($i-1) % 5).0"
-    if ($i % 7 -eq 0) { $versionName += "-hotfix" }
+# Gedefinieerde release suites voor verschillende teams en applicaties:
+$releaseDefs = @(
+    # Conventie Team User: WEB | applicatienaam en dan versie
+    @{ name = "WEB | Zoekdienst 1.0.0"; dateOffset = 0; team = "Team Alpha" },
+    @{ name = "WEB | Inlogportaal 1.0.0"; dateOffset = 4; team = "Team Beta" },
+    @{ name = "CORE-2026.01"; dateOffset = 8; team = "Team Gamma" },
+    @{ name = "WEB | Zoekdienst 1.1.0"; dateOffset = 14; team = "Team Alpha" },
+    @{ name = "API | Gateway v1.0.0"; dateOffset = 18; team = "Team Delta" },
+    @{ name = "WEB | Klantdossier 1.0.0"; dateOffset = 22; team = "Team Alpha" },
+    @{ name = "WEB | Zoekdienst 1.2.0-hotfix"; dateOffset = 28; team = "Team Alpha"; hotfix = $true },
+    @{ name = "WEB | Inlogportaal 1.1.0"; dateOffset = 33; team = "Team Beta" },
+    @{ name = "v1.0.0"; dateOffset = 38; team = "Team Gamma" },
+    @{ name = "CORE-2026.02"; dateOffset = 44; team = "Team Gamma" },
+    @{ name = "WEB | Zoekdienst 2.0.0"; dateOffset = 50; team = "Team Alpha" },
+    @{ name = "WEB | Klantdossier 1.1.0"; dateOffset = 56; team = "Team Alpha" },
+    @{ name = "API | Gateway v1.1.0"; dateOffset = 62; team = "Team Delta" },
+    @{ name = "WEB | Inlogportaal 1.2.0-hotfix"; dateOffset = 68; team = "Team Beta"; hotfix = $true },
+    @{ name = "WEB | Zoekdienst 2.1.0"; dateOffset = 74; team = "Team Alpha" },
+    @{ name = "v1.1.0"; dateOffset = 80; team = "Team Gamma" },
+    @{ name = "CORE-2026.03"; dateOffset = 86; team = "Team Gamma" },
+    @{ name = "WEB | Inlogportaal 1.3.0"; dateOffset = 92; team = "Team Beta" },
+    @{ name = "WEB | Zoekdienst 2.2.0"; dateOffset = 98; team = "Team Alpha" },
+    @{ name = "WEB | Klantdossier 2.0.0"; dateOffset = 104; team = "Team Alpha" },
+    @{ name = "API | Gateway v1.2.0-hotfix"; dateOffset = 110; team = "Team Delta"; hotfix = $true },
+    @{ name = "CORE-2026.04-hotfix"; dateOffset = 116; team = "Team Gamma"; hotfix = $true },
+    @{ name = "WEB | Zoekdienst 2.3.0"; dateOffset = 122; team = "Team Alpha" },
+    @{ name = "WEB | Inlogportaal 2.0.0"; dateOffset = 128; team = "Team Beta" },
+    @{ name = "v1.2.0"; dateOffset = 134; team = "Team Gamma" },
+    @{ name = "WEB | Zoekdienst 2.4.0"; dateOffset = 140; team = "Team Alpha" },
+    @{ name = "WEB | Klantdossier 2.1.0"; dateOffset = 146; team = "Team Alpha" },
+    @{ name = "API | Gateway v2.0.0"; dateOffset = 152; team = "Team Delta" },
+    @{ name = "CORE-2026.05"; dateOffset = 158; team = "Team Gamma" },
+    @{ name = "WEB | Zoekdienst 2.4.1-hotfix"; dateOffset = 164; team = "Team Alpha"; hotfix = $true },
+    @{ name = "WEB | Inlogportaal 2.1.0"; dateOffset = 170; team = "Team Beta" },
+    @{ name = "v2.0.0"; dateOffset = 176; team = "Team Gamma" },
+    @{ name = "WEB | Zoekdienst 2.5.0"; dateOffset = 182; team = "Team Alpha" },
+    @{ name = "WEB | Klantdossier 2.2.0"; dateOffset = 188; team = "Team Alpha" },
+    @{ name = "API | Gateway v2.1.0"; dateOffset = 194; team = "Team Delta" },
+    @{ name = "CORE-2026.06"; dateOffset = 200; team = "Team Gamma" },
+    @{ name = "WEB | Inlogportaal 2.2.0"; dateOffset = 206; team = "Team Beta" },
+    @{ name = "WEB | Zoekdienst 3.0.0"; dateOffset = 214; team = "Team Alpha" },
+    @{ name = "v2.1.0-hotfix"; dateOffset = 220; team = "Team Gamma"; hotfix = $true },
+    @{ name = "WEB | Klantdossier 3.0.0"; dateOffset = 226; team = "Team Alpha" },
+    @{ name = "API | Gateway v2.2.0"; dateOffset = 232; team = "Team Delta" },
+    @{ name = "CORE-2026.07"; dateOffset = 238; team = "Team Gamma" },
+    @{ name = "WEB | Zoekdienst 3.1.0"; dateOffset = 244; team = "Team Alpha" },
+    @{ name = "WEB | Inlogportaal 2.3.0"; dateOffset = 250; team = "Team Beta" },
+    @{ name = "WEB | Klantdossier 3.1.0-hotfix"; dateOffset = 256; team = "Team Alpha"; hotfix = $true },
+    @{ name = "v2.2.0"; dateOffset = 262; team = "Team Gamma" },
+    @{ name = "API | Gateway v2.3.0"; dateOffset = 268; team = "Team Delta" },
+    @{ name = "WEB | Zoekdienst 3.2.0"; dateOffset = 274; team = "Team Alpha" },
+    @{ name = "CORE-2026.08"; dateOffset = 280; team = "Team Gamma" },
+    @{ name = "WEB | Inlogportaal 2.4.0"; dateOffset = 286; team = "Team Beta" }
+)
+
+for ($i = 0; $i -lt $releaseDefs.Count; $i++) {
+    $def = $releaseDefs[$i]
+    $rDate = $startDate.AddDays($def.dateOffset)
     
     $releases += [PSCustomObject]@{
-        id          = (10000 + $i).ToString()
-        name        = $versionName
+        id          = (10001 + $i).ToString()
+        name        = $def.name
         released    = $true
         releaseDate = $rDate.ToString("yyyy-MM-dd")
+        team        = $def.team
+        isHotfix    = [bool]($def.hotfix -eq $true)
     }
 }
 
@@ -57,8 +113,8 @@ $bugSummaries = @(
 for ($rIdx = 0; $rIdx -lt $releases.Count; $rIdx++) {
     $rel = $releases[$rIdx]
     $rDate = [DateTime]::Parse($rel.releaseDate)
-    $team = $teams[$rIdx % $teams.Count]
-    $isHotfixRelease = ($rIdx % 7 -eq 6)
+    $team = if ($rel.team) { $rel.team } else { $teams[$rIdx % $teams.Count] }
+    $isHotfixRelease = [bool]($rel.isHotfix -eq $true)
     
     if (-not $isHotfixRelease) {
         $numFeatures = ($rIdx % 3) + 1
