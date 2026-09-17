@@ -422,7 +422,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V11</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.1.0 (17-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.1.1 (17-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -1071,7 +1071,10 @@
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    try { resolve(JSON.parse(e.target.result)); }
+                    try {
+                        const cleanText = e.target.result.replace(/^\uFEFF/, '');
+                        resolve(JSON.parse(cleanText));
+                    }
                     catch (err) { reject(new Error(`Kan ${file.name} niet parsen.`)); }
                 };
                 reader.onerror = () => reject(new Error(`Fout bij het lezen van ${file.name}`));
@@ -1791,15 +1794,6 @@
 
                     if (!matchesStatus) return;
 
-                    totalAvailableReleases++;
-
-                    // Releasenaam filter check (vrije tekst & meervoudige chips)
-                    if (!matchesReleaseFilter(v.name, releaseNameFilters, currentSearchInput)) {
-                        return;
-                    }
-
-                    totalMatchingReleases++;
-
                     let rDate = v.releaseDate ? new Date(v.releaseDate) : null;
                     let isFallbackDate = false;
 
@@ -1820,37 +1814,64 @@
                         }
                     }
 
-                    if (rDate) {
-                        if (filterStartLimit && rDate < filterStartLimit) return;
-                        if (filterEndLimit && rDate > filterEndLimit) return;
+                    // Eerst datum checken zodat het periodefilter éérst effect heeft:
+                    if (!rDate) return;
+                    if (filterStartLimit && rDate < filterStartLimit) return;
+                    if (filterEndLimit && rDate > filterEndLimit) return;
 
-                        validVersions[v.name] = {
-                            id: v.id,
-                            name: v.name,
-                            releaseDate: rDate,
-                            isFallbackDate: isFallbackDate,
-                            isUnreleased: isUnreleased,
-                            changes: 0,
-                            bugs: 0,
-                            hasSeverePostBug: false,
-                            hasSevereBug: false,
-                            issues: []
-                        };
-                        if (!minDate || rDate < minDate) minDate = rDate;
-                        if (!maxDate || rDate > maxDate) maxDate = rDate;
+                    // Release valt binnen status en gekozen periode:
+                    totalAvailableReleases++;
+
+                    // Releasenaam filter check (vrije tekst, tags & uitsluitingen):
+                    if (!matchesReleaseFilter(v.name, releaseNameFilters, currentSearchInput)) {
+                        return;
                     }
+
+                    totalMatchingReleases++;
+
+                    validVersions[v.name] = {
+                        id: v.id,
+                        name: v.name,
+                        releaseDate: rDate,
+                        isFallbackDate: isFallbackDate,
+                        isUnreleased: isUnreleased,
+                        changes: 0,
+                        bugs: 0,
+                        hasSeverePostBug: false,
+                        hasSevereBug: false,
+                        issues: []
+                    };
+                    if (!minDate || rDate < minDate) minDate = rDate;
+                    if (!maxDate || rDate > maxDate) maxDate = rDate;
                 });
+
+                // Update actieve datums in dashboard header titel
+                const sumDatesEl = document.getElementById('sumDates');
+                if (sumDatesEl) {
+                    const formatDateStr = d => d.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    if (customStartVal && customEndVal) {
+                        sumDatesEl.textContent = `${formatDateStr(new Date(customStartVal))} t/m ${formatDateStr(new Date(customEndVal))}`;
+                    } else if (customStartVal) {
+                        sumDatesEl.textContent = `Vanaf ${formatDateStr(new Date(customStartVal))}`;
+                    } else if (customEndVal) {
+                        sumDatesEl.textContent = `Tot ${formatDateStr(new Date(customEndVal))}`;
+                    } else if (minDate && maxDate) {
+                        sumDatesEl.textContent = `${formatDateStr(minDate)} t/m ${formatDateStr(maxDate)}`;
+                    } else {
+                        sumDatesEl.textContent = "Gehele dataset";
+                    }
+                }
 
                 // Update teller badge voor releasenaam filter
                 const countBadge = document.getElementById('releaseFilterCountBadge');
                 if (countBadge) {
                     const hasActiveFilter = releaseNameFilters.length > 0 || (currentSearchInput && currentSearchInput.trim().length > 0);
                     if (hasActiveFilter) {
-                        countBadge.textContent = `${totalMatchingReleases} van ${totalAvailableReleases} versies actief`;
+                        countBadge.textContent = `${totalMatchingReleases} van ${totalAvailableReleases} versies actief in deze periode`;
                         countBadge.style.color = '#0b57d0';
                         countBadge.style.fontWeight = 'bold';
                     } else {
-                        countBadge.textContent = `${totalAvailableReleases} versies actief (geen filter)`;
+                        countBadge.textContent = `${totalAvailableReleases} versies actief in deze periode`;
                         countBadge.style.color = '#5e6c84';
                         countBadge.style.fontWeight = 'normal';
                     }
@@ -2151,10 +2172,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "11.1.0";
+        const DASHBOARD_VERSION = "11.1.1";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V11 &bull; Versie 11.1.0 (17-09-2026)
+        DORA &amp; Performance Dashboard V11 &bull; Versie 11.1.1 (17-09-2026)
     </footer>
 </body>
 </html>
