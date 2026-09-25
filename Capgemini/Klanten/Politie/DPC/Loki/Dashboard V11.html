@@ -231,6 +231,51 @@
             margin-top: 2rem;
         }
 
+        .chart-tabs-bar {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid #dfe1e6;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .chart-tab {
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #5e6c84;
+            cursor: pointer;
+            margin-bottom: -2px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.2s ease;
+            width: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chart-tab:hover {
+            color: #0052cc;
+            background: #ebecf0;
+        }
+
+        .chart-tab.active {
+            color: #0052cc;
+            border-bottom: 3px solid #0052cc;
+            background: #f4f5f7;
+        }
+
+        .chart-tab-content {
+            width: 100%;
+        }
+
+        .chart-tab-content:not(.active) {
+            display: none;
+        }
+
         .stat-subtext {
             font-size: 0.75rem;
             color: #5e6c84;
@@ -456,7 +501,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V11</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.4.0 (25-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.5.0 (25-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -783,7 +828,26 @@
             </div>
 
             <div class="chart-container">
-                <canvas id="cfrChart" height="100"></canvas>
+                <div class="chart-tabs-bar">
+                    <button type="button" class="chart-tab active" id="tabBtn-cfr" onclick="switchChartTab('cfr')">
+                        🔥 Change Failure Rate (CFR)
+                    </button>
+                    <button type="button" class="chart-tab" id="tabBtn-ltc" onclick="switchChartTab('ltc')">
+                        ⏱️ Lead Time for Changes (LTC)
+                    </button>
+                    <button type="button" class="chart-tab" id="tabBtn-mttr" onclick="switchChartTab('mttr')">
+                        🛠️ Mean Time to Restore (MTTR)
+                    </button>
+                </div>
+                <div id="chartContainer-cfr" class="chart-tab-content active">
+                    <canvas id="cfrChart" height="100"></canvas>
+                </div>
+                <div id="chartContainer-ltc" class="chart-tab-content" style="display:none;">
+                    <canvas id="ltcChart" height="100"></canvas>
+                </div>
+                <div id="chartContainer-mttr" class="chart-tab-content" style="display:none;">
+                    <canvas id="mttrChart" height="100"></canvas>
+                </div>
             </div>
         </div>
 
@@ -827,6 +891,9 @@
         let discoveredTeams = new Set();
 
         let cfrChart = null;
+        let ltcChart = null;
+        let mttrChart = null;
+        let currentChartTab = 'cfr';
         let sparklineCharts = {
             df: null,
             ltc: null,
@@ -1421,6 +1488,263 @@
             });
         }
 
+        function switchChartTab(tabKey) {
+            currentChartTab = tabKey;
+            document.querySelectorAll('.chart-tab').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`tabBtn-${tabKey}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            document.querySelectorAll('.chart-tab-content').forEach(el => {
+                el.classList.remove('active');
+                el.style.display = 'none';
+            });
+            const activeContainer = document.getElementById(`chartContainer-${tabKey}`);
+            if (activeContainer) {
+                activeContainer.classList.add('active');
+                activeContainer.style.display = 'block';
+            }
+
+            if (tabKey === 'cfr') {
+                renderCfrChart();
+            } else if (tabKey === 'ltc') {
+                renderLtcChart();
+            } else if (tabKey === 'mttr') {
+                renderMttrChart();
+            }
+        }
+
+        function renderLtcChart() {
+            const canvas = document.getElementById('ltcChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (ltcChart) ltcChart.destroy();
+            if (tableData.length === 0) return;
+
+            let monthlyData = {};
+            tableData.forEach(release => {
+                const d = release.releaseDate;
+                if (!d) return;
+                const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = { totalLtcDays: 0, changesCount: 0, date: new Date(d.getFullYear(), d.getMonth(), 1) };
+                }
+                if (Array.isArray(release.issues)) {
+                    release.issues.forEach(issue => {
+                        if (issue.type === 'Change' && typeof issue.ltcDays === 'number' && !isNaN(issue.ltcDays)) {
+                            monthlyData[monthKey].totalLtcDays += issue.ltcDays;
+                            monthlyData[monthKey].changesCount += 1;
+                        }
+                    });
+                }
+            });
+
+            const sortedKeys = Object.keys(monthlyData).sort();
+            const chartPoints = sortedKeys.map(key => {
+                const data = monthlyData[key];
+                return {
+                    x: data.date,
+                    avgLtc: data.changesCount > 0 ? (data.totalLtcDays / data.changesCount) : null,
+                    changesCount: data.changesCount
+                };
+            });
+
+            ltcChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Gem. LTC (dagen)',
+                            data: chartPoints.map(p => ({ x: p.x, y: p.avgLtc })),
+                            yAxisID: 'yLtc',
+                            borderColor: '#0052cc',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#0052cc',
+                            pointBorderColor: '#fff',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            tension: 0.3,
+                            spanGaps: true,
+                            order: 1
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Aantal Changes',
+                            data: chartPoints.map(p => ({ x: p.x, y: p.changesCount })),
+                            yAxisID: 'yCount',
+                            backgroundColor: '#4c9aff',
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: { unit: 'month', displayFormats: { month: 'MMM yyyy' } },
+                            title: { display: true, text: 'Maand', font: { weight: 'bold' } }
+                        },
+                        yCount: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Aantal Changes', font: { weight: 'bold' } },
+                            ticks: { stepSize: 1 },
+                            beginAtZero: true
+                        },
+                        yLtc: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Gem. LTC (dagen)', font: { weight: 'bold' } },
+                            beginAtZero: true,
+                            grid: { drawOnChartArea: false }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    if (context.dataset.yAxisID === 'yLtc') {
+                                        return context.raw.y !== null ? `Gem. LTC: ${context.raw.y.toFixed(1)} dagen` : 'Gem. LTC: Geen data';
+                                    }
+                                    return `${context.dataset.label}: ${context.raw.y}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderMttrChart() {
+            const canvas = document.getElementById('mttrChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (mttrChart) mttrChart.destroy();
+            if (tableData.length === 0) return;
+
+            let monthlyData = {};
+            tableData.forEach(release => {
+                const d = release.releaseDate;
+                if (!d) return;
+                const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = { totalMttrHours: 0, bugsCount: 0, seenBugs: new Set(), date: new Date(d.getFullYear(), d.getMonth(), 1) };
+                }
+                if (Array.isArray(release.issues)) {
+                    release.issues.forEach(issue => {
+                        const matchesPriority = (typeof selectedQualityPriorities === 'undefined' || selectedQualityPriorities.size === 0 || selectedQualityPriorities.has(issue.priority));
+                        if (issue.type === 'Bug' && matchesPriority && typeof issue.mttrHours === 'number' && !isNaN(issue.mttrHours)) {
+                            if (!monthlyData[monthKey].seenBugs.has(issue.key)) {
+                                monthlyData[monthKey].seenBugs.add(issue.key);
+                                monthlyData[monthKey].totalMttrHours += issue.mttrHours;
+                                monthlyData[monthKey].bugsCount += 1;
+                            }
+                        }
+                    });
+                }
+            });
+
+            const sortedKeys = Object.keys(monthlyData).sort();
+            const chartPoints = sortedKeys.map(key => {
+                const data = monthlyData[key];
+                return {
+                    x: data.date,
+                    avgMttr: data.bugsCount > 0 ? (data.totalMttrHours / data.bugsCount) : null,
+                    bugsCount: data.bugsCount
+                };
+            });
+
+            mttrChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Gem. MTTR (uren)',
+                            data: chartPoints.map(p => ({ x: p.x, y: p.avgMttr })),
+                            yAxisID: 'yMttr',
+                            borderColor: '#ff8b00',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#ff8b00',
+                            pointBorderColor: '#fff',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            tension: 0.3,
+                            spanGaps: true,
+                            order: 1
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Aantal Bugs',
+                            data: chartPoints.map(p => ({ x: p.x, y: p.bugsCount })),
+                            yAxisID: 'yCount',
+                            backgroundColor: '#ffbdad',
+                            order: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: { unit: 'month', displayFormats: { month: 'MMM yyyy' } },
+                            title: { display: true, text: 'Maand', font: { weight: 'bold' } }
+                        },
+                        yCount: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Aantal Bugs', font: { weight: 'bold' } },
+                            ticks: { stepSize: 1 },
+                            beginAtZero: true
+                        },
+                        yMttr: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Gem. MTTR (uren)', font: { weight: 'bold' } },
+                            beginAtZero: true,
+                            grid: { drawOnChartArea: false }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    if (context.dataset.yAxisID === 'yMttr') {
+                                        return context.raw.y !== null ? `Gem. MTTR: ${context.raw.y.toFixed(1)} uur` : 'Gem. MTTR: Geen data';
+                                    }
+                                    return `${context.dataset.label}: ${context.raw.y}`;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
         function destroyDoraSparklines() {
             ['df', 'ltc', 'cfr', 'mttr'].forEach(key => {
                 if (sparklineCharts[key]) {
@@ -1758,6 +2082,11 @@
                     sparklineCharts.mttr = createSparkline('sparklineMttr', monthly.mttr, monthly.months, '#0052cc');
                 }
             }
+
+            // Sync MTTR hoofdchart als tab MTTR actief is
+            if (tableData && tableData.length > 0 && currentChartTab === 'mttr') {
+                renderMttrChart();
+            }
         }
 
         function resetStatsToZero() {
@@ -1779,6 +2108,14 @@
             if (cfrChart) {
                 cfrChart.destroy();
                 cfrChart = null;
+            }
+            if (ltcChart) {
+                ltcChart.destroy();
+                ltcChart = null;
+            }
+            if (mttrChart) {
+                mttrChart.destroy();
+                mttrChart = null;
             }
             destroyDoraSparklines();
         }
@@ -2853,6 +3190,8 @@
                 sortTable('date', true);
                 updateQualityMetricsDisplay();
                 renderCfrChart();
+                renderLtcChart();
+                renderMttrChart();
                 renderDoraSparklines();
 
             } catch (error) {
@@ -2866,10 +3205,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "11.4.0";
+        const DASHBOARD_VERSION = "11.5.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V11 &bull; Versie 11.4.0 (25-09-2026)
+        DORA &amp; Performance Dashboard V11 &bull; Versie 11.5.0 (25-09-2026)
     </footer>
 </body>
 </html>
