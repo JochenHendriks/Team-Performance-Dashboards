@@ -1,5 +1,5 @@
 # ==============================================================================
-# Jira Data Fetcher voor DORA CFR Dashboard (V11)
+# Jira Data Fetcher voor DORA CFR Dashboard (V12)
 # ==============================================================================
 # Gebruik: Vul hieronder jouw Jira URL, Project Key, Veldnaam voor Team en PAT-token in.
 # Optioneel kun je $TeamName invullen om het resultaat te beperken tot één team,
@@ -89,7 +89,7 @@ try {
     @{ issues = $allIssues } | ConvertTo-Json -Depth 10 | Out-File -FilePath "$ScriptDir\issues.json" -Encoding utf8
     Write-Host "   [OK] issues.json opgeslagen met $($allIssues.Count) tickets!" -ForegroundColor Green
 
-    Write-Host "`nSucces! Je kunt nu Dashboard V11 openen en de bijgewerkte JSON-bestanden inladen.`n" -ForegroundColor Yellow
+    Write-Host "`nSucces! Je kunt nu Dashboard V12 openen en de bijgewerkte JSON-bestanden inladen.`n" -ForegroundColor Yellow
 
 } catch {
     Write-Host "`n[FOUT] Er is een fout ingetreden bij het ophalen van data uit Jira:" -ForegroundColor Red
