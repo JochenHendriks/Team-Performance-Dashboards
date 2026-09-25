@@ -189,18 +189,29 @@ filters:
 
 --- KWALITEIT & CAPACITEIT INZICHT ---
 
-5. Defect Escape Rate [% Bugs Ontdekt in Productie]
+5. Cycle Time [Doorlooptijd Ontwikkeling]
+   - Betekenis: De gemiddelde actieve ontwikkeltijd van het moment dat aan een 
+     ticket wordt gewerkt tot aan de afronding (Done status).
+   - Formule  : Gemiddelde van (Resolutiondate - In Progress datum) voor Changes.
+   - Databron : Wordt bepaald via de Jira changelog (statusovergang naar 'In Progress', 
+     'In behandeling' of 'In ontwikkeling') of een startdatum-veld. Bij afwezigheid 
+     van de changelog valt dit terug op de aanmaakdatum.
+   - Interpretatie:
+     * Onderscheid met LTC: Waar Lead Time for Changes (LTC) de gehele keten meet 
+       (aanmaak t/m officiële release), meet Cycle Time zuiver de ontwikkeltijd van het team.
+
+6. Defect Escape Rate [% Bugs Ontdekt in Productie]
    - Formule  : (Aantal Post-release Bugs / Totaal Aantal Bugs) * 100
    - Interpretatie: Geeft aan hoeveel procent van de bugs door het testproces 
      is 'ontsnapt' naar productie. Een hoog percentage duidt op onvoldoende 
      pre-release testing.
 
-6. Time to Detect (MTTD) [Livegang tot Bugmelding]
+7. Time to Detect (MTTD) [Livegang tot Bugmelding]
    - Formule  : Gemiddelde van (Created Bug - Releasedatum Release).
    - Interpretatie: Hoe snel worden fouten na livegang ontdekt? Snelle detectie 
      (< 3 dagen) wijst op goede monitoring/telemetrie.
 
-7. Investment Mix [Features % / Bugs %]
+8. Investment Mix [Features % / Bugs %]
    - Formule  : Verhouding tussen het aantal verwerkte Changes vs. Bugs.
    - Interpretatie: 
      * Bijv. 80% / 20%: Team besteedt 80% capaciteit aan nieuwe waarde en 20% aan onderhoud.

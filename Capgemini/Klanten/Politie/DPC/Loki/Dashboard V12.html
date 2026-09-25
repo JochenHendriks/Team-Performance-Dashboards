@@ -539,7 +539,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V12</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.0.0 (25-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.1.0 (25-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -848,10 +848,10 @@
             <div class="section-title">Kwaliteit &amp; Capaciteit Inzicht</div>
             <div class="stats-grid">
                 <div class="stat-box">
-                    <span class="stat-label" title="Cycle Time (Doorlooptijd Ontwikkeling): De gemiddelde tijd vanaf het aanmaken/starten van een change ticket tot de afronding (Done status). Formule: Som(resolutionDate - created) / Aantal Changes.">Cycle Time</span>
+                    <span class="stat-label" title="Cycle Time (Doorlooptijd Ontwikkeling): De gemiddelde tijd vanaf de start van werkzaamheden ('In Progress') tot de afronding (Done status). Formule: Som(resolutionDate - inProgressDate) / Aantal Changes.">Cycle Time</span>
                     <span class="stat-value" id="sumCycleTime">0 dagen</span>
                     <span class="trend-badge" id="trendCycleTime" style="display:none;"></span>
-                    <div class="stat-subtext" id="subCycleTime">Aanmaak tot afgerond (Done)</div>
+                    <div class="stat-subtext" id="subCycleTime">In Progress tot afgerond (Done)</div>
                 </div>
                 <div class="stat-box">
                     <span class="stat-label" title="Defect Escape Rate: Het percentage van alle bugs dat pas in productie is ontdekt (Post-release). Formule: (Post-release Bugs / Totaal Aantal Bugs) * 100.">Defect Escape Rate</span>
@@ -1238,7 +1238,7 @@
                     document.getElementById('jqlPreview').textContent = fullJql;
                 }
 
-                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(fullJql)}&startAt=0&maxResults=1000&fields=issuetype,summary,fixVersions,versions,created,resolutiondate,priority,status,updated,${teamField}`;
+                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(fullJql)}&expand=changelog&startAt=0&maxResults=1000&fields=issuetype,summary,fixVersions,versions,created,resolutiondate,priority,status,updated,${teamField}`;
             } else {
                 document.getElementById('urlVersions').value = "";
                 document.getElementById('urlIssues').value = "";
@@ -2753,6 +2753,61 @@
             el.style.display = 'inline-flex';
         }
 
+        function getIssueInProgressDate(issue) {
+            // 1. Zoek in Jira changelog naar status transitie naar 'In Progress' / actieve ontwikkeling
+            if (issue.changelog && Array.isArray(issue.changelog.histories)) {
+                const sortedHistories = [...issue.changelog.histories].sort((a, b) => new Date(a.created) - new Date(b.created));
+                for (const history of sortedHistories) {
+                    if (!history.items || !history.created) continue;
+                    for (const item of history.items) {
+                        if (item.field === 'status') {
+                            const toStr = (item.toString || '').trim().toLowerCase();
+                            if (
+                                toStr === 'in progress' ||
+                                toStr === 'in behandeling' ||
+                                toStr === 'in ontwikkeling' ||
+                                toStr === 'in uitvoering' ||
+                                toStr === 'in development' ||
+                                toStr === 'in review' ||
+                                toStr === 'bezig' ||
+                                toStr === 'doing' ||
+                                toStr === 'active' ||
+                                toStr.includes('progress') ||
+                                toStr.includes('behandeling') ||
+                                toStr.includes('ontwikkeling')
+                            ) {
+                                const d = new Date(history.created);
+                                if (!isNaN(d.getTime())) return { date: d, source: 'changelog' };
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. Zoek in Jira velden naar een expliciet start-/in progress datumveld
+            if (issue.fields) {
+                if (issue.fields.startDate) {
+                    const d = new Date(issue.fields.startDate);
+                    if (!isNaN(d.getTime())) return { date: d, source: 'field' };
+                }
+                if (issue.fields.inprogressdate) {
+                    const d = new Date(issue.fields.inprogressdate);
+                    if (!isNaN(d.getTime())) return { date: d, source: 'field' };
+                }
+                for (const [key, val] of Object.entries(issue.fields)) {
+                    if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+                        const kLower = key.toLowerCase();
+                        if (kLower.includes('start') || kLower.includes('inprogress') || kLower.includes('in_progress')) {
+                            const d = new Date(val);
+                            if (!isNaN(d.getTime())) return { date: d, source: 'field' };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         function computePeriodMetrics(allVersions, allIssuesRaw, filterStartLimit, filterEndLimit, ltcMode, statusConfig, releaseFilters, currentSearchInput) {
             const { incReleased, incUnreleased, incArchived } = statusConfig;
             const validVersions = {};
@@ -2832,6 +2887,8 @@
             let ltcCount = 0;
             let totalCycleTimeDays = 0;
             let cycleTimeCount = 0;
+            let hasChangelogCycleCount = 0;
+            let fallbackCycleCount = 0;
 
             teamFilteredIssues.forEach(issue => {
                 const typeName = issue.fields.issuetype ? issue.fields.issuetype.name : "Unknown";
@@ -2849,12 +2906,25 @@
                     if (issue.fields.updated) resolvedDate = new Date(issue.fields.updated);
                 }
 
-                // Cycle Time: Tijd van Aanmaak/Start tot Afronding (Done)
+                // Cycle Time: Tijd van In Progress (start werkzaamheden) tot Afronding (Done)
+                const inProgressInfo = getIssueInProgressDate(issue);
                 let cycleDays = null;
-                if (resolvedDate && createdDate && resolvedDate >= createdDate) {
-                    cycleDays = (resolvedDate - createdDate) / (1000 * 60 * 60 * 24);
-                    totalCycleTimeDays += cycleDays;
-                    cycleTimeCount++;
+                let cycleStart = null;
+                if (resolvedDate) {
+                    if (inProgressInfo && inProgressInfo.date && resolvedDate >= inProgressInfo.date) {
+                        cycleStart = inProgressInfo.date;
+                        cycleDays = (resolvedDate - inProgressInfo.date) / (1000 * 60 * 60 * 24);
+                        totalCycleTimeDays += cycleDays;
+                        cycleTimeCount++;
+                        hasChangelogCycleCount++;
+                    } else if (!inProgressInfo && createdDate && resolvedDate >= createdDate) {
+                        // Fallback naar created date indien changelog/startdatum niet aanwezig is in de export
+                        cycleStart = createdDate;
+                        cycleDays = (resolvedDate - createdDate) / (1000 * 60 * 60 * 24);
+                        totalCycleTimeDays += cycleDays;
+                        cycleTimeCount++;
+                        fallbackCycleCount++;
+                    }
                 }
 
                 let earliestReleaseDate = null;
@@ -2886,7 +2956,7 @@
                             uniqueChanges.add(key);
                             validVersions[vName].issues.push({
                                 key, summary, type: 'Change',
-                                createdDate, resolvedDate, targetDate, ltcDays: diffDays, cycleDays: cycleDays
+                                createdDate, inProgressDate: cycleStart, resolvedDate, targetDate, ltcDays: diffDays, cycleDays: cycleDays
                             });
                         }
                     });
@@ -3120,6 +3190,8 @@
                 avgCycleTimeDays,
                 cycleTimeCount,
                 cycleTimeText,
+                hasChangelogCycleCount,
+                fallbackCycleCount,
                 numChanges,
                 totalNumBugs,
                 featurePct,
@@ -3311,6 +3383,16 @@
                 document.getElementById('sumDf').textContent = currentPeriodMetrics.dfText;
                 document.getElementById('sumLtc').textContent = currentPeriodMetrics.ltcText;
                 document.getElementById('sumCycleTime').textContent = currentPeriodMetrics.cycleTimeText;
+                const subCycleTimeEl = document.getElementById('subCycleTime');
+                if (subCycleTimeEl) {
+                    if (currentPeriodMetrics.hasChangelogCycleCount > 0) {
+                        subCycleTimeEl.textContent = "In Progress tot afgerond (Done)";
+                    } else if (currentPeriodMetrics.cycleTimeCount > 0) {
+                        subCycleTimeEl.textContent = "Aanmaak tot afgerond (geen changelog)";
+                    } else {
+                        subCycleTimeEl.textContent = "In Progress tot afgerond (Done)";
+                    }
+                }
 
                 const sumCfrElement = document.getElementById('sumCfr');
                 sumCfrElement.textContent = currentPeriodMetrics.totalCFR.toFixed(2) + '%';
@@ -3473,10 +3555,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "12.0.0";
+        const DASHBOARD_VERSION = "12.1.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V12 &bull; Versie 12.0.0 (25-09-2026)
+        DORA &amp; Performance Dashboard V12 &bull; Versie 12.1.0 (25-09-2026)
     </footer>
 </body>
 </html>

@@ -122,6 +122,7 @@ for ($rIdx = 0; $rIdx -lt $releases.Count; $rIdx++) {
             $key = "LOKI-$issueKeyCounter"
             $issueKeyCounter++
             $created = $rDate.AddDays(- (10 + ($f * 2)))
+            $inProgress = $rDate.AddDays(- (4 + $f))
             $resolved = $rDate.AddDays(- (1 + $f))
             $sum = $featureSummaries[($issueKeyCounter) % $featureSummaries.Count] + " ($($rel.name))"
             
@@ -139,6 +140,32 @@ for ($rIdx = 0; $rIdx -lt $releases.Count; $rIdx++) {
                     updated        = $resolved.ToString("yyyy-MM-ddTHH:mm:ss.000+0100")
                     team           = [PSCustomObject]@{ name = $team }
                 }
+                changelog = [PSCustomObject]@{
+                    histories = @(
+                        [PSCustomObject]@{
+                            created = $inProgress.ToString("yyyy-MM-ddTHH:mm:ss.000+0100")
+                            items = @(
+                                [PSCustomObject]@{
+                                    field = "status"
+                                    fieldtype = "jira"
+                                    fromString = "To Do"
+                                    toString = "In Progress"
+                                }
+                            )
+                        },
+                        [PSCustomObject]@{
+                            created = $resolved.ToString("yyyy-MM-ddTHH:mm:ss.000+0100")
+                            items = @(
+                                [PSCustomObject]@{
+                                    field = "status"
+                                    fieldtype = "jira"
+                                    fromString = "In Progress"
+                                    toString = "Done"
+                                }
+                            )
+                        }
+                    )
+                }
             }
         }
     }
@@ -152,9 +179,11 @@ for ($rIdx = 0; $rIdx -lt $releases.Count; $rIdx++) {
             $isPost = ($b % 2 -eq 0) -or $isHotfixRelease
             if ($isPost) {
                 $created = $rDate.AddDays(1 + ($b * 2))
+                $inProgress = $created.AddHours(2)
                 $resolved = $created.AddHours(12 + ($b * 8))
             } else {
                 $created = $rDate.AddDays(-5)
+                $inProgress = $rDate.AddDays(-3)
                 $resolved = $rDate.AddDays(-1)
             }
             
@@ -179,6 +208,32 @@ for ($rIdx = 0; $rIdx -lt $releases.Count; $rIdx++) {
                     status         = [PSCustomObject]@{ name = "Done"; statusCategory = [PSCustomObject]@{ key = "done" } }
                     updated        = $resolved.ToString("yyyy-MM-ddTHH:mm:ss.000+0100")
                     team           = [PSCustomObject]@{ name = $team }
+                }
+                changelog = [PSCustomObject]@{
+                    histories = @(
+                        [PSCustomObject]@{
+                            created = $inProgress.ToString("yyyy-MM-ddTHH:mm:ss.000+0100")
+                            items = @(
+                                [PSCustomObject]@{
+                                    field = "status"
+                                    fieldtype = "jira"
+                                    fromString = "To Do"
+                                    toString = "In Progress"
+                                }
+                            )
+                        },
+                        [PSCustomObject]@{
+                            created = $resolved.ToString("yyyy-MM-ddTHH:mm:ss.000+0100")
+                            items = @(
+                                [PSCustomObject]@{
+                                    field = "status"
+                                    fieldtype = "jira"
+                                    fromString = "In Progress"
+                                    toString = "Done"
+                                }
+                            )
+                        }
+                    )
                 }
             }
         }

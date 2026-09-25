@@ -71,7 +71,7 @@ try {
     $moreRecords = $true
 
     while ($moreRecords) {
-        $searchUrl = "$cleanBaseUrl/rest/api/2/search?jql=$([Uri]::EscapeDataString($jql))&startAt=$startAt&maxResults=$maxResults&fields=$fields"
+        $searchUrl = "$cleanBaseUrl/rest/api/2/search?jql=$([Uri]::EscapeDataString($jql))&expand=changelog&startAt=$startAt&maxResults=$maxResults&fields=$fields"
         $response = Invoke-RestMethod -Uri $searchUrl -Headers $Headers -Method Get
         
         if ($response.issues) {
