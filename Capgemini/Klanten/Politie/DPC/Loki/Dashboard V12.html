@@ -539,7 +539,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V12</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.1.0 (25-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.2.0 (25-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -2396,23 +2396,10 @@
             const startInput = document.getElementById('filterStartDate');
             const endInput = document.getElementById('filterEndDate');
 
-            // Bepaal referentiedatum dynamisch op basis van de nieuwste release in geladen data, of val terug op heden
-            let refDate = new Date();
-            if (cachedAllVersions && cachedAllVersions.length > 0) {
-                let maxDataDate = null;
-                cachedAllVersions.forEach(v => {
-                    if (v.releaseDate) {
-                        const d = new Date(v.releaseDate);
-                        if (!isNaN(d.getTime()) && (!maxDataDate || d > maxDataDate)) {
-                            maxDataDate = d;
-                        }
-                    }
-                });
-                if (maxDataDate) refDate = maxDataDate;
-            }
-
+            // Altijd de actuele datum (systeemtijd) als referentiepunt
+            const refDate = new Date();
             const y = refDate.getFullYear();
-            const m = refDate.getMonth(); // 0-indexed
+            const m = refDate.getMonth(); // 0-indexed (huidige kalendermaand)
 
             if (preset === 'all') {
                 if (startInput) startInput.value = '';
@@ -2433,18 +2420,22 @@
                 if (startInput) startInput.value = formatLocalDate(firstDay);
                 if (endInput) endInput.value = formatLocalDate(lastDay);
             } else if (preset === '3m') {
+                // Laatste 3 maanden vanaf de huidige kalendermaand
                 const lastDay = new Date(y, m + 1, 0);
-                let d = new Date(y, m - 2, 1);
-                if (startInput) startInput.value = formatLocalDate(d);
+                const firstDay = new Date(y, m - 2, 1);
+                if (startInput) startInput.value = formatLocalDate(firstDay);
                 if (endInput) endInput.value = formatLocalDate(lastDay);
             } else if (preset === '6m') {
+                // Laatste 6 maanden vanaf de huidige kalendermaand
                 const lastDay = new Date(y, m + 1, 0);
-                let d = new Date(y, m - 5, 1);
-                if (startInput) startInput.value = formatLocalDate(d);
+                const firstDay = new Date(y, m - 5, 1);
+                if (startInput) startInput.value = formatLocalDate(firstDay);
                 if (endInput) endInput.value = formatLocalDate(lastDay);
             } else if (preset === '1y') {
-                if (startInput) startInput.value = `${y}-01-01`;
-                if (endInput) endInput.value = `${y}-12-31`;
+                const lastDay = new Date(y, m + 1, 0);
+                const firstDay = new Date(y, m - 11, 1);
+                if (startInput) startInput.value = formatLocalDate(firstDay);
+                if (endInput) endInput.value = formatLocalDate(lastDay);
             }
             calculateMetrics();
         }
@@ -3555,10 +3546,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "12.1.0";
+        const DASHBOARD_VERSION = "12.2.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V12 &bull; Versie 12.1.0 (25-09-2026)
+        DORA &amp; Performance Dashboard V12 &bull; Versie 12.2.0 (25-09-2026)
     </footer>
 </body>
 </html>
