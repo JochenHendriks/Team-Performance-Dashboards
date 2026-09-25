@@ -501,7 +501,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V11</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.5.0 (25-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v11.6.0 (25-09-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -1370,6 +1370,33 @@
             });
         }
 
+        function calculateRollingAverage(dataArray, windowSize = 3) {
+            if (!Array.isArray(dataArray) || dataArray.length === 0) return [];
+
+            return dataArray.map((item, index) => {
+                const isObj = item !== null && typeof item === 'object' && ('y' in item);
+                const start = Math.max(0, index - windowSize + 1);
+                const windowSlice = dataArray.slice(start, index + 1);
+
+                let sum = 0;
+                let count = 0;
+
+                windowSlice.forEach(wItem => {
+                    const val = (wItem !== null && typeof wItem === 'object' && ('y' in wItem)) ? wItem.y : wItem;
+                    if (typeof val === 'number' && !isNaN(val) && val !== null) {
+                        sum += val;
+                        count++;
+                    }
+                });
+
+                const avg = count > 0 ? (sum / count) : null;
+                if (isObj) {
+                    return { x: item.x, y: avg !== null ? Math.round(avg * 10) / 10 : null };
+                }
+                return avg !== null ? Math.round(avg * 10) / 10 : null;
+            });
+        }
+
         function renderCfrChart() {
             const ctx = document.getElementById('cfrChart').getContext('2d');
             if (cfrChart) cfrChart.destroy();
@@ -1400,6 +1427,8 @@
                 };
             });
 
+            const cfrTrendPoints = calculateRollingAverage(chartPoints.map(p => ({ x: p.x, y: p.cfr })), 3);
+
             cfrChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1418,6 +1447,21 @@
                             pointHoverRadius: 8,
                             tension: 0.3,
                             order: 1
+                        },
+                        {
+                            type: 'line',
+                            label: 'Trend (3 mnd gemiddelde)',
+                            data: cfrTrendPoints,
+                            yAxisID: 'yCfr',
+                            borderColor: '#ff8b00',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            tension: 0.4,
+                            spanGaps: true,
+                            order: 0
                         },
                         {
                             type: 'bar',
@@ -1472,6 +1516,9 @@
                         tooltip: {
                             callbacks: {
                                 label: function (context) {
+                                    if (context.dataset.label === 'Trend (3 mnd gemiddelde)') {
+                                        return `Trend (3 mnd gem.): ${context.raw.y !== null ? context.raw.y.toFixed(1) + '%' : 'Geen data'}`;
+                                    }
                                     if (context.dataset.label === 'CFR (%)') {
                                         return `CFR: ${context.raw.y.toFixed(1)}%`;
                                     }
@@ -1548,6 +1595,8 @@
                 };
             });
 
+            const ltcTrendPoints = calculateRollingAverage(chartPoints.map(p => ({ x: p.x, y: p.avgLtc })), 3);
+
             ltcChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1567,6 +1616,21 @@
                             tension: 0.3,
                             spanGaps: true,
                             order: 1
+                        },
+                        {
+                            type: 'line',
+                            label: 'Trend (3 mnd gemiddelde)',
+                            data: ltcTrendPoints,
+                            yAxisID: 'yLtc',
+                            borderColor: '#ff8b00',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            tension: 0.4,
+                            spanGaps: true,
+                            order: 0
                         },
                         {
                             type: 'bar',
@@ -1611,6 +1675,9 @@
                         tooltip: {
                             callbacks: {
                                 label: function (context) {
+                                    if (context.dataset.label === 'Trend (3 mnd gemiddelde)') {
+                                        return `Trend (3 mnd gem.): ${context.raw.y !== null ? context.raw.y.toFixed(1) + ' dagen' : 'Geen data'}`;
+                                    }
                                     if (context.dataset.yAxisID === 'yLtc') {
                                         return context.raw.y !== null ? `Gem. LTC: ${context.raw.y.toFixed(1)} dagen` : 'Gem. LTC: Geen data';
                                     }
@@ -1666,6 +1733,8 @@
                 };
             });
 
+            const mttrTrendPoints = calculateRollingAverage(chartPoints.map(p => ({ x: p.x, y: p.avgMttr })), 3);
+
             mttrChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1685,6 +1754,21 @@
                             tension: 0.3,
                             spanGaps: true,
                             order: 1
+                        },
+                        {
+                            type: 'line',
+                            label: 'Trend (3 mnd gemiddelde)',
+                            data: mttrTrendPoints,
+                            yAxisID: 'yMttr',
+                            borderColor: '#42526e',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            pointHoverRadius: 4,
+                            tension: 0.4,
+                            spanGaps: true,
+                            order: 0
                         },
                         {
                             type: 'bar',
@@ -1729,6 +1813,9 @@
                         tooltip: {
                             callbacks: {
                                 label: function (context) {
+                                    if (context.dataset.label === 'Trend (3 mnd gemiddelde)') {
+                                        return `Trend (3 mnd gem.): ${context.raw.y !== null ? context.raw.y.toFixed(1) + ' uur' : 'Geen data'}`;
+                                    }
                                     if (context.dataset.yAxisID === 'yMttr') {
                                         return context.raw.y !== null ? `Gem. MTTR: ${context.raw.y.toFixed(1)} uur` : 'Gem. MTTR: Geen data';
                                     }
@@ -3205,10 +3292,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "11.5.0";
+        const DASHBOARD_VERSION = "11.6.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V11 &bull; Versie 11.5.0 (25-09-2026)
+        DORA &amp; Performance Dashboard V11 &bull; Versie 11.6.0 (25-09-2026)
     </footer>
 </body>
 </html>
