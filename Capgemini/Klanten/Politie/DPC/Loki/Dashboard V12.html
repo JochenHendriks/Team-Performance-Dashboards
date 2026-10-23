@@ -557,7 +557,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V12</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.3.1 (23-10-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.4.0 (23-10-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -959,42 +959,180 @@
     </div>
 
     <script>
-        let tableData = [];
-        let currentSortColumn = 'date';
-        let isSortDescending = true;
-        let globalSeverityMetrics = {
-            total: { mttrHours: 0, mttrCount: 0, mttdHours: 0, mttdCount: 0, totalBugs: 0, postReleaseBugs: 0 },
-            byPriority: {}
+        // ==============================================================================
+        // CENTRALE STATE MANAGEMENT & DOM CACHING (FASE 1)
+        // ==============================================================================
+        const DashboardState = {
+            data: {
+                tableData: [],
+                currentSortColumn: 'date',
+                isSortDescending: true,
+                globalSeverityMetrics: {
+                    total: { mttrHours: 0, mttrCount: 0, mttdHours: 0, mttdCount: 0, totalBugs: 0, postReleaseBugs: 0 },
+                    byPriority: {}
+                },
+                cachedAllVersions: null,
+                cachedAllIssuesRaw: null,
+                currentPeriodMetrics: null,
+                comparisonPeriodMetrics: null
+            },
+            filters: {
+                releaseNameFilters: [],
+                selectedQualityPriorities: new Set(),
+                selectedCfrPriorities: new Set(),
+                discoveredPriorities: new Set(),
+                selectedChangeTypes: new Set(),
+                selectedBugTypes: new Set(),
+                discoveredIssueTypes: new Set(),
+                selectedTeams: new Set(),
+                discoveredTeams: new Set()
+            },
+            ui: {
+                currentChartTab: 'cfr',
+                releaseSearchInputDebounce: null,
+                charts: {
+                    cfr: null,
+                    ltc: null,
+                    mttr: null,
+                    sparklines: {
+                        df: null,
+                        ltc: null,
+                        cfr: null,
+                        mttr: null
+                    }
+                }
+            }
         };
 
-        let selectedQualityPriorities = new Set();
-        let selectedCfrPriorities = new Set();
-        let discoveredPriorities = new Set();
+        // DOM Caching helper: voorkomt herhaalde getElementById scans over de DOM
+        const DOM_CACHE = new Map();
+        function getEl(id) {
+            let el = DOM_CACHE.get(id);
+            if (!el || !document.contains(el)) {
+                el = document.getElementById(id);
+                if (el) DOM_CACHE.set(id, el);
+            }
+            return el;
+        }
 
-        let selectedChangeTypes = new Set();
-        let selectedBugTypes = new Set();
-        let discoveredIssueTypes = new Set();
-
-        let selectedTeams = new Set();
-        let discoveredTeams = new Set();
-
-        let cfrChart = null;
-        let ltcChart = null;
-        let mttrChart = null;
-        let currentChartTab = 'cfr';
-        let sparklineCharts = {
-            df: null,
-            ltc: null,
-            cfr: null,
-            mttr: null
-        };
-
-        let releaseNameFilters = [];
-        let cachedAllVersions = null;
-        let cachedAllIssuesRaw = null;
-        let releaseSearchInputDebounce = null;
-        let currentPeriodMetrics = null;
-        let comparisonPeriodMetrics = null;
+        // Backward compatibility mappings naar DashboardState
+        Object.defineProperties(window, {
+            tableData: {
+                get: () => DashboardState.data.tableData,
+                set: (v) => { DashboardState.data.tableData = v; },
+                configurable: true
+            },
+            currentSortColumn: {
+                get: () => DashboardState.data.currentSortColumn,
+                set: (v) => { DashboardState.data.currentSortColumn = v; },
+                configurable: true
+            },
+            isSortDescending: {
+                get: () => DashboardState.data.isSortDescending,
+                set: (v) => { DashboardState.data.isSortDescending = v; },
+                configurable: true
+            },
+            globalSeverityMetrics: {
+                get: () => DashboardState.data.globalSeverityMetrics,
+                set: (v) => { DashboardState.data.globalSeverityMetrics = v; },
+                configurable: true
+            },
+            cachedAllVersions: {
+                get: () => DashboardState.data.cachedAllVersions,
+                set: (v) => { DashboardState.data.cachedAllVersions = v; },
+                configurable: true
+            },
+            cachedAllIssuesRaw: {
+                get: () => DashboardState.data.cachedAllIssuesRaw,
+                set: (v) => { DashboardState.data.cachedAllIssuesRaw = v; },
+                configurable: true
+            },
+            currentPeriodMetrics: {
+                get: () => DashboardState.data.currentPeriodMetrics,
+                set: (v) => { DashboardState.data.currentPeriodMetrics = v; },
+                configurable: true
+            },
+            comparisonPeriodMetrics: {
+                get: () => DashboardState.data.comparisonPeriodMetrics,
+                set: (v) => { DashboardState.data.comparisonPeriodMetrics = v; },
+                configurable: true
+            },
+            selectedQualityPriorities: {
+                get: () => DashboardState.filters.selectedQualityPriorities,
+                set: (v) => { DashboardState.filters.selectedQualityPriorities = v; },
+                configurable: true
+            },
+            selectedCfrPriorities: {
+                get: () => DashboardState.filters.selectedCfrPriorities,
+                set: (v) => { DashboardState.filters.selectedCfrPriorities = v; },
+                configurable: true
+            },
+            discoveredPriorities: {
+                get: () => DashboardState.filters.discoveredPriorities,
+                set: (v) => { DashboardState.filters.discoveredPriorities = v; },
+                configurable: true
+            },
+            selectedChangeTypes: {
+                get: () => DashboardState.filters.selectedChangeTypes,
+                set: (v) => { DashboardState.filters.selectedChangeTypes = v; },
+                configurable: true
+            },
+            selectedBugTypes: {
+                get: () => DashboardState.filters.selectedBugTypes,
+                set: (v) => { DashboardState.filters.selectedBugTypes = v; },
+                configurable: true
+            },
+            discoveredIssueTypes: {
+                get: () => DashboardState.filters.discoveredIssueTypes,
+                set: (v) => { DashboardState.filters.discoveredIssueTypes = v; },
+                configurable: true
+            },
+            selectedTeams: {
+                get: () => DashboardState.filters.selectedTeams,
+                set: (v) => { DashboardState.filters.selectedTeams = v; },
+                configurable: true
+            },
+            discoveredTeams: {
+                get: () => DashboardState.filters.discoveredTeams,
+                set: (v) => { DashboardState.filters.discoveredTeams = v; },
+                configurable: true
+            },
+            releaseNameFilters: {
+                get: () => DashboardState.filters.releaseNameFilters,
+                set: (v) => { DashboardState.filters.releaseNameFilters = v; },
+                configurable: true
+            },
+            currentChartTab: {
+                get: () => DashboardState.ui.currentChartTab,
+                set: (v) => { DashboardState.ui.currentChartTab = v; },
+                configurable: true
+            },
+            releaseSearchInputDebounce: {
+                get: () => DashboardState.ui.releaseSearchInputDebounce,
+                set: (v) => { DashboardState.ui.releaseSearchInputDebounce = v; },
+                configurable: true
+            },
+            cfrChart: {
+                get: () => DashboardState.ui.charts.cfr,
+                set: (v) => { DashboardState.ui.charts.cfr = v; },
+                configurable: true
+            },
+            ltcChart: {
+                get: () => DashboardState.ui.charts.ltc,
+                set: (v) => { DashboardState.ui.charts.ltc = v; },
+                configurable: true
+            },
+            mttrChart: {
+                get: () => DashboardState.ui.charts.mttr,
+                set: (v) => { DashboardState.ui.charts.mttr = v; },
+                configurable: true
+            },
+            sparklineCharts: {
+                get: () => DashboardState.ui.charts.sparklines,
+                set: (v) => { DashboardState.ui.charts.sparklines = v; },
+                configurable: true
+            }
+        });
 
         function escapeHtml(str) {
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -1391,19 +1529,22 @@
         }
 
         function renderTableRows() {
-            const resultsBody = document.getElementById('resultsBody');
+            const resultsBody = getEl('resultsBody');
+            if (!resultsBody) return;
             resultsBody.innerHTML = '';
 
             if (tableData.length === 0) return;
 
-            const baseUrlRaw = document.getElementById('jiraUrl').value.trim();
-            const projectKey = document.getElementById('projectKey').value.trim();
+            const baseUrlRaw = (getEl('jiraUrl')?.value || '').trim();
+            const projectKey = (getEl('projectKey')?.value || '').trim();
             const baseUrl = baseUrlRaw ? baseUrlRaw.replace(/\/$/, "") : "";
 
             const formatDate = (dateObj) => {
                 if (!dateObj) return "Onbekend";
                 return dateObj.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' });
             };
+
+            const fragment = document.createDocumentFragment();
 
             tableData.forEach(data => {
                 let statusBadgeHtml = '';
@@ -1475,9 +1616,11 @@
                 </td>
             `;
 
-                resultsBody.appendChild(tr);
-                resultsBody.appendChild(trDetails);
+                fragment.appendChild(tr);
+                fragment.appendChild(trDetails);
             });
+
+            resultsBody.appendChild(fragment);
         }
 
         function getDoraTier(metric, val) {
@@ -3600,10 +3743,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "12.3.1";
+        const DASHBOARD_VERSION = "12.4.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V12 &bull; Versie 12.3.1 (23-10-2026)
+        DORA &amp; Performance Dashboard V12 &bull; Versie 12.4.0 (23-10-2026)
     </footer>
 </body>
 </html>
