@@ -16,6 +16,7 @@ param (
     [string]$StartDate         = "",                  # Optioneel: YYYY-MM-DD
     [string]$EndDate           = "",                  # Optioneel: YYYY-MM-DD
     [string]$DateField         = "resolutiondate",    # "resolutiondate", "updated", of "created"
+    [bool]$IncludeChangelog    = $false,              # Optioneel: zet op $true om changelog mee te nemen (maakt export veel groter; alleen nodig voor exacte cycle time)
     [string]$PatToken          = "JOUW_PERSONAL_ACCESS_TOKEN"
 )
 
@@ -68,10 +69,10 @@ try {
     $allIssues = @()
     $startAt = 0
     $maxResults = 1000
-    $moreRecords = $true
+    $expandParam = if ($IncludeChangelog) { "&expand=changelog" } else { "" }
 
     while ($moreRecords) {
-        $searchUrl = "$cleanBaseUrl/rest/api/2/search?jql=$([Uri]::EscapeDataString($jql))&expand=changelog&startAt=$startAt&maxResults=$maxResults&fields=$fields"
+        $searchUrl = "$cleanBaseUrl/rest/api/2/search?jql=$([Uri]::EscapeDataString($jql))$expandParam&startAt=$startAt&maxResults=$maxResults&fields=$fields"
         $response = Invoke-RestMethod -Uri $searchUrl -Headers $Headers -Method Get
         
         if ($response.issues) {

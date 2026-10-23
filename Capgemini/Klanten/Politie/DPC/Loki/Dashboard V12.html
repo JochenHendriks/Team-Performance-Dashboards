@@ -539,7 +539,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V12</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.2.0 (25-09-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.3.0 (23-10-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -593,6 +593,18 @@
                     <option value="updated">Updated Date (Gewijzigd op)</option>
                     <option value="created">Created Date (Aangemaakt op)</option>
                 </select>
+            </div>
+
+            <div class="input-group full-width" style="background: #fafbfc; border: 1px solid #ebecf0; border-radius: 6px; padding: 10px 14px; margin-bottom: 0.5rem;">
+                <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; margin: 0;">
+                    <input type="checkbox" id="apiIncludeChangelog" onchange="generateUrls()" style="width: 18px; height: 18px; margin: 0; cursor: pointer;">
+                    <span>
+                        Changelog exporteren (<code>&amp;expand=changelog</code>)
+                        <span style="display: block; font-weight: normal; font-size: 0.8rem; color: #5e6c84; margin-top: 2px;">
+                            Optioneel: Alleen inschakelen voor exacte in-progress Cycle Time. Uitgevinkt blijft de export vele malen compacter en sneller.
+                        </span>
+                    </span>
+                </label>
             </div>
 
             <div class="input-group full-width">
@@ -1134,6 +1146,7 @@
             const savedStartDate = localStorage.getItem('dora_apiStartDate');
             const savedEndDate = localStorage.getItem('dora_apiEndDate');
             const savedDateField = localStorage.getItem('dora_apiDateField');
+            const savedIncludeChangelog = localStorage.getItem('dora_apiIncludeChangelog');
 
             if (savedUrl) document.getElementById('jiraUrl').value = savedUrl;
             if (savedProject) document.getElementById('projectKey').value = savedProject;
@@ -1143,6 +1156,9 @@
             if (savedStartDate && document.getElementById('apiStartDate')) document.getElementById('apiStartDate').value = savedStartDate;
             if (savedEndDate && document.getElementById('apiEndDate')) document.getElementById('apiEndDate').value = savedEndDate;
             if (savedDateField && document.getElementById('apiDateField')) document.getElementById('apiDateField').value = savedDateField;
+            if (document.getElementById('apiIncludeChangelog')) {
+                document.getElementById('apiIncludeChangelog').checked = (savedIncludeChangelog === 'true');
+            }
 
             loadReleaseFilters();
 
@@ -1198,6 +1214,7 @@
             const startDate = document.getElementById('apiStartDate') ? document.getElementById('apiStartDate').value : '';
             const endDate = document.getElementById('apiEndDate') ? document.getElementById('apiEndDate').value : '';
             const dateField = document.getElementById('apiDateField') ? document.getElementById('apiDateField').value : 'resolutiondate';
+            const includeChangelog = document.getElementById('apiIncludeChangelog') ? document.getElementById('apiIncludeChangelog').checked : false;
 
             localStorage.setItem('dora_jiraUrl', baseUrlRaw);
             localStorage.setItem('dora_projectKey', projectKey);
@@ -1207,6 +1224,7 @@
             localStorage.setItem('dora_apiStartDate', startDate);
             localStorage.setItem('dora_apiEndDate', endDate);
             localStorage.setItem('dora_apiDateField', dateField);
+            localStorage.setItem('dora_apiIncludeChangelog', includeChangelog ? 'true' : 'false');
 
             if (baseUrlRaw && projectKey) {
                 const baseUrl = baseUrlRaw.replace(/\/$/, "");
@@ -1238,7 +1256,8 @@
                     document.getElementById('jqlPreview').textContent = fullJql;
                 }
 
-                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(fullJql)}&expand=changelog&startAt=0&maxResults=1000&fields=issuetype,summary,fixVersions,versions,created,resolutiondate,priority,status,updated,${teamField}`;
+                const expandParam = includeChangelog ? '&expand=changelog' : '';
+                document.getElementById('urlIssues').value = `${baseUrl}/rest/api/2/search?jql=${encodeURIComponent(fullJql)}${expandParam}&startAt=0&maxResults=1000&fields=issuetype,summary,fixVersions,versions,created,resolutiondate,priority,status,updated,${teamField}`;
             } else {
                 document.getElementById('urlVersions').value = "";
                 document.getElementById('urlIssues').value = "";
@@ -3546,10 +3565,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "12.2.0";
+        const DASHBOARD_VERSION = "12.3.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V12 &bull; Versie 12.2.0 (25-09-2026)
+        DORA &amp; Performance Dashboard V12 &bull; Versie 12.3.0 (23-10-2026)
     </footer>
 </body>
 </html>
