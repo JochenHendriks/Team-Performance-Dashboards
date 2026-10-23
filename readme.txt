@@ -9,7 +9,7 @@ Inhoudsopgave:
 3. Data Ophalen uit Jira (PowerShell & REST API)
 4. Stap-voor-Stap Handleiding voor het Dashboard
 5. Hoe moet je de Data en Metrics interpreteren?
-6. De Grafiek lezen (DORA Trend & Release Impact Chart)
+6. De Grafieken Lezen (DORA Sparklines & Multi-Tab Trendgrafiek)
 7. Troubleshooting & Veelgestelde Vragen
 8. Versiebeheer & Git Protocol
 
@@ -17,16 +17,21 @@ Inhoudsopgave:
 1. OVERZICHT & DOEL
 ==============================================================================
 Het DORA & Performance Dashboard V12 is een self-contained, offline HTML5 
-dashboard ontworpen voor softwareteams, Agile Coaches, Scrum Masters en Management.
+dashboard ontworpen voor softwareteams, Agile Coaches, Product Owners, Scrum Masters 
+en Management.
 
 Het dashboard biedt diepgaand inzicht in:
 - De 4 officiële DORA Metrics (Deployment Frequency, Lead Time for Changes, 
-  Change Failure Rate, Mean Time to Restore).
+  Change Failure Rate, Mean Time to Restore) inclusief DORA Maturity Badges (Elite, 
+  High, Medium, Low) en maandelijkse Sparkline trendlijnen.
+- Cycle Time (actieve ontwikkeltijd van In Progress tot Done) en Lead Time for Changes.
 - Kwaliteits- en capaciteitsindicatoren (Defect Escape Rate, MTTD, Investment Mix).
+- Vergelijkings- en trendanalyse t.o.v. de vorige periode of hetzelfde tijdvak vorig jaar.
 - De impact van specifieke releases, hotfixes en post-release bugs per team.
 
-Het dashboard draait volledig lokaal in je browser. Er is geen externe webserver 
-of database vereist.
+Het dashboard draait volledig lokaal in je browser (via het file:// protocol). Er is 
+geen externe webserver, Node.js runtime of database vereist. Alle grafieken en tabellen 
+worden vloeibaar in-place bijgewerkt zonder herladen.
 
 ==============================================================================
 2. RANDVOORWAARDEN & VEREISTEN
@@ -37,8 +42,9 @@ randvoorwaarden worden voldaan:
 A. Browser Vereisten:
    - Een moderne webbrowser met JavaScript ondersteuning (Google Chrome, 
      Microsoft Edge, Mozilla Firefox of Safari).
+   - Werkt direct als lokaal HTML-bestand via 'file://'.
 
-B. Jira Data Randvoorwaarden (Verplichte Jira Velden):
+B. Jira Data Randvoorwaarden (Jira Velden):
    Het Jira project moet de volgende velden beschikbaar stellen in de REST API 
    of JSON-export:
    - issuetype      : Type ticket (Story, Task, Bug, Incident, Defect, etc.)
@@ -52,17 +58,21 @@ B. Jira Data Randvoorwaarden (Verplichte Jira Velden):
    - updated        : Datum van laatste wijziging
    - Team veld      : Jira veldnaam voor het team (standaard 'team', of een 
                       CustomField ID zoals 'customfield_10011').
+   - changelog      : (Optioneel) Statusovergangen, alleen nodig voor de berekening 
+                      van de exacte Cycle Time (In Progress transitie).
 
 C. Jira Versiebeheer Conventies:
    - Releases (Versies) worden in Jira aangemaakt onder 'Project Settings > Versions'.
    - Opleveringen (Stories/Tasks) worden gekoppeld aan de betreffende 'Fix Version'.
    - Wanneer een bug in productie ontstaat, wordt bij voorkeur de release waarin 
      de fout is ontstaan gekoppeld in het veld 'Affects Version'.
+   - Indien een versie geen expliciete releasedatum heeft, hanteert het dashboard 
+     een slimme pre-indexed fallback op basis van het nieuwst opgeloste ticket.
 
 ==============================================================================
 3. DATA OPHALEN UIT JIRA (POWERSHELL & REST API)
 ==============================================================================
-Er zijn twee manieren om de benodigde data uit Jira te halen:
+Er zijn twee manieren om de benodigde data uit Jira te exporteren:
 
 --- MANIER 1: AUTOMATISCH VIA POWERSHELL (Aanbevolen) ---
 In de map 'Capgemini/Klanten/Politie/DPC/Loki/' staan twee hulpscripts:
@@ -72,75 +82,97 @@ In de map 'Capgemini/Klanten/Politie/DPC/Loki/' staan twee hulpscripts:
 Stappen:
 1. Open 'update-data.ps1' in een tekstverwerker (bijv. Notepad++ of VS Code).
 2. Vul de volgende variabelen bovenaan het script in:
-   - $JiraUrl    = "https://jira.jouwbedrijf.nl"
-   - $ProjectKey = "JOUW_PROJECT_KEY" (bijv. WEB of LOKI)
-   - $TeamField  = "team" (of jouw customfield ID)
-   - $PatToken   = "JOUW_PERSONAL_ACCESS_TOKEN" (PAT token uit Jira)
-3. Optionele filters instellen in 'update-data.ps1':
+   - $JiraUrl           = "https://jira.jouwbedrijf.nl"
+   - $ProjectKey        = "JOUW_PROJECT_KEY" (bijv. WEB of LOKI)
+   - $TeamField         = "team" (of jouw customfield ID)
+   - $PatToken          = "JOUW_PERSONAL_ACCESS_TOKEN" (PAT token uit Jira)
+3. Optionele instellingen in 'update-data.ps1':
+   - $IncludeChangelog  = $false (Zet op $true als je Cycle Time met In Progress 
+                          statustransities wilt berekenen. $false maakt de export 
+                          aanzienlijk kleiner en sneller).
    - $TeamName          = "Team Alpha" (Leeg laten voor alle teams)
    - $VersionFilterMode = "released"   ("released", "unreleased", of "all")
    - $StartDate         = "2026-01-01" (Optioneel)
    - $EndDate           = "2026-12-31" (Optioneel)
 4. Dubbelklik op 'run-update.bat'.
-   Het script haalt automatisch paginerend alle data op en maakt twee bestanden aan:
+   Het script haalt automatisch paginerend alle data op en slaat deze lokaal op als:
    - versies.json
    - issues.json
 
 --- MANIER 2: HANDMATIG VIA DE URL-GENERATOR IN HET DASHBOARD ---
-Als je geen PowerShell kunt/wilt gebruiken:
+Als je geen PowerShell kunt of mag uitvoeren:
 1. Open 'Dashboard V12.html' in je browser.
 2. Vul in Stap 1 jouw Jira Base URL en Project Key in.
-3. Stel de gewenste filters in (Versies filter, Team filter, Datum range).
-4. Kopieer Link 1 (Versies) en geef deze in een ingelogde browser in. Sla de 
-   JSON-respons op als 'versies.json'.
-5. Kopieer Link 2 (Issues op maat) en sla de JSON-respons op als 'issues.json'.
+3. Configureer eventuele opties (zoals het vinkje voor changelog).
+4. Klik bij Link 1 (Versies) op 'Openen ↗' om de API direct in een nieuw tabblad 
+   te openen (of gebruik 'Kopieer URL'). Sla de JSON op als 'versies.json'.
+5. Klik bij Link 2 (Issues op maat) op 'Openen ↗' en sla de JSON op als 'issues.json'.
 
 ==============================================================================
 4. STAP-VOOR-STAP HANDLEIDING VOOR HET DASHBOARD
 ==============================================================================
-Stap 1: Data Inladen
---------------------
+Stap 1: Data Inladen & Berekenen
+--------------------------------
 1. Open 'Dashboard V12.html' in de browser.
 2. Ga naar "Stap 2: Upload en Bereken".
 3. Selecteer het bestand 'versies.json' bij "Upload versies.json".
-4. Selecteer het bestand 'issues.json' bij "Upload issues.json" (je kunt hier 
-   eventueel meerdere JSON-bestanden tegelijk selecteren).
-5. Klik op de blauwe knop "Bereken Metrics".
+4. Selecteer het bestand 'issues.json' bij "Upload issues.json" (meerdere bestanden 
+   tegelijk uploaden is ondersteund; tickets worden automatisch ontdubbeld).
+5. Klik op de knop "Bereken Metrics".
+   Er verschijnt kort een moderne laad-overlay met spinner. Na verwerking verbergt 
+   het dashboard de importsectie automatisch voor een rustig overzicht (deze kan 
+   altijd weer worden geopend via de knop '⚙️ Toon Import & API Instellingen').
 
-Stap 2: Filters & Instellingen Aanpassen in het Dashboard
----------------------------------------------------------
-Zodra de data is geladen, verschijnen er bovenaan het dashboard diverse interactieve 
-filters:
+Stap 2: Dynamische Filters & Personalisatie
+-------------------------------------------
+Alle filters worden direct in het geheugen en in localStorage bewaard, zodat jouw 
+selecties behouden blijven bij een verversing van de pagina:
 
-1. Periode Filter:
-   - Snelfilters: "Alles in Data", "Laatste 3 Maanden", "Laatste 6 Maanden", "Dit Jaar".
-   - Of vul handmatig een "Van" en "Tot" datum in. Alle statistieken en grafieken 
-     passen zich direct aan.
+1. Periode Filter & Snelfilters:
+   - Kies een snelfilter ("Deze Maand", "Vorige Maand", "YTD", "Laatste 3 Mnd", 
+     "Laatste 6 Mnd", "Laatste 12 Mnd", "Gehele Dataset") of voer zelf een "Van" 
+     en/of "Tot" datum in.
 
-2. Release Status Filter:
-   - Released   : Vink aan om officieel vrijgegeven versies mee te nemen.
-   - Unreleased : Vink aan om concept/lopende versies mee te nemen.
-   - Archived   : Vink aan om gearchiveerde versies mee te nemen.
+2. Trend / Vergelijkingsperiode:
+   - Kies in het dropdownmenu of je de huidige periode wilt vergelijken met:
+     * Geen vergelijking
+     * Vorige Periode (gelijke lengte direct voorafgaand)
+     * Zelfde Periode Vorig Jaar
+     * Aangepaste Periode (kies zelf een referentie datumreeks)
+   - Op alle KPI-kaarten verschijnen direct trendbadges met procentuele en 
+     absolute afwijkingen (met passende groen/rood indicaties).
 
-3. LTC Eindpunt (Doorlooptijd Definitie):
-   - Ticket Aanmaak ➔ Releasedatum (DORA E2E) : Tijd vanaf aanmaken ticket tot livegang.
-   - Ticket Aanmaak ➔ Ticket Afgerond (Done) : Tijd vanaf aanmaken tot status Done.
+3. Releasenaam Filter & Zoekveld:
+   - Zoek direct op een trefwoord (bijv. "12." of "Hotfix").
+   - Voeg filter-chips toe om specifieke versies in of uit te sluiten (bijv. '!rc').
+   - Een tellerbadge toont exact hoeveel versies binnen de selectie vallen.
 
-4. Issue Types Selectie:
-   - Changes / Features : Vink aan welke issue types als nieuw werk tellen (bijv. Story, Task, Feature).
-   - Bugs / Defects     : Vink aan welke issue types als fouten tellen (bijv. Bug, Incident, Defect).
+4. Release Status Filter:
+   - Vink 'Released', 'Unreleased' of 'Archived' aan om te bepalen welke type 
+     versies in de calculaties worden meegenomen.
 
-5. CFR Prioriteiten Filter:
-   - Vink aan welke bugprioriteiten krachtig genoeg zijn om een release te laten falen 
-     (bijv. Highest, High, Critical, Major). Cosmetische bugs (Minor/Low) kun je uitvinken.
+5. LTC Eindpunt Selectie:
+   - Kies tussen "Ticket Aanmaak ➔ Releasedatum (DORA E2E)" of 
+     "Ticket Aanmaak ➔ Ticket Afgerond (Done)".
 
-6. Team Filter:
-   - Vink specifieke teams aan of uit om de prestaties van één team of een vergelijking 
-     tussen teams te bekijken.
+6. Issue Types Selectie:
+   - Definieer flexibel welke typen gelden als Changes/Features en welke als Bugs.
 
-7. Bug Severity Filter (Klikbare tegels):
-   - Klik op een specifieke prioriteit-tegel om MTTR, MTTD en Defect Escape Rate 
-     dynamisch te filteren op enkel die prioriteit.
+7. CFR Prioriteiten Filter:
+   - Vink aan welke prioriteiten een release mogen laten falen (standaard Highest, 
+     High, Critical, Major).
+
+8. Team Filter:
+   - Schakel tussen individuele teams of selecteer meerdere teams tegelijk.
+
+9. Kwaliteit & Bug Severity Filter (Interactieve Pills):
+   - Klik op een prioriteit-pill (bijv. 'Highest') om MTTR, MTTD en Defect Escape 
+     Rate specifiek voor die ernstgraad te analyseren.
+
+10. Vriendelijke Lege Status:
+    - Mocht een filtercombinatie 0 resultaten opleveren, dan toont het dashboard 
+      een duidelijke en vriendelijke lege status box met hersteltips in plaats 
+      van een foutmelding.
 
 ==============================================================================
 5. HOE MOET JE DE DATA EN METRICS INTERPRETEREN?
@@ -149,97 +181,102 @@ filters:
 --- DE 4 OFFICIËLE DORA METRICS ---
 
 1. Deployment Frequency (DF) - [Snelheid van Opleveren]
-   - Betekenis: Het gemiddeld aantal uitgebrachte releases per maand.
-   - Formule  : (Totaal Aantal Actieve Releases in Periode) / (Aantal Maanden in Periode)
-   - Interpretatie:
-     * Hoog (> 2-4 per maand): Het team levert in kleine, frequente iteraties op. 
-       Dit verlaagt het risico per oplevering.
-     * Laag (< 0.5 per maand): Grote 'big bang' releases. Dit verhoogt het risico 
-       op fouten bij livegang.
+   - Betekenis: Het gemiddeld aantal productiereleases per maand.
+   - Formule  : (Aantal Actieve Releases) / (Aantal Maanden in Periode)
+   - DORA Benchmark Badges:
+     * Elite  : Dagelijks / Meerdere keren per dag (> 30/mnd)
+     * High   : Wekelijks tot maandelijks (1 tot 4/mnd)
+     * Medium : Eens per maand tot 6 maanden
+     * Low    : Minder dan eens per 6 maanden
 
-2. Lead Time for Changes (LTC) - [Aanmaak tot Livegang]
-   - Betekenis: De gemiddelde doorlooptijd van idee/verzoek tot productie.
+2. Lead Time for Changes (LTC) - [Doorlooptijd van Wijzigingen]
+   - Betekenis: De gemiddelde tijd van ticketcreatie tot productie (of status Done).
    - Formule  : Gemiddelde van (Releasedatum - Aanmaakdatum ticket) voor alle Changes.
-   - Interpretatie:
-     * Kort (< 7-14 dagen): Hoge wendbaarheid. Verzoeken zijn snel live.
-     * Lang (> 30-60 dagen): Mogelijke bottlenecks in refinement, testing of releaseprocedures.
+   - DORA Benchmark Badges:
+     * Elite  : < 1 dag
+     * High   : 1 dag tot 1 week (< 7 dagen)
+     * Medium : 1 week tot 1 maand (< 30 dagen)
+     * Low    : > 1 maand
 
-3. Change Failure Rate (CFR) - [Gefaalde Releases %]
-   - Betekenis: Het percentage releases dat heeft geleid tot een storing of een 
-     kritieke herstelactie.
+3. Change Failure Rate (CFR) - [Percentage Gefaalde Releases]
+   - Betekenis: Het percentage releases dat tot storingen of herstelacties heeft geleid.
    - Formule  : (Aantal Gefaalde Releases / Totaal Aantal Releases) * 100
-   - Hoe bepaalt de tool of een release FAALT? (Trechterlogica):
-     Een release faalt als:
-     a) Het een HOTFIX is (release bevat 0 features en minimaal 1 aangevinkte bug).
-     b) AFFECTS VERSION: Een bug met aangevinkte prioriteit heeft deze release 
-        expliciet in het veld 'Affects Version' staan.
+   - DORA Trechterlogica (Wanneer faalt een release?):
+     a) HOTFIX: Release bevat 0 features en minimaal één aangevinkte bug.
+     b) AFFECTS VERSION: Een bug met geselecteerde prioriteit heeft deze release 
+        expliciet als oorzaak gekoppeld.
      c) POST-RELEASE FALLBACK: Als 'Affects Version' leeg is, faalt de release als 
-        er een kritieke bug is gemeld óp of ná de releasedatum.
-   - Kleurcodering & Normen:
-     * Groen (< 15%)  : Uitstekende kwaliteitscontrole.
-     * Oranje (15-30%): Aandacht vereist; regelmatig storingen na livegang.
-     * Rood (> 30%)   : Kritiek; releases veroorzaken te vaak instabiliteit.
+        een kritieke bug is gemeld óp of ná de releasedatum.
+   - DORA Benchmark Badges:
+     * Elite  : 0% - 5%
+     * High   : 5% - 15%
+     * Medium : 15% - 30%
+     * Low    : > 30%
 
-4. Mean Time to Restore (MTTR) - [Aanpak tot Herstel]
-   - Betekenis: De gemiddelde hersteltijd van gemelde bugs (van aanmaak tot afronding).
-   - Formule  : Gemiddelde van (Resolutiondate - Created) van verwerkte bugs.
-   - Interpretatie:
-     * Snelle MTTR (< 24-48 uur): Hoge reactiesnelheid bij incidenten.
-     * Trage MTTR (> 7-14 dagen): Herstel duurt lang; mogelijke impact op eindgebruikers.
+4. Mean Time to Restore (MTTR) - [Hersteltijd bij Incidenten]
+   - Betekenis: De gemiddelde tijd tussen aanmaak en afronding van productieverstoringen.
+   - Formule  : Gemiddelde van (Resolutiondate - Created) van opgeloste bugs.
+   - DORA Benchmark Badges:
+     * Elite  : < 1 uur
+     * High   : < 1 dag (< 24 uur)
+     * Medium : < 1 week (< 7 dagen)
+     * Low    : > 1 week
 
 --- KWALITEIT & CAPACITEIT INZICHT ---
 
-5. Cycle Time [Doorlooptijd Ontwikkeling]
-   - Betekenis: De gemiddelde actieve ontwikkeltijd van het moment dat aan een 
-     ticket wordt gewerkt tot aan de afronding (Done status).
-   - Formule  : Gemiddelde van (Resolutiondate - In Progress datum) voor Changes.
-   - Databron : Wordt bepaald via de Jira changelog (statusovergang naar 'In Progress', 
-     'In behandeling' of 'In ontwikkeling') of een startdatum-veld. Bij afwezigheid 
-     van de changelog valt dit terug op de aanmaakdatum.
-   - Interpretatie:
-     * Onderscheid met LTC: Waar Lead Time for Changes (LTC) de gehele keten meet 
-       (aanmaak t/m officiële release), meet Cycle Time zuiver de ontwikkeltijd van het team.
+5. Cycle Time [Actieve Ontwikkeltijd]
+   - Betekenis: De tijd vanaf start ontwikkeling ('In Progress') tot 'Done'.
+   - Onderscheid met LTC: Waar LTC de gehele wachttijd (backlog, refinement, 
+     release-planning) meeneemt, toont Cycle Time zuiver de engineering-snelheid.
 
-6. Defect Escape Rate [% Bugs Ontdekt in Productie]
-   - Formule  : (Aantal Post-release Bugs / Totaal Aantal Bugs) * 100
-   - Interpretatie: Geeft aan hoeveel procent van de bugs door het testproces 
-     is 'ontsnapt' naar productie. Een hoog percentage duidt op onvoldoende 
-     pre-release testing.
+6. Defect Escape Rate [% Bugs in Productie]
+   - Formule: (Aantal Post-release Bugs / Totaal Aantal Bugs) * 100
+   - Geeft aan hoeveel procent van de fouten niet vooraf tijdens sprints/testen 
+     werd ontdekt.
 
-7. Time to Detect (MTTD) [Livegang tot Bugmelding]
-   - Formule  : Gemiddelde van (Created Bug - Releasedatum Release).
-   - Interpretatie: Hoe snel worden fouten na livegang ontdekt? Snelle detectie 
-     (< 3 dagen) wijst op goede monitoring/telemetrie.
+7. Time to Detect (MTTD) [Livegang tot Ontdekking]
+   - Formule: Gemiddelde van (Aanmaakdatum Bug - Releasedatum).
+   - Meet de effectiviteit van telemetrie, monitoring en alertingsystemen.
 
 8. Investment Mix [Features % / Bugs %]
-   - Formule  : Verhouding tussen het aantal verwerkte Changes vs. Bugs.
-   - Interpretatie: 
-     * Bijv. 80% / 20%: Team besteedt 80% capaciteit aan nieuwe waarde en 20% aan onderhoud.
-     * Bijv. 40% / 60%: Team heeft een hoge 'technical debt' en is voornamelijk 
-       bezig met brandjes blussen.
+   - Verhouding tussen het aantal opgeleverde Changes vs. Bugs.
+   - Geeft direct inzicht in de balans tussen innovatie en 'technical debt'/onderhoud.
 
 ==============================================================================
-6. DE GRAFIEK LEZEN (DORA TREND & RELEASE IMPACT CHART)
+6. DE GRAFIEKEN LEZEN (DORA SPARKLINES & MULTI-TAB TRENDGRAFIEK)
 ==============================================================================
-Onderaan het dashboard bevindt zich een gecombineerde trendgrafiek:
+Het dashboard combineert compacte KPI-sparklines met een diepgaande interactieve 
+trendgrafiek:
 
-Balken (Linker Y-as):
-- Blauwe Balken : Aantal Changes / Features opgeleverd in de release.
-- Rode Balken   : Aantal Bugs gekoppeld aan de release.
+A. Maandelijkse DORA Sparklines:
+   - Bovenaan elke DORA KPI-tegel (DF, LTC, CFR, MTTR) bevindt zich een minimalistische 
+     sparkline.
+   - Geeft in één oogopslag de ontwikkeling van de betreffende metriek over de 
+     maanden weer, inclusief micro-animatie bij datawisselingen.
 
-Achtergrond / Arceringsbalken van Releases:
-- Groene achtergrondbalk : Succesvolle release (0 kritieke bugs / geen hotfix).
-- Rode achtergrondbalk   : Gefaalde release (bevat een hotfix of veroorzaakte een kritieke bug).
+B. Multi-Tab Hoofdtrendgrafiek:
+   Boven de grote grafiek kan gewisseld worden tussen 3 gerichte tabbladen:
 
-Lijnen (Rechter Y-as):
-- Oranje/Rode Lijn : Change Failure Rate (CFR %) cumulatief/trend over de tijd.
-- Blauwe Lijn      : MTTR Trend over de tijd.
+   1. Tab "CFR & Release Impact":
+      - Groene gestapelde balken : Aantal succesvolle releases per maand.
+      - Rode gestapelde balken   : Aantal gefaalde releases per maand.
+      - Blauwe lijn (Rechter Y-as): Change Failure Rate per maand (in %).
+      - Oranje stippellijn       : 3-maands rollend gemiddelde (trendlijn).
 
-Hoe te gebruiken bij retrospective / teamanalyse:
-- Kijk naar opeenvolgende rode releases: Welke onderwerpen of specifieke versies 
-  zorgden voor uitval?
-- Vergelijk de verhouding blauwe/rode balken per release om de stabiliteit per 
-  oplevering te beoordelen.
+   2. Tab "Lead Time for Changes (LTC)":
+      - Blauwe balken (Linker Y-as): Totaal aantal opgeleverde Changes per maand.
+      - Blauwe lijn (Rechter Y-as)  : Gemiddelde LTC in dagen.
+      - Oranje stippellijn          : 3-maands trend van de doorlooptijd.
+
+   3. Tab "Mean Time to Restore (MTTR)":
+      - Rode balken (Linker Y-as)  : Aantal opgeloste bugs per maand.
+      - Oranje lijn (Rechter Y-as) : Gemiddelde hersteltijd (MTTR) in uren.
+      - Grijze stippellijn         : 3-maands trend van de hersteltijd.
+
+C. In-Place Updates:
+   - Bij het wisselen van teams, datums of prioriteiten blijven de grafiek-instanties 
+     behouden. Gegevens worden vloeiend bijgewerkt via 'chart.update()', zonder 
+     schermflikkeringen of geheugenverlies.
 
 ==============================================================================
 7. TROUBLESHOOTING & VEELGESTELDE VRAGEN
@@ -249,10 +286,40 @@ A: Controleer in Jira wat de exacte veldnaam is voor het team. Vul in Stap 1 van
    het dashboard of in 'update-data.ps1' het CustomField ID in (bijv. customfield_10011).
 
 V: Een versie heeft geen releasedatum in Jira.
-A: Geen probleem. Het dashboard gebruikt een intelligente fallback: de releasedatum 
-   wordt automatisch geschat op basis van het nieuwst opgeloste ticket in die versie.
+A: Geen probleem. Het dashboard gebruikt een intelligente O(I) pre-indexed fallback: 
+   de releasedatum wordt automatisch afgeleid van het nieuwst opgeloste ticket in die versie.
 
 V: Kan ik data van meerdere projecten combineren?
 A: Ja! Je kunt in Stap 2 meerdere 'issues.json' bestanden tegelijk selecteren. 
    Het dashboard ontdubbelt automatisch dubbele tickets op basis van Issue Key.
 
+V: Het ophalen van issues via PowerShell duurt lang of het bestand is erg groot.
+A: Zet in 'update-data.ps1' de variabele $IncludeChangelog op $false (of vink in Stap 1 
+   de optie '&expand=changelog' uit). Dit scheelt tot wel 80% van de bestandsgrootte.
+
+V: Mijn filters worden gereset als ik de browser sluit.
+A: Vanaf versie 12.5.0 worden alle filters automatisch opgeslagen in localStorage 
+   van je browser. Zorg dat je browser niet in 'Incognito' of 'Private browsing' 
+   staat als je wilt dat instellingen permanent behouden blijven.
+
+==============================================================================
+8. VERSIEBEHEER & GIT PROTOCOL
+==============================================================================
+Het project volgt een strikt versiebeheer- en releaseprotocol (vastgelegd in AGENTS.md):
+
+1. Versienummering in Dashboard V12.html:
+   Bij elke aanpassing of release wordt het versienummer (v12.X.Y) en de datum 
+   in drie verplichte componenten synchroon geüpdatet:
+   - Header Badge : #versionBadge
+   - Javascript   : const DASHBOARD_VERSION
+   - Footer       : <footer>
+
+2. Git Commit Conventie:
+   Formaat: release(v12.X.Y): <korte beschrijving van de wijzigingen>
+
+3. Git Tagging & Push:
+   - Annotated Tag: git tag -a v12.X.Y -m "Release v12.X.Y: <beschrijving>"
+   - Push command : git push origin main --tags
+
+Huidige stabiele versie: v12.6.0 (23-10-2026)
+==============================================================================
