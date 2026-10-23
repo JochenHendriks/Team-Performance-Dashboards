@@ -104,6 +104,24 @@
             background: #dfe1e6;
         }
 
+        .open-btn {
+            background: #0052cc;
+            color: white;
+            font-weight: bold;
+            padding: 0 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            width: auto;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            transition: background 0.15s ease;
+        }
+
+        .open-btn:hover {
+            background: #0747a6;
+        }
+
         button {
             background: #0052cc;
             color: white;
@@ -539,7 +557,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V12</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.3.0 (23-10-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.3.1 (23-10-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -617,13 +635,15 @@
                 <div class="url-box">
                     <input type="text" id="urlVersions" readonly
                         placeholder="Vul eerst je Base URL en Project Key in...">
-                    <button class="copy-btn" onclick="copyToClipboard('urlVersions')">Kopieer</button>
+                    <button class="open-btn" onclick="openUrl('urlVersions')">Openen ↗</button>
+                    <button class="copy-btn" onclick="copyToClipboard('urlVersions', this)">Kopieer</button>
                 </div>
 
                 <label style="margin-top: 1rem;">Link 2: Issues op maat (issues.json)</label>
                 <div class="url-box">
                     <input type="text" id="urlIssues" readonly placeholder="Vul eerst je Base URL en Project Key in...">
-                    <button class="copy-btn" onclick="copyToClipboard('urlIssues')">Kopieer</button>
+                    <button class="open-btn" onclick="openUrl('urlIssues')">Openen ↗</button>
+                    <button class="copy-btn" onclick="copyToClipboard('urlIssues', this)">Kopieer</button>
                 </div>
             </div>
         </div>
@@ -1267,15 +1287,30 @@
             }
         }
 
-        function copyToClipboard(elementId) {
+        function openUrl(elementId) {
             const input = document.getElementById(elementId);
-            if (input.value) {
-                input.select();
-                document.execCommand('copy');
-                const btn = input.nextElementSibling;
-                const originalText = btn.textContent;
-                btn.textContent = "Gekopieerd!";
-                setTimeout(() => { btn.textContent = originalText; }, 1500);
+            if (input && input.value && input.value.trim().length > 0) {
+                window.open(input.value.trim(), '_blank');
+            } else {
+                alert("Vul eerst je Jira Base URL en Project Key in om de API-link te genereren.");
+            }
+        }
+
+        function copyToClipboard(elementId, btnElement) {
+            const input = document.getElementById(elementId);
+            if (input && input.value) {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(input.value);
+                } else {
+                    input.select();
+                    document.execCommand('copy');
+                }
+                const btn = btnElement || (input.parentElement ? input.parentElement.querySelector('.copy-btn') : input.nextElementSibling);
+                if (btn) {
+                    const originalText = btn.textContent;
+                    btn.textContent = "Gekopieerd!";
+                    setTimeout(() => { btn.textContent = originalText; }, 1500);
+                }
             }
         }
 
@@ -3565,10 +3600,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "12.3.0";
+        const DASHBOARD_VERSION = "12.3.1";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V12 &bull; Versie 12.3.0 (23-10-2026)
+        DORA &amp; Performance Dashboard V12 &bull; Versie 12.3.1 (23-10-2026)
     </footer>
 </body>
 </html>
