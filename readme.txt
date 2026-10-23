@@ -321,5 +321,5 @@ Het project volgt een strikt versiebeheer- en releaseprotocol (vastgelegd in AGE
    - Annotated Tag: git tag -a v12.X.Y -m "Release v12.X.Y: <beschrijving>"
    - Push command : git push origin main --tags
 
-Huidige stabiele versie: v12.6.0 (23-10-2026)
+Huidige stabiele versie: v12.6.1 (23-10-2026)
 ==============================================================================

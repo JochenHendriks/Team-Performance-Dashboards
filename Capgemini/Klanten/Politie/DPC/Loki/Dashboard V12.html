@@ -603,7 +603,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V12</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.6.0 (23-10-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.6.1 (23-10-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -2471,7 +2471,7 @@
             const validPoints = values.filter(v => typeof v === 'number' && !isNaN(v));
             const showDot = validPoints.length === 1;
 
-            if (sparklineCharts[chartKey]) {
+            if (sparklineCharts && sparklineCharts[chartKey]) {
                 const chart = sparklineCharts[chartKey];
                 chart.data.labels = labels;
                 chart.data.datasets[0].data = values;
@@ -2480,8 +2480,11 @@
                 return chart;
             }
 
+            const existingChart = Chart.getChart(canvas);
+            if (existingChart) existingChart.destroy();
+
             const ctx = canvas.getContext('2d');
-            return new Chart(ctx, {
+            const newChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -2520,6 +2523,16 @@
                     }
                 }
             });
+
+            if (sparklineCharts) {
+                sparklineCharts[chartKey] = newChart;
+            }
+            return newChart;
+        }
+
+        function createSparkline(canvasId, values, labels, color = '#0052cc') {
+            const chartKey = canvasId.replace('sparkline', '').toLowerCase();
+            return createOrUpdateSparkline(chartKey, canvasId, values, labels, color);
         }
 
         function renderDoraSparklines() {
@@ -2716,14 +2729,13 @@
             }
 
             // Sync MTTR sparkline met de actieve severity selectie
-            if (tableData && tableData.length > 0 && document.getElementById('sparklineMttr')) {
+            if (tableData && tableData.length > 0 && getEl('sparklineMttr')) {
                 const monthly = calculateMonthlyDoraMetrics(tableData);
-                if (sparklineCharts.mttr) {
+                if (monthly.months.length > 0) {
+                    createOrUpdateSparkline('mttr', 'sparklineMttr', monthly.mttr, monthly.months, '#0052cc');
+                } else if (sparklineCharts && sparklineCharts.mttr) {
                     sparklineCharts.mttr.destroy();
                     sparklineCharts.mttr = null;
-                }
-                if (monthly.months.length > 0) {
-                    sparklineCharts.mttr = createSparkline('sparklineMttr', monthly.mttr, monthly.months, '#0052cc');
                 }
             }
 
@@ -3999,10 +4011,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "12.6.0";
+        const DASHBOARD_VERSION = "12.6.1";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V12 &bull; Versie 12.6.0 (23-10-2026)
+        DORA &amp; Performance Dashboard V12 &bull; Versie 12.6.1 (23-10-2026)
     </footer>
 </body>
 </html>
