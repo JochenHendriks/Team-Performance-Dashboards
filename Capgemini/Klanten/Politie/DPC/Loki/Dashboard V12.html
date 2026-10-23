@@ -603,7 +603,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V12</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.5.0 (23-10-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.6.0 (23-10-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -1861,9 +1861,16 @@
         }
 
         function renderCfrChart() {
-            const ctx = document.getElementById('cfrChart').getContext('2d');
-            if (cfrChart) cfrChart.destroy();
-            if (tableData.length === 0) return;
+            const canvas = getEl('cfrChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (tableData.length === 0) {
+                if (cfrChart) {
+                    cfrChart.destroy();
+                    cfrChart = null;
+                }
+                return;
+            }
 
             let monthlyData = {};
             tableData.forEach(release => {
@@ -1891,6 +1898,16 @@
             });
 
             const cfrTrendPoints = calculateRollingAverage(chartPoints.map(p => ({ x: p.x, y: p.cfr })), 3);
+
+            if (cfrChart) {
+                cfrChart.data.datasets[0].data = chartPoints.map(p => ({ x: p.x, y: p.cfr }));
+                cfrChart.data.datasets[0].pointBackgroundColor = chartPoints.map(p => getCfrColor(p.cfr));
+                cfrChart.data.datasets[1].data = cfrTrendPoints;
+                cfrChart.data.datasets[2].data = chartPoints.map(p => ({ x: p.x, y: p.failed }));
+                cfrChart.data.datasets[3].data = chartPoints.map(p => ({ x: p.x, y: p.success }));
+                cfrChart.update();
+                return;
+            }
 
             cfrChart = new Chart(ctx, {
                 type: 'bar',
@@ -2037,11 +2054,16 @@
         }
 
         function renderLtcChart() {
-            const canvas = document.getElementById('ltcChart');
+            const canvas = getEl('ltcChart');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            if (ltcChart) ltcChart.destroy();
-            if (tableData.length === 0) return;
+            if (tableData.length === 0) {
+                if (ltcChart) {
+                    ltcChart.destroy();
+                    ltcChart = null;
+                }
+                return;
+            }
 
             let monthlyData = {};
             tableData.forEach(release => {
@@ -2072,6 +2094,14 @@
             });
 
             const ltcTrendPoints = calculateRollingAverage(chartPoints.map(p => ({ x: p.x, y: p.avgLtc })), 3);
+
+            if (ltcChart) {
+                ltcChart.data.datasets[0].data = chartPoints.map(p => ({ x: p.x, y: p.avgLtc }));
+                ltcChart.data.datasets[1].data = ltcTrendPoints;
+                ltcChart.data.datasets[2].data = chartPoints.map(p => ({ x: p.x, y: p.changesCount }));
+                ltcChart.update();
+                return;
+            }
 
             ltcChart = new Chart(ctx, {
                 type: 'bar',
@@ -2182,11 +2212,16 @@
         }
 
         function renderMttrChart() {
-            const canvas = document.getElementById('mttrChart');
+            const canvas = getEl('mttrChart');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            if (mttrChart) mttrChart.destroy();
-            if (tableData.length === 0) return;
+            if (tableData.length === 0) {
+                if (mttrChart) {
+                    mttrChart.destroy();
+                    mttrChart = null;
+                }
+                return;
+            }
 
             let monthlyData = {};
             tableData.forEach(release => {
@@ -2221,6 +2256,14 @@
             });
 
             const mttrTrendPoints = calculateRollingAverage(chartPoints.map(p => ({ x: p.x, y: p.avgMttr })), 3);
+
+            if (mttrChart) {
+                mttrChart.data.datasets[0].data = chartPoints.map(p => ({ x: p.x, y: p.avgMttr }));
+                mttrChart.data.datasets[1].data = mttrTrendPoints;
+                mttrChart.data.datasets[2].data = chartPoints.map(p => ({ x: p.x, y: p.bugsCount }));
+                mttrChart.update();
+                return;
+            }
 
             mttrChart = new Chart(ctx, {
                 type: 'bar',
@@ -2421,14 +2464,23 @@
             return { months, df, ltc, cfr, mttr };
         }
 
-        function createSparkline(canvasId, values, labels, color = '#0052cc') {
-            const canvas = document.getElementById(canvasId);
+        function createOrUpdateSparkline(chartKey, canvasId, values, labels, color = '#0052cc') {
+            const canvas = getEl(canvasId);
             if (!canvas) return null;
-            const ctx = canvas.getContext('2d');
 
             const validPoints = values.filter(v => typeof v === 'number' && !isNaN(v));
             const showDot = validPoints.length === 1;
 
+            if (sparklineCharts[chartKey]) {
+                const chart = sparklineCharts[chartKey];
+                chart.data.labels = labels;
+                chart.data.datasets[0].data = values;
+                chart.data.datasets[0].pointRadius = showDot ? 3 : 0;
+                chart.update();
+                return chart;
+            }
+
+            const ctx = canvas.getContext('2d');
             return new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -2471,17 +2523,22 @@
         }
 
         function renderDoraSparklines() {
-            destroyDoraSparklines();
-            if (!tableData || tableData.length === 0) return;
+            if (!tableData || tableData.length === 0) {
+                destroyDoraSparklines();
+                return;
+            }
 
             const monthly = calculateMonthlyDoraMetrics(tableData);
-            if (monthly.months.length === 0) return;
+            if (monthly.months.length === 0) {
+                destroyDoraSparklines();
+                return;
+            }
 
             const sparkColor = '#0052cc';
-            sparklineCharts.df = createSparkline('sparklineDf', monthly.df, monthly.months, sparkColor);
-            sparklineCharts.ltc = createSparkline('sparklineLtc', monthly.ltc, monthly.months, sparkColor);
-            sparklineCharts.cfr = createSparkline('sparklineCfr', monthly.cfr, monthly.months, sparkColor);
-            sparklineCharts.mttr = createSparkline('sparklineMttr', monthly.mttr, monthly.months, sparkColor);
+            sparklineCharts.df = createOrUpdateSparkline('df', 'sparklineDf', monthly.df, monthly.months, sparkColor);
+            sparklineCharts.ltc = createOrUpdateSparkline('ltc', 'sparklineLtc', monthly.ltc, monthly.months, sparkColor);
+            sparklineCharts.cfr = createOrUpdateSparkline('cfr', 'sparklineCfr', monthly.cfr, monthly.months, sparkColor);
+            sparklineCharts.mttr = createOrUpdateSparkline('mttr', 'sparklineMttr', monthly.mttr, monthly.months, sparkColor);
         }
 
         function toggleQualitySeverity(priorityRaw) {
@@ -3179,6 +3236,31 @@
             let totalAvailableReleases = 0;
             let totalMatchingReleases = 0;
 
+            // Pre-indexeer fallback datums per versie in één enkele O(Issues) pass i.p.v. O(Versies * Issues)
+            let versionMaxDateMap = null;
+            const needsFallbackDates = allVersions.some(v => !v.releaseDate);
+            if (needsFallbackDates && allIssuesRaw && allIssuesRaw.length > 0) {
+                versionMaxDateMap = new Map();
+                for (let i = 0; i < allIssuesRaw.length; i++) {
+                    const issue = allIssuesRaw[i];
+                    const fixV = issue.fields && issue.fields.fixVersions;
+                    if (!fixV || fixV.length === 0) continue;
+
+                    const dateStr = issue.fields.resolutiondate || issue.fields.updated || issue.fields.created;
+                    if (!dateStr) continue;
+                    const d = new Date(dateStr);
+                    if (isNaN(d.getTime())) continue;
+
+                    for (let j = 0; j < fixV.length; j++) {
+                        const vName = fixV[j].name;
+                        const existing = versionMaxDateMap.get(vName);
+                        if (!existing || d > existing) {
+                            versionMaxDateMap.set(vName, d);
+                        }
+                    }
+                }
+            }
+
             allVersions.forEach(v => {
                 const isReleased = v.released === true;
                 const isArchived = v.archived === true;
@@ -3194,17 +3276,8 @@
                 let rDate = v.releaseDate ? new Date(v.releaseDate) : null;
                 let isFallbackDate = false;
 
-                if (!rDate) {
-                    let maxDateInVersion = null;
-                    allIssuesRaw.forEach(issue => {
-                        const fixV = issue.fields.fixVersions || [];
-                        if (fixV.some(fv => fv.name === v.name)) {
-                            let d = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : (issue.fields.updated ? new Date(issue.fields.updated) : new Date(issue.fields.created));
-                            if (d && (!maxDateInVersion || d > maxDateInVersion)) {
-                                maxDateInVersion = d;
-                            }
-                        }
-                    });
+                if (!rDate && versionMaxDateMap) {
+                    const maxDateInVersion = versionMaxDateMap.get(v.name);
                     if (maxDateInVersion) {
                         rDate = maxDateInVersion;
                         isFallbackDate = true;
@@ -3926,10 +3999,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "12.5.0";
+        const DASHBOARD_VERSION = "12.6.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V12 &bull; Versie 12.5.0 (23-10-2026)
+        DORA &amp; Performance Dashboard V12 &bull; Versie 12.6.0 (23-10-2026)
     </footer>
 </body>
 </html>
