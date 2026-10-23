@@ -5,8 +5,8 @@
 Whenever modifying the dashboard or preparing commits for GitHub:
 
 1. **Version Update Requirement:**
-   - Always update the version number (`v12.X.Y`) and date in `Dashboard V12.html` when making changes.
-   - Synchronize all 3 version locations in `Dashboard V12.html`:
+   - Always update the version number (`v12.X.Y`) and date in `dora/index.html` when making changes.
+   - Synchronize all 3 version locations in `dora/index.html`:
      - Header Badge (`#versionBadge`)
      - Footer (`<footer>`)
      - JS Constant (`const DASHBOARD_VERSION`)

@@ -75,12 +75,12 @@ C. Jira Versiebeheer Conventies:
 Er zijn twee manieren om de benodigde data uit Jira te exporteren:
 
 --- MANIER 1: AUTOMATISCH VIA POWERSHELL (Aanbevolen) ---
-In de hoofdmap staan twee hulpscripts:
+In de map 'dora/' staan twee hulpscripts:
 - update-data.ps1 : Het PowerShell script dat de Jira REST API aanroept.
 - run-update.bat  : Een dubbelklik-bestand dat het PowerShell script start.
 
 Stappen:
-1. Open 'update-data.ps1' in een tekstverwerker (bijv. Notepad++ of VS Code).
+1. Open 'update-data.ps1' (in de map 'dora/') in een tekstverwerker (bijv. Notepad++ of VS Code).
 2. Vul de volgende variabelen bovenaan het script in:
    - $JiraUrl           = "https://jira.jouwbedrijf.nl"
    - $ProjectKey        = "JOUW_PROJECT_KEY" (bijv. WEB of PROJ)
@@ -94,14 +94,14 @@ Stappen:
    - $VersionFilterMode = "released"   ("released", "unreleased", of "all")
    - $StartDate         = "2026-01-01" (Optioneel)
    - $EndDate           = "2026-12-31" (Optioneel)
-4. Dubbelklik op 'run-update.bat'.
+4. Dubbelklik op 'run-update.bat' in de map 'dora/'.
    Het script haalt automatisch paginerend alle data op en slaat deze lokaal op als:
    - versies.json
    - issues.json
 
 --- MANIER 2: HANDMATIG VIA DE URL-GENERATOR IN HET DASHBOARD ---
 Als je geen PowerShell kunt of mag uitvoeren:
-1. Open 'Dashboard V12.html' in je browser.
+1. Open 'dora/index.html' (of de GitHub Pages URL '/dora/') in je browser.
 2. Vul in Stap 1 jouw Jira Base URL en Project Key in.
 3. Configureer eventuele opties (zoals het vinkje voor changelog).
 4. Klik bij Link 1 (Versies) op 'Openen ↗' om de API direct in een nieuw tabblad 
@@ -113,7 +113,7 @@ Als je geen PowerShell kunt of mag uitvoeren:
 ==============================================================================
 Stap 1: Data Inladen & Berekenen
 --------------------------------
-1. Open 'Dashboard V12.html' in de browser.
+1. Open 'dora/index.html' (of navigeer naar '/dora/' op GitHub Pages).
 2. Ga naar "Stap 2: Upload en Bereken".
 3. Selecteer het bestand 'versies.json' bij "Upload versies.json".
 4. Selecteer het bestand 'issues.json' bij "Upload issues.json" (meerdere bestanden 
@@ -315,7 +315,7 @@ A: Vanaf versie 12.7.0 detecteert het dashboard automatisch bij het uploaden of 
 ==============================================================================
 Het project volgt een strikt versiebeheer- en releaseprotocol (vastgelegd in AGENTS.md):
 
-1. Versienummering in Dashboard V12.html:
+1. Versienummering in dora/index.html:
    Bij elke aanpassing of release wordt het versienummer (v12.X.Y) en de datum 
    in drie verplichte componenten synchroon geüpdatet:
    - Header Badge : #versionBadge
@@ -329,5 +329,5 @@ Het project volgt een strikt versiebeheer- en releaseprotocol (vastgelegd in AGE
    - Annotated Tag: git tag -a v12.X.Y -m "Release v12.X.Y: <beschrijving>"
    - Push command : git push origin main --tags
 
-Huidige stabiele versie: v12.7.1 (23-10-2026)
+Huidige stabiele versie: v12.7.2 (23-10-2026)
 ==============================================================================

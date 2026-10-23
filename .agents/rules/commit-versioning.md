@@ -3,13 +3,13 @@
 Whenever creating git commits, releasing updates, or modifying dashboard files in this repository:
 
 ## 1. Version Increment Checklist
-Before creating a commit for changes in `Dashboard V12.html`:
+Before creating a commit for changes in `dora/index.html`:
 - Check the current version tag (`v12.X.Y`) and date (`DD-MM-YYYY`).
 - Increment the version number according to Semantic Versioning:
   - **Patch (`v12.7.X`)**: Bugfixes, minor UI adjustments.
   - **Minor (`v12.X.0`)**: New features, new filter controls, metric calculation updates.
   - **Major (`vX.0.0`)**: Breaking changes, new major dashboard versions.
-- Ensure the version and date are updated across all 3 references in `Dashboard V12.html`:
+- Ensure the version and date are updated across all 3 references in `dora/index.html`:
   1. **Header Badge**: `<span id="versionBadge">v12.X.Y (DD-MM-YYYY)</span>`
   2. **Footer**: `DORA & Performance Dashboard V12 • Versie 12.X.Y (DD-MM-YYYY)`
   3. **JavaScript Constant**: `const DASHBOARD_VERSION = "12.X.Y";`
