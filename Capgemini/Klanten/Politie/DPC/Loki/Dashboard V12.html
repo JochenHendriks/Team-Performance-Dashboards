@@ -161,6 +161,46 @@
             display: none;
         }
 
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(2px);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .spinner {
+            width: 42px;
+            height: 42px;
+            border: 4px solid #dfe1e6;
+            border-top: 4px solid #0052cc;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            display: none;
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            background: #fafbfc;
+            border: 1px dashed #c1c7d0;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
         .dashboard {
             display: none;
             background: #e9ecef;
@@ -553,11 +593,17 @@
 
 <body>
 
+    <!-- Loading Overlay Spinner -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loadingText" style="font-weight: 600; color: #172b4d; font-size: 0.95rem;">Data verwerken...</div>
+    </div>
+
     <div class="container">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                 <h1 style="margin:0;">DORA & Performance Dashboard V12</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.4.0 (23-10-2026)</span>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.5.0 (23-10-2026)</span>
             </div>
             <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
                 ⚙️ Toon Import &amp; API Instellingen
@@ -939,6 +985,15 @@
             </div>
         </div>
 
+        <!-- Vriendelijke Empty State Container (Fase 2) -->
+        <div id="emptyStateContainer" class="empty-state">
+            <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🔍</div>
+            <h3 style="margin: 0 0 0.5rem 0; color: #172b4d;">Geen releases gevonden</h3>
+            <p style="margin: 0; color: #5e6c84; font-size: 0.9rem; max-width: 520px; margin-left: auto; margin-right: auto; line-height: 1.4;">
+                Er zijn geen releases die voldoen aan de huidige filtercombinatie. Pas je datumselectie, teamselectie, releasestatus of zoektermen aan.
+            </p>
+        </div>
+
         <table id="resultsTable" style="display:none;">
             <thead>
                 <tr>
@@ -1134,6 +1189,107 @@
             }
         });
 
+        // ==============================================================================
+        // LOADING OVERLAY & SPINNER (FASE 2)
+        // ==============================================================================
+        function showLoading(msg = "Data verwerken en metrics berekenen...") {
+            const overlay = getEl('loadingOverlay');
+            if (overlay) {
+                const textEl = getEl('loadingText');
+                if (textEl) textEl.textContent = msg;
+                overlay.style.display = 'flex';
+            }
+        }
+
+        function hideLoading() {
+            const overlay = getEl('loadingOverlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        // ==============================================================================
+        // FILTER PERSISTENTIE VIA LOCALSTORAGE (FASE 2)
+        // ==============================================================================
+        function saveFilterPreferences() {
+            try {
+                localStorage.setItem('dora_selectedTeams', JSON.stringify(Array.from(DashboardState.filters.selectedTeams)));
+                localStorage.setItem('dora_selectedCfrPriorities', JSON.stringify(Array.from(DashboardState.filters.selectedCfrPriorities)));
+                localStorage.setItem('dora_selectedBugTypes', JSON.stringify(Array.from(DashboardState.filters.selectedBugTypes)));
+                localStorage.setItem('dora_selectedChangeTypes', JSON.stringify(Array.from(DashboardState.filters.selectedChangeTypes)));
+                localStorage.setItem('dora_selectedQualityPriorities', JSON.stringify(Array.from(DashboardState.filters.selectedQualityPriorities)));
+
+                const chkRel = getEl('chkStatusReleased');
+                const chkUnrel = getEl('chkStatusUnreleased');
+                const chkArch = getEl('chkStatusArchived');
+                const ltcMode = getEl('ltcModeSelect');
+
+                if (chkRel) localStorage.setItem('dora_incReleased', chkRel.checked ? 'true' : 'false');
+                if (chkUnrel) localStorage.setItem('dora_incUnreleased', chkUnrel.checked ? 'true' : 'false');
+                if (chkArch) localStorage.setItem('dora_incArchived', chkArch.checked ? 'true' : 'false');
+                if (ltcMode) localStorage.setItem('dora_ltcMode', ltcMode.value);
+            } catch (e) {
+                console.warn('Kon filtervoorkeuren niet opslaan in localStorage', e);
+            }
+        }
+
+        function loadFilterPreferences() {
+            try {
+                const teams = localStorage.getItem('dora_selectedTeams');
+                if (teams) {
+                    const arr = JSON.parse(teams);
+                    if (Array.isArray(arr) && arr.length > 0) {
+                        DashboardState.filters.selectedTeams = new Set(arr);
+                    }
+                }
+                const cfrPrios = localStorage.getItem('dora_selectedCfrPriorities');
+                if (cfrPrios) {
+                    const arr = JSON.parse(cfrPrios);
+                    if (Array.isArray(arr) && arr.length > 0) {
+                        DashboardState.filters.selectedCfrPriorities = new Set(arr);
+                    }
+                }
+                const bugs = localStorage.getItem('dora_selectedBugTypes');
+                if (bugs) {
+                    const arr = JSON.parse(bugs);
+                    if (Array.isArray(arr) && arr.length > 0) {
+                        DashboardState.filters.selectedBugTypes = new Set(arr);
+                    }
+                }
+                const changes = localStorage.getItem('dora_selectedChangeTypes');
+                if (changes) {
+                    const arr = JSON.parse(changes);
+                    if (Array.isArray(arr) && arr.length > 0) {
+                        DashboardState.filters.selectedChangeTypes = new Set(arr);
+                    }
+                }
+                const qualityPrios = localStorage.getItem('dora_selectedQualityPriorities');
+                if (qualityPrios) {
+                    const arr = JSON.parse(qualityPrios);
+                    if (Array.isArray(arr)) {
+                        DashboardState.filters.selectedQualityPriorities = new Set(arr);
+                    }
+                }
+
+                const chkRel = getEl('chkStatusReleased');
+                const chkUnrel = getEl('chkStatusUnreleased');
+                const chkArch = getEl('chkStatusArchived');
+                const ltcMode = getEl('ltcModeSelect');
+
+                const savedRel = localStorage.getItem('dora_incReleased');
+                if (savedRel !== null && chkRel) chkRel.checked = (savedRel === 'true');
+
+                const savedUnrel = localStorage.getItem('dora_incUnreleased');
+                if (savedUnrel !== null && chkUnrel) chkUnrel.checked = (savedUnrel === 'true');
+
+                const savedArch = localStorage.getItem('dora_incArchived');
+                if (savedArch !== null && chkArch) chkArch.checked = (savedArch === 'true');
+
+                const savedLtcMode = localStorage.getItem('dora_ltcMode');
+                if (savedLtcMode && ltcMode) ltcMode.value = savedLtcMode;
+            } catch (e) {
+                console.warn('Kon filtervoorkeuren niet inladen uit localStorage', e);
+            }
+        }
+
         function escapeHtml(str) {
             return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
         }
@@ -1319,6 +1475,16 @@
             }
 
             loadReleaseFilters();
+            loadFilterPreferences();
+
+            ['chkStatusReleased', 'chkStatusUnreleased', 'chkStatusArchived'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', () => { saveFilterPreferences(); calculateMetrics(); });
+            });
+            const ltcModeEl = document.getElementById('ltcModeSelect');
+            if (ltcModeEl) {
+                ltcModeEl.addEventListener('change', () => { saveFilterPreferences(); calculateMetrics(); });
+            }
 
             const versionsFileInput = document.getElementById('versionsFile');
             const issuesFileInput = document.getElementById('issuesFile');
@@ -2335,6 +2501,7 @@
                 }
             }
 
+            saveFilterPreferences();
             updateQualityMetricsDisplay();
         }
 
@@ -2570,6 +2737,7 @@
                     container.querySelectorAll('input:checked').forEach(i =>
                         selectedCfrPriorities.add(i.value.toLowerCase().trim())
                     );
+                    saveFilterPreferences();
                     calculateMetrics();
                 });
             });
@@ -2646,6 +2814,7 @@
             if (container) {
                 container.querySelectorAll('input').forEach(cb => { cb.checked = selectAll; });
             }
+            saveFilterPreferences();
             calculateMetrics();
         }
 
@@ -2658,6 +2827,7 @@
             if (container) {
                 container.querySelectorAll('input').forEach(cb => { cb.checked = selectAll; });
             }
+            saveFilterPreferences();
             calculateMetrics();
         }
 
@@ -2670,6 +2840,7 @@
             if (container) {
                 container.querySelectorAll('input').forEach(cb => { cb.checked = selectAll; });
             }
+            saveFilterPreferences();
             calculateMetrics();
         }
 
@@ -2682,6 +2853,7 @@
             if (container) {
                 container.querySelectorAll('input').forEach(cb => { cb.checked = selectAll; });
             }
+            saveFilterPreferences();
             calculateMetrics();
         }
 
@@ -2710,6 +2882,7 @@
                     container.querySelectorAll('input:checked').forEach(i =>
                         selectedTeams.add(i.value.toLowerCase().trim())
                     );
+                    saveFilterPreferences();
                     calculateMetrics();
                 });
             });
@@ -2749,6 +2922,7 @@
                     changeContainer.querySelectorAll('input:checked').forEach(i =>
                         selectedChangeTypes.add(i.value.toLowerCase().trim())
                     );
+                    saveFilterPreferences();
                     calculateMetrics();
                 });
             });
@@ -2759,6 +2933,7 @@
                     bugContainer.querySelectorAll('input:checked').forEach(i =>
                         selectedBugTypes.add(i.value.toLowerCase().trim())
                     );
+                    saveFilterPreferences();
                     calculateMetrics();
                 });
             });
@@ -3391,31 +3566,38 @@
         }
 
         async function calculateMetrics() {
-            const versionsFileInput = document.getElementById('versionsFile');
-            const issuesFileInput = document.getElementById('issuesFile');
+            showLoading("Data verwerken en metrics berekenen...");
+            await new Promise(r => setTimeout(r, 20));
 
-            const errorMsg = document.getElementById('errorMessage');
-            const dashboard = document.getElementById('summaryDashboard');
-            const resultsTable = document.getElementById('resultsTable');
+            const versionsFileInput = getEl('versionsFile');
+            const issuesFileInput = getEl('issuesFile');
 
-            errorMsg.style.display = "none";
+            const errorMsg = getEl('errorMessage');
+            const dashboard = getEl('summaryDashboard');
+            const resultsTable = getEl('resultsTable');
+            const emptyState = getEl('emptyStateContainer');
+
+            if (errorMsg) errorMsg.style.display = "none";
+            if (emptyState) emptyState.style.display = "none";
 
             globalMttrData = { total: { hours: 0, count: 0 }, byPriority: {} };
 
-            // Als cache leeg is, verifieer of bestanden geselecteerd zijn
-            if (!cachedAllVersions || !cachedAllIssuesRaw) {
-                const versionsFile = versionsFileInput ? versionsFileInput.files[0] : null;
-                const issuesFiles = issuesFileInput ? issuesFileInput.files : [];
+            try {
+                // Als cache leeg is, verifieer of bestanden geselecteerd zijn
+                if (!cachedAllVersions || !cachedAllIssuesRaw) {
+                    const versionsFile = versionsFileInput ? versionsFileInput.files[0] : null;
+                    const issuesFiles = issuesFileInput ? issuesFileInput.files : [];
 
-                if (!versionsFile || issuesFiles.length === 0) {
-                    errorMsg.textContent = "Upload a.u.b. de JSON-bestanden (versies en minimaal één issues bestand) in Stap 2.";
-                    errorMsg.style.display = "block";
-                    dashboard.style.display = "none";
-                    resultsTable.style.display = "none";
-                    return;
-                }
+                    if (!versionsFile || issuesFiles.length === 0) {
+                        if (errorMsg) {
+                            errorMsg.textContent = "Upload a.u.b. de JSON-bestanden (versies en minimaal één issues bestand) in Stap 2.";
+                            errorMsg.style.display = "block";
+                        }
+                        if (dashboard) dashboard.style.display = "none";
+                        if (resultsTable) resultsTable.style.display = "none";
+                        return;
+                    }
 
-                try {
                     const allVersionsData = await readFileAsJson(versionsFile);
 
                     if (!Array.isArray(allVersionsData)) {
@@ -3441,14 +3623,8 @@
 
                     cachedAllVersions = allVersionsData;
                     cachedAllIssuesRaw = Array.from(uniqueIssuesMap.values());
-                } catch (err) {
-                    cachedAllVersions = null;
-                    cachedAllIssuesRaw = null;
-                    throw err;
                 }
-            }
 
-            try {
                 const allVersions = cachedAllVersions;
                 let allIssuesRaw = cachedAllIssuesRaw;
 
@@ -3488,6 +3664,7 @@
                 renderCfrPrioritySelector(Array.from(discoveredPriorities));
                 renderTeamSelector(Array.from(discoveredTeams));
                 renderIssueTypeSelectors(Array.from(discoveredIssueTypes));
+                saveFilterPreferences();
 
                 let teamFilteredIssues = allIssuesRaw.filter(issue => {
                     const team = extractTeam(issue).toLowerCase().trim();
@@ -3546,10 +3723,10 @@
                 }
 
                 if (Object.keys(currentPeriodMetrics.validVersions).length === 0) {
-                    errorMsg.textContent = "Geen versies gevonden voor de huidige filtercombinatie. Controleer je releasenaam-filter, release status of datumselectie.";
-                    errorMsg.style.display = "block";
-                    dashboard.style.display = "block";
-                    resultsTable.style.display = "none";
+                    if (errorMsg) errorMsg.style.display = "none";
+                    if (emptyState) emptyState.style.display = "block";
+                    if (dashboard) dashboard.style.display = "block";
+                    if (resultsTable) resultsTable.style.display = "none";
                     resetStatsToZero();
                     return;
                 }
@@ -3713,12 +3890,13 @@
                     }
                 }
 
-                dashboard.style.display = "block";
-                resultsTable.style.display = "table";
+                if (emptyState) emptyState.style.display = "none";
+                if (dashboard) dashboard.style.display = "block";
+                if (resultsTable) resultsTable.style.display = "table";
 
                 // Auto-hide Step 1 & Step 2 for a clean view!
-                const setupSec = document.getElementById('setupSection');
-                const toggleBtn = document.getElementById('toggleSetupBtn');
+                const setupSec = getEl('setupSection');
+                const toggleBtn = getEl('toggleSetupBtn');
                 if (setupSec) setupSec.style.display = "none";
                 if (toggleBtn) {
                     toggleBtn.style.display = "inline-block";
@@ -3734,19 +3912,24 @@
 
             } catch (error) {
                 console.error(error);
-                errorMsg.textContent = error.message;
-                errorMsg.style.display = "block";
-                if (!cachedAllVersions || !cachedAllIssuesRaw) {
-                    dashboard.style.display = "none";
-                    resultsTable.style.display = "none";
+                if (errorMsg) {
+                    errorMsg.textContent = error.message;
+                    errorMsg.style.display = "block";
                 }
+                if (emptyState) emptyState.style.display = "none";
+                if (!cachedAllVersions || !cachedAllIssuesRaw) {
+                    if (dashboard) dashboard.style.display = "none";
+                    if (resultsTable) resultsTable.style.display = "none";
+                }
+            } finally {
+                hideLoading();
             }
         }
 
-        const DASHBOARD_VERSION = "12.4.0";
+        const DASHBOARD_VERSION = "12.5.0";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V12 &bull; Versie 12.4.0 (23-10-2026)
+        DORA &amp; Performance Dashboard V12 &bull; Versie 12.5.0 (23-10-2026)
     </footer>
 </body>
 </html>
