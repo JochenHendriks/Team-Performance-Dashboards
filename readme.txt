@@ -302,6 +302,14 @@ A: Vanaf versie 12.5.0 worden alle filters automatisch opgeslagen in localStorag
    van je browser. Zorg dat je browser niet in 'Incognito' of 'Private browsing' 
    staat als je wilt dat instellingen permanent behouden blijven.
 
+V: Mijn export bevat meer dan 1.000 tickets, maar Jira exporteert er maximaal 1.000 per keer.
+A: Vanaf versie 12.7.0 detecteert het dashboard automatisch bij het uploaden of een 
+   bestand onvolledig is (bijv. 1.000 van 1.336 tickets). Het dashboard toont direct 
+   een waarschuwing met kant-en-klare 'Openen ↗'-knoppen voor Deel 2, Deel 3 etc. 
+   Upload simpelweg alle delen tegelijk in Stap 2; het dashboard voegt ze automatisch samen!
+   Als alternatief kan 'update-data.ps1' gebruikt worden, dat automatisch alle pagina's 
+   in één bestand bundelt.
+
 ==============================================================================
 8. VERSIEBEHEER & GIT PROTOCOL
 ==============================================================================
@@ -321,5 +329,5 @@ Het project volgt een strikt versiebeheer- en releaseprotocol (vastgelegd in AGE
    - Annotated Tag: git tag -a v12.X.Y -m "Release v12.X.Y: <beschrijving>"
    - Push command : git push origin main --tags
 
-Huidige stabiele versie: v12.6.1 (23-10-2026)
+Huidige stabiele versie: v12.7.0 (23-10-2026)
 ==============================================================================

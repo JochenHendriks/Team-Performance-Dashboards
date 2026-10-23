@@ -70,6 +70,7 @@ try {
     $startAt = 0
     $maxResults = 1000
     $expandParam = if ($IncludeChangelog) { "&expand=changelog" } else { "" }
+    $moreRecords = $true
 
     while ($moreRecords) {
         $searchUrl = "$cleanBaseUrl/rest/api/2/search?jql=$([Uri]::EscapeDataString($jql))$expandParam&startAt=$startAt&maxResults=$maxResults&fields=$fields"
