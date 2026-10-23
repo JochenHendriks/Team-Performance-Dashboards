@@ -626,12 +626,17 @@
     <div class="container">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px;">
             <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-                <h1 style="margin:0;">DORA & Performance Dashboard V12</h1>
-                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.7.0 (23-10-2026)</span>
+                <h1 style="margin:0;">DORA &amp; Performance Dashboard V12</h1>
+                <span id="versionBadge" style="background:#e3f2fd; color:#0d47a1; font-size:0.8rem; padding:4px 12px; border-radius:12px; font-weight:600;">v12.7.1 (23-10-2026)</span>
             </div>
-            <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
-                ⚙️ Toon Import &amp; API Instellingen
-            </button>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <a href="EBM dashboard.html" class="copy-btn" style="text-decoration:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;display:inline-flex;align-items:center;gap:4px;color:#172b4d;">
+                    📊 EBM Dashboard ➔
+                </a>
+                <button id="toggleSetupBtn" class="copy-btn" onclick="toggleSetupSection()" style="display:none;padding:8px 14px;font-size:0.85rem;font-weight:bold;">
+                    ⚙️ Toon Import &amp; API Instellingen
+                </button>
+            </div>
         </div>
 
         <div id="setupSection">
@@ -4248,10 +4253,10 @@
             }
         }
 
-        const DASHBOARD_VERSION = "12.7.0";
+        const DASHBOARD_VERSION = "12.7.1";
     </script>
     <footer style="margin-top: 3rem; text-align: center; color: #6b778c; font-size: 0.8rem; border-top: 1px solid #dfe1e6; padding-top: 1rem; margin-bottom: 1.5rem;">
-        DORA &amp; Performance Dashboard V12 &bull; Versie 12.7.0 (23-10-2026)
+        DORA &amp; Performance Dashboard V12 &bull; Versie 12.7.1 (23-10-2026)
     </footer>
 </body>
 </html>

@@ -5,7 +5,7 @@
 Whenever modifying the dashboard or preparing commits for GitHub:
 
 1. **Version Update Requirement:**
-   - Always update the version number (`v12.X.Y`) and date in `Capgemini/Klanten/Politie/DPC/Loki/Dashboard V12.html` when making changes.
+   - Always update the version number (`v12.X.Y`) and date in `Dashboard V12.html` when making changes.
    - Synchronize all 3 version locations in `Dashboard V12.html`:
      - Header Badge (`#versionBadge`)
      - Footer (`<footer>`)

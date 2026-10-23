@@ -119,7 +119,7 @@ for ($rIdx = 0; $rIdx -lt $releases.Count; $rIdx++) {
     if (-not $isHotfixRelease) {
         $numFeatures = ($rIdx % 3) + 1
         for ($f = 0; $f -lt $numFeatures; $f++) {
-            $key = "LOKI-$issueKeyCounter"
+            $key = "WEB-$issueKeyCounter"
             $issueKeyCounter++
             $created = $rDate.AddDays(- (10 + ($f * 2)))
             $inProgress = $rDate.AddDays(- (4 + $f))
@@ -173,7 +173,7 @@ for ($rIdx = 0; $rIdx -lt $releases.Count; $rIdx++) {
     if ($rIdx % 2 -eq 0 -or $isHotfixRelease) {
         $numBugs = if ($isHotfixRelease) { 2 } else { 1 }
         for ($b = 0; $b -lt $numBugs; $b++) {
-            $key = "LOKI-$issueKeyCounter"
+            $key = "WEB-$issueKeyCounter"
             $issueKeyCounter++
             
             $isPost = ($b % 2 -eq 0) -or $isHotfixRelease

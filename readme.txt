@@ -75,7 +75,7 @@ C. Jira Versiebeheer Conventies:
 Er zijn twee manieren om de benodigde data uit Jira te exporteren:
 
 --- MANIER 1: AUTOMATISCH VIA POWERSHELL (Aanbevolen) ---
-In de map 'Capgemini/Klanten/Politie/DPC/Loki/' staan twee hulpscripts:
+In de hoofdmap staan twee hulpscripts:
 - update-data.ps1 : Het PowerShell script dat de Jira REST API aanroept.
 - run-update.bat  : Een dubbelklik-bestand dat het PowerShell script start.
 
@@ -83,7 +83,7 @@ Stappen:
 1. Open 'update-data.ps1' in een tekstverwerker (bijv. Notepad++ of VS Code).
 2. Vul de volgende variabelen bovenaan het script in:
    - $JiraUrl           = "https://jira.jouwbedrijf.nl"
-   - $ProjectKey        = "JOUW_PROJECT_KEY" (bijv. WEB of LOKI)
+   - $ProjectKey        = "JOUW_PROJECT_KEY" (bijv. WEB of PROJ)
    - $TeamField         = "team" (of jouw customfield ID)
    - $PatToken          = "JOUW_PERSONAL_ACCESS_TOKEN" (PAT token uit Jira)
 3. Optionele instellingen in 'update-data.ps1':
@@ -329,5 +329,5 @@ Het project volgt een strikt versiebeheer- en releaseprotocol (vastgelegd in AGE
    - Annotated Tag: git tag -a v12.X.Y -m "Release v12.X.Y: <beschrijving>"
    - Push command : git push origin main --tags
 
-Huidige stabiele versie: v12.7.0 (23-10-2026)
+Huidige stabiele versie: v12.7.1 (23-10-2026)
 ==============================================================================

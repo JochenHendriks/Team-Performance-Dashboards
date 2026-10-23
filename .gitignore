@@ -1,0 +1,35 @@
+# Jira Data Exports & Resultaten (bevat mogelijk gevoelige interne data)
+issues*.json
+versies*.json
+versions*.json
+data/
+*.export.json
+
+# Credentials, tokens & omgevingsvariabelen
+*.env
+*.env.*
+*.token
+*.pat
+*.key
+*.pem
+credentials.json
+secrets.json
+
+# Logbestanden & tijdelijke bestanden
+*.log
+*.tmp
+temp/
+logs/
+
+# IDE & Editor configuratie
+.vscode/
+.idea/
+*.suo
+*.user
+*.swp
+*~
+
+# Besturingssysteem bestanden
+.DS_Store
+Thumbs.db
+desktop.ini
